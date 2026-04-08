@@ -1,0 +1,36 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-marketplace",
+  "description": "Chris Peterson's Claude Code plugins",
+  "owner": {
+    "name": "chris-peterson"
+  },
+  "plugins": [
+    {
+      "name": "tack",
+      "description": "Route-aware agent that tracks AI-assisted development work — pivots, deliverables, and dependencies — across session boundaries",
+      "author": {
+        "name": "chris-peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/tack.git"
+      },
+      "category": "productivity",
+      "homepage": "https://chris-peterson.github.io/tack/#/"
+    },
+    {
+      "name": "ClaudeWatch",
+      "description": "PreToolUse hook that enforces command safety rules via 'claude-watches'",
+      "author": {
+        "name": "chris-peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/ClaudeWatch.git"
+      },
+      "category": "security",
+      "homepage": "https://chris-peterson.github.io/ClaudeWatch/#/"
+    }
+  ]
+}
