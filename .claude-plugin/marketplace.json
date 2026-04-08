@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "claude-marketplace",
+  "name": "chris-peterson",
   "description": "Chris Peterson's Claude Code plugins",
   "owner": {
     "name": "chris-peterson"
