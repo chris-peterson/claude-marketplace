@@ -7,17 +7,17 @@
   },
   "plugins": [
     {
-      "name": "tack",
-      "description": "Route-aware agent that tracks AI-assisted development work — pivots, deliverables, and dependencies — across session boundaries",
+      "name": "beacon",
+      "description": "At-a-glance session awareness for Claude Code in iTerm2.",
       "author": {
         "name": "chris-peterson"
       },
       "source": {
         "source": "url",
-        "url": "https://github.com/chris-peterson/tack.git"
+        "url": "https://github.com/chris-peterson/beacon.git"
       },
-      "category": "productivity",
-      "homepage": "https://chris-peterson.github.io/tack/#/"
+      "category": "development",
+      "homepage": "https://chris-peterson.github.io/beacon/#/"
     },
     {
       "name": "ClaudeWatch",
@@ -31,6 +31,31 @@
       },
       "category": "security",
       "homepage": "https://chris-peterson.github.io/ClaudeWatch/#/"
+    },
+    {
+      "name": "scribe",
+      "description": "A scribe for AI coding sessions: capture, sanitize, retrospect.",
+      "author": {
+        "name": "chris-peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/scribe.git"
+      },
+      "category": "development"
+    },
+    {
+      "name": "tack",
+      "description": "Route-aware agent that tracks AI-assisted development work — pivots, deliverables, and dependencies — across session boundaries",
+      "author": {
+        "name": "chris-peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/tack.git"
+      },
+      "category": "productivity",
+      "homepage": "https://chris-peterson.github.io/tack/#/"
     }
   ]
 }

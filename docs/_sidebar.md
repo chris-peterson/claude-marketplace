@@ -1,0 +1,2 @@
+- [Home](/)
+- [How they fit together](/relationships)
