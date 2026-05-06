@@ -33,16 +33,17 @@
       "homepage": "https://chris-peterson.github.io/ClaudeWatch/#/"
     },
     {
-      "name": "scribe",
-      "description": "A scribe for AI coding sessions: capture, sanitize, retrospect.",
+      "name": "logbook",
+      "description": "A log of important learnings, e.g. AI-assisted coding session retros.",
       "author": {
         "name": "chris-peterson"
       },
       "source": {
         "source": "url",
-        "url": "https://github.com/chris-peterson/scribe.git"
+        "url": "https://github.com/chris-peterson/logbook.git"
       },
-      "category": "development"
+      "category": "development",
+      "homepage": "https://chris-peterson.github.io/logbook/#/"
     },
     {
       "name": "tack",

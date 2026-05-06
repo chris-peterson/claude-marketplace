@@ -13,7 +13,7 @@ Then install whichever plugins you want:
 ```bash
 claude plugins install beacon@chris-peterson
 claude plugins install ClaudeWatch@chris-peterson
-claude plugins install scribe@chris-peterson
+claude plugins install logbook@chris-peterson
 claude plugins install tack@chris-peterson
 ```
 
@@ -27,9 +27,9 @@ At-a-glance session awareness for Claude Code in iTerm2. Paints an iTerm2 badge 
 
 `PreToolUse` hook that enforces command safety rules. Blocks or requires confirmation for destructive git ops, global installs, recursive deletes, and secret exposure — using regex matching that handles compound commands and heredocs that Claude Code's built-in permission system misses.
 
-### [scribe](https://github.com/chris-peterson/scribe)
+### [logbook](https://github.com/chris-peterson/logbook)
 
-Turns a coding session — Claude Code, Cursor, or GitHub Copilot — into a retrospective committed to a team-owned git repository. Transcripts stay on the author's workstation; only the retro is published.
+Turns a Claude Code, Cursor, or GitHub Copilot session into a retrospective committed to a team-owned git repository. Captures session metrics (token usage, tool counts, files touched, overlapping sessions, git activity) and uses them to draft the retro; only the published retro leaves the workstation, transcripts stay local.
 
 ### [tack](https://github.com/chris-peterson/tack)
 
