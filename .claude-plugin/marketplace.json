@@ -46,6 +46,19 @@
       "homepage": "https://chris-peterson.github.io/logbook/#/"
     },
     {
+      "name": "sextant",
+      "description": "AI-assisted SPEC-driven development — write requirements first, audit implementations against them, graduate the winner.",
+      "author": {
+        "name": "chris-peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/sextant.git"
+      },
+      "category": "development",
+      "homepage": "https://chris-peterson.github.io/sextant/#/"
+    },
+    {
       "name": "tack",
       "description": "Route-aware agent that tracks AI-assisted development work — pivots, deliverables, and dependencies — across session boundaries",
       "author": {
