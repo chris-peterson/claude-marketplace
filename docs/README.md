@@ -185,6 +185,8 @@
 .plugin-card.claudewatch-card:hover{ border-color: var(--orange); }
 .plugin-card.logbook-card          { border-bottom-color: var(--green); }
 .plugin-card.logbook-card:hover    { border-color: var(--green); }
+.plugin-card.sextant-card          { border-bottom-color: var(--yellow); }
+.plugin-card.sextant-card:hover    { border-color: var(--yellow); }
 .plugin-card.tack-card             { border-bottom-color: var(--purple); }
 .plugin-card.tack-card:hover       { border-color: var(--purple); }
 
@@ -215,6 +217,13 @@
       <span class="desc">AI-coding-session retros, committed to git</span>
     </div>
   </a>
+  <a class="plugin-card sextant-card" href="https://chris-peterson.github.io/sextant/#/">
+    <img class="icon" src="https://chris-peterson.github.io/sextant/favicon.svg" alt=""/>
+    <div class="meta">
+      <span class="name">sextant</span>
+      <span class="desc">AI-assisted SPEC-driven development</span>
+    </div>
+  </a>
   <a class="plugin-card tack-card" href="https://chris-peterson.github.io/tack/#/">
     <img class="icon" src="https://chris-peterson.github.io/tack/favicon.svg" alt=""/>
     <div class="meta">
@@ -236,6 +245,7 @@ claude plugins marketplace add https://github.com/chris-peterson/claude-marketpl
 claude plugins install beacon@chris-peterson
 claude plugins install ClaudeWatch@chris-peterson
 claude plugins install logbook@chris-peterson
+claude plugins install sextant@chris-peterson
 claude plugins install tack@chris-peterson
 ```
 
