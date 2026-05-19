@@ -181,7 +181,7 @@
 
 .plugin-card.beacon-card           { border-bottom-color: var(--cyan); }
 .plugin-card.beacon-card:hover     { border-color: var(--cyan); }
-.plugin-card.claudewatch-card      { border-bottom-color: var(--orange); }
+.plugin-card.claudewatch-card      { border-bottom-color: var(--orange); grid-column: 1 / -1; }
 .plugin-card.claudewatch-card:hover{ border-color: var(--orange); }
 .plugin-card.logbook-card          { border-bottom-color: var(--green); }
 .plugin-card.logbook-card:hover    { border-color: var(--green); }
@@ -203,13 +203,6 @@
       <span class="desc">At-a-glance Claude Code session awareness</span>
     </div>
   </a>
-  <a class="plugin-card claudewatch-card" href="https://chris-peterson.github.io/ClaudeWatch/#/">
-    <img class="icon" src="https://chris-peterson.github.io/ClaudeWatch/favicon.svg" alt=""/>
-    <div class="meta">
-      <span class="name">ClaudeWatch</span>
-      <span class="desc">Pre-tool-call command-safety hook</span>
-    </div>
-  </a>
   <a class="plugin-card logbook-card" href="https://chris-peterson.github.io/logbook/#/">
     <img class="icon" src="https://chris-peterson.github.io/logbook/favicon.svg" alt=""/>
     <div class="meta">
@@ -229,6 +222,13 @@
     <div class="meta">
       <span class="name">tack</span>
       <span class="desc">Route-aware tracker for AI-assisted development</span>
+    </div>
+  </a>
+  <a class="plugin-card claudewatch-card" href="https://chris-peterson.github.io/ClaudeWatch/#/">
+    <img class="icon" src="https://chris-peterson.github.io/ClaudeWatch/favicon.svg" alt=""/>
+    <div class="meta">
+      <span class="name">ClaudeWatch</span>
+      <span class="desc">Pre-tool-call command-safety hook</span>
     </div>
   </a>
 </div>
