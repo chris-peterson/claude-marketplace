@@ -46,6 +46,19 @@
       "homepage": "https://chris-peterson.github.io/logbook/#/"
     },
     {
+      "name": "moor",
+      "description": "A fast, keyboard-driven diff viewer for reviewing AI-generated code.",
+      "author": {
+        "name": "chris-peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/moor.git"
+      },
+      "category": "development",
+      "homepage": "https://chris-peterson.github.io/moor/#/"
+    },
+    {
       "name": "sextant",
       "description": "AI-assisted SPEC-driven development — write requirements first, audit implementations against them, graduate the winner.",
       "author": {
