@@ -7,6 +7,19 @@
   },
   "plugins": [
     {
+      "name": "anchor",
+      "description": "Git/forge skills that drive reviewed work into the permanent record — commit, prepare-review, preview.",
+      "author": {
+        "name": "chris-peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/anchor.git"
+      },
+      "category": "development",
+      "homepage": "https://chris-peterson.github.io/anchor/#/"
+    },
+    {
       "name": "beacon",
       "description": "At-a-glance session awareness for Claude Code in iTerm2.",
       "author": {
