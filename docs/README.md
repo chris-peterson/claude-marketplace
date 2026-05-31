@@ -179,6 +179,8 @@
   line-height: 1.45;
 }
 
+.plugin-card.anchor-card           { border-bottom-color: var(--red); }
+.plugin-card.anchor-card:hover     { border-color: var(--red); }
 .plugin-card.beacon-card           { border-bottom-color: var(--cyan); }
 .plugin-card.beacon-card:hover     { border-color: var(--cyan); }
 .plugin-card.claudewatch-card      { border-bottom-color: var(--orange); grid-column: 1 / -1; }
@@ -198,6 +200,13 @@
 </style>
 
 <div class="plugin-grid">
+  <a class="plugin-card anchor-card" href="https://chris-peterson.github.io/anchor/#/">
+    <img class="icon" src="https://chris-peterson.github.io/anchor/favicon.svg" alt=""/>
+    <div class="meta">
+      <span class="name">anchor</span>
+      <span class="desc">Drive reviewed work into git</span>
+    </div>
+  </a>
   <a class="plugin-card beacon-card" href="https://chris-peterson.github.io/beacon/#/">
     <img class="icon" src="https://chris-peterson.github.io/beacon/favicon.svg" alt=""/>
     <div class="meta">
@@ -251,6 +260,7 @@ claude plugins marketplace add https://github.com/chris-peterson/claude-marketpl
 ## Install plugins
 
 ```bash
+claude plugins install anchor@chris-peterson
 claude plugins install beacon@chris-peterson
 claude plugins install ClaudeWatch@chris-peterson
 claude plugins install logbook@chris-peterson
