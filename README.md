@@ -5,19 +5,20 @@ Claude Code plugins by [chris-peterson](https://github.com/chris-peterson).
 ## Installation
 
 ```bash
-claude plugins marketplace add https://github.com/chris-peterson/claude-marketplace
+claude plugin marketplace add chris-peterson/claude-marketplace
 ```
 
-Then install whichever plugins you want:
+Then run `/plugin` inside Claude Code and open the **Discover** tab to browse and install — or install one directly by name:
 
 ```bash
-claude plugins install beacon@chris-peterson
-claude plugins install ClaudeWatch@chris-peterson
-claude plugins install logbook@chris-peterson
-claude plugins install tack@chris-peterson
+claude plugin install <name>@chris-peterson
 ```
 
 ## Plugins
+
+### [anchor](https://github.com/chris-peterson/anchor)
+
+Git/forge skills that drive reviewed work into the permanent record. `/anchor:commit` writes why-focused commit messages, `/anchor:prepare-review` opens a change request on the forge, and `/anchor:preview` shows in-flight changes in a visual difftool.
 
 ### [beacon](https://github.com/chris-peterson/beacon)
 
@@ -30,6 +31,14 @@ At-a-glance session awareness for Claude Code in iTerm2. Paints an iTerm2 badge 
 ### [logbook](https://github.com/chris-peterson/logbook)
 
 Turns a Claude Code, Cursor, or GitHub Copilot session into a retrospective committed to a team-owned git repository. Captures session metrics (token usage, tool counts, files touched, overlapping sessions, git activity) and uses them to draft the retro; only the published retro leaves the workstation, transcripts stay local.
+
+### [moor](https://github.com/chris-peterson/moor)
+
+A fast, keyboard-driven diff viewer for reviewing AI-generated code. Opens instantly, shows a two-file or directory diff, and feeds structured review feedback back to the agent that produced the change. Wires up as `git difftool`.
+
+### [sextant](https://github.com/chris-peterson/sextant)
+
+AI-assisted SPEC-driven development. Maintains a `SPEC.md` contract, audits implementations against it for coverage and drift, and scaffolds candidate implementations so the winner can be graduated to the repo root.
 
 ### [tack](https://github.com/chris-peterson/tack)
 

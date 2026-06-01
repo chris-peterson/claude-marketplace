@@ -251,22 +251,18 @@
   </a>
 </div>
 
-## Add the marketplace
+## Install
+
+Add the marketplace once:
 
 ```bash
-claude plugins marketplace add https://github.com/chris-peterson/claude-marketplace
+claude plugin marketplace add chris-peterson/claude-marketplace
 ```
 
-## Install plugins
+Then run `/plugin` inside Claude Code and open the **Discover** tab to browse and install any of these — or install one directly by name:
 
 ```bash
-claude plugins install anchor@chris-peterson
-claude plugins install beacon@chris-peterson
-claude plugins install ClaudeWatch@chris-peterson
-claude plugins install logbook@chris-peterson
-claude plugins install moor@chris-peterson
-claude plugins install sextant@chris-peterson
-claude plugins install tack@chris-peterson
+claude plugin install <name>@chris-peterson
 ```
 
-See [How they fit together](/relationships) for the workflow roles each plugin plays and how they interact.
+Each plugin's page (linked above) carries its own quickstart. See [How they fit together](/relationships) for the workflow roles each plugin plays and how they interact.
