@@ -9,6 +9,15 @@ solves, and some in-session context) **without ever leaving the site**.
 Lean away from the current docsify docs site; this front page becomes the
 product, and the per-plugin material lives inside it.
 
+## Design metaphor: an integrated bridge system
+Frame bridge.ai as a ship's **integrated bridge system** — a single console that
+consolidates separate instruments into one place, each a glanceable "heads-up"
+widget. The brand mark (a 2×2 of the functional-area colors) is that console in
+miniature; each plugin favicon is one instrument. A plugin view in the SPA is
+that widget zoomed to full screen — readouts, controls, and in-session context
+in one panel — with a `← Back` that returns you to the full console. Lean into
+glanceable status, panel framing, and multi-function displays over prose.
+
 ## Interaction model
 - The current landing is the **home** view.
 - Clicking a plugin (name or card) activates a **zoomed-in plugin view** — a

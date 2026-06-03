@@ -46,8 +46,8 @@
     background:linear-gradient(180deg,rgba(25,26,33,.94),rgba(25,26,33,.7));border-bottom:1px solid var(--line)}
   .nav-inner{max-width:920px;margin:0 auto;padding:11px 28px;display:flex;align-items:center;justify-content:space-between;gap:18px}
   .brand{display:inline-flex;align-items:center;gap:11px;font-family:var(--mono);font-size:13px;letter-spacing:.05em;color:var(--fg)}
-  .brand svg{width:23px;height:23px;flex:none;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
-  .brand:hover{text-decoration:none}.brand:hover svg{transform:rotate(-40deg)}
+  .brand svg{width:21px;height:21px;flex:none;transition:transform .3s cubic-bezier(.2,.7,.2,1)}
+  .brand:hover{text-decoration:none}.brand:hover svg{transform:scale(1.1)}
   .brand b{color:var(--cyan);font-weight:600}
   .nav-links{display:flex;align-items:center;gap:24px;font-family:var(--mono);font-size:12.5px;letter-spacing:.07em}
   .nav-links a{color:var(--muted);padding:4px 0}.nav-links a:hover{color:var(--fg);text-decoration:none}
@@ -172,7 +172,7 @@
   .ship .head .srclink{margin-left:auto}
 
   footer{padding:54px 0 64px;color:var(--faint);font-family:var(--mono);font-size:12.5px;letter-spacing:.05em;text-align:center}
-  footer .rose-mini{display:block;margin:0 auto 16px;width:34px;height:34px;opacity:.6}
+  footer .fmark{display:block;margin:0 auto 16px;width:30px;height:30px;opacity:.7}
   footer a{color:var(--muted)}
 
   .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
@@ -183,16 +183,17 @@
 <body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="rose-mini" viewBox="0 0 40 40">
-    <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="1"/>
-    <path d="M20 3 L23 20 L20 37 L17 20 Z" fill="currentColor"/>
-    <path d="M3 20 L20 17 L37 20 L20 23 Z" fill="currentColor" opacity=".5"/>
+  <symbol id="mark" viewBox="0 0 40 40">
+    <rect x="4" y="4" width="14.5" height="14.5" rx="3.5" fill="var(--purple)"/>
+    <rect x="21.5" y="4" width="14.5" height="14.5" rx="3.5" fill="var(--cyan)"/>
+    <rect x="4" y="21.5" width="14.5" height="14.5" rx="3.5" fill="var(--pink)"/>
+    <rect x="21.5" y="21.5" width="14.5" height="14.5" rx="3.5" fill="var(--green)"/>
   </symbol>
 </svg>
 
 <nav class="sitenav">
   <div class="nav-inner">
-    <a class="brand" href="#top"><svg viewBox="0 0 40 40"><use href="#rose-mini"/></svg><span>bridge<b>.ai</b></span></a>
+    <a class="brand" href="#top"><svg viewBox="0 0 40 40"><use href="#mark"/></svg><span>bridge<b>.ai</b></span></a>
     <div class="nav-links">
       <a href="#install">install</a>
       <a href="#start">pick plugins</a>
@@ -392,7 +393,7 @@
 </div>
 
 <footer>
-  <svg class="rose-mini" viewBox="0 0 40 40" style="color:var(--muted)"><use href="#rose-mini"/></svg>
+  <svg class="fmark" viewBox="0 0 40 40"><use href="#mark"/></svg>
   bridge.ai · chris-peterson/claude-marketplace · plugins for AI-assisted development<br>
   <a href="https://github.com/chris-peterson/claude-marketplace">github.com/chris-peterson/claude-marketplace</a>
 </footer>
