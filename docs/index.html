@@ -1,22 +1,461 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>claude-marketplace</title>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta name="description" content="Claude Code plugins by chris-peterson">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>bridge.ai — Claude Code plugins for AI-assisted work</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=JetBrains+Mono:wght@400;500;700&family=Spline+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --abyss:#191a21; --deep:#21222c; --sea:#282a36; --hull:#343746; --line-h:#44475a;
+    --fg:#f8f8f2; --muted:#6272a4; --faint:#4b527a;
+    --cyan:#8be9fd; --green:#50fa7b; --orange:#ffb86c; --pink:#ff79c6;
+    --purple:#bd93f9; --red:#ff5555; --yellow:#f1fa8c; --gold:#e3b341; --claude:#d97757;
+    /* four functional areas → four colors */
+    --ship:#8be9fd; --guard:#ff5555; --orient:#bd93f9; --build:#50fa7b;
+    --line:rgba(139,233,253,.14); --line-2:rgba(248,248,242,.07);
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --disp:'Fraunces',Georgia,'Times New Roman',serif;
+    --body:'Spline Sans',ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--abyss);color:var(--fg);font-family:var(--body);
+    font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(1000px 760px at 80% -10%, rgba(139,233,253,.09), transparent 60%),
+      radial-gradient(760px 640px at 2% 104%, rgba(189,147,249,.09), transparent 55%),
+      radial-gradient(1300px 1000px at 50% 46%, rgba(40,42,54,.6), transparent 72%)}
+  body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.045;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:0 28px}
+
+  a{color:var(--cyan);text-decoration:none}
+  a:hover{text-decoration:underline;text-underline-offset:3px}
+  code{font-family:var(--mono);font-size:.85em}
+
+  .bearings{display:flex;align-items:center;gap:14px;margin:0;color:var(--faint)}
+  .bearings .tickline{flex:1;height:1px;background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 9px)}
+  .bearings .label{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted)}
+
+  .sitenav{position:sticky;top:0;z-index:50;-webkit-backdrop-filter:blur(11px);backdrop-filter:blur(11px);
+    background:linear-gradient(180deg,rgba(25,26,33,.94),rgba(25,26,33,.7));border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:920px;margin:0 auto;padding:11px 28px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+  .brand{display:inline-flex;align-items:center;gap:11px;font-family:var(--mono);font-size:13px;letter-spacing:.05em;color:var(--fg)}
+  .brand svg{width:23px;height:23px;flex:none;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+  .brand:hover{text-decoration:none}.brand:hover svg{transform:rotate(-40deg)}
+  .brand b{color:var(--cyan);font-weight:600}
+  .nav-links{display:flex;align-items:center;gap:24px;font-family:var(--mono);font-size:12.5px;letter-spacing:.07em}
+  .nav-links a{color:var(--muted);padding:4px 0}.nav-links a:hover{color:var(--fg);text-decoration:none}
+  @media(max-width:720px){.nav-links{display:none}}
+  section[id]{scroll-margin-top:70px}
+
+  header.hero{padding:44px 0 26px;position:relative}
+  .hero-main{margin-top:0}
+  .eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.32em;text-transform:uppercase;color:var(--cyan);margin:0 0 18px}
+  h1.title{font-family:var(--disp);font-optical-sizing:auto;font-weight:900;
+    font-size:clamp(58px,12vw,138px);line-height:.84;letter-spacing:-.03em;margin:0;color:var(--fg)}
+  h1.title .ai{color:var(--cyan);font-style:italic;font-weight:500;text-shadow:0 0 34px rgba(139,233,253,.35)}
+  .tagline{font-family:var(--disp);font-style:italic;font-weight:400;
+    font-size:clamp(20px,2.5vw,28px);line-height:1.3;color:var(--fg);max-width:40ch;margin:22px 0 0}
+  .lede{margin:20px 0 0;max-width:62ch;color:var(--muted)}
+  .lede b{color:var(--fg);font-weight:600}
+  .lede strong{color:var(--gold);font-weight:700;font-style:normal}
+  .lede strong.claude{color:var(--claude)}
+
+  section{padding:60px 0;position:relative}
+  #install{padding:30px 0 40px}
+  h2{font-family:var(--disp);font-weight:600;font-size:clamp(30px,4.4vw,44px);
+    letter-spacing:-.02em;line-height:1.04;margin:8px 0 8px;color:var(--fg)}
+  .sub{color:var(--muted);max-width:66ch;margin:0 0 8px}
+  .sub b{color:var(--fg);font-weight:600}
+  .sub a{color:var(--muted);text-decoration:underline;text-decoration-color:var(--faint);text-underline-offset:3px}
+  .sub a:hover{color:var(--fg);text-decoration-color:var(--muted)}
+
+  /* ---- start-here path ---- */
+  .path{margin-top:30px;position:relative}
+  .path::before{content:"";position:absolute;left:23px;top:8px;bottom:34px;width:1px;
+    background:linear-gradient(180deg,var(--cyan),var(--line-h) 70%,transparent)}
+  .prow{display:grid;grid-template-columns:48px 1fr;gap:20px;align-items:start;padding:0 0 22px;position:relative}
+  .prow:last-child{padding-bottom:0}
+  .prow .pmark{display:flex;justify-content:center}
+  .prow .pmark img{width:46px;height:46px;border-radius:13px;background:var(--sea);position:relative;z-index:1;
+    border:1px solid color-mix(in srgb,var(--ac) 45%,transparent);box-shadow:0 0 18px -5px var(--ac)}
+  .prow .pbody{padding-top:3px}
+  .prow .pname{font-family:var(--disp);font-weight:600;font-size:20px;color:var(--fg);display:flex;align-items:baseline;gap:11px;flex-wrap:wrap}
+  .prow .pname b{color:var(--ac)}
+  .prow .when{margin:4px 0 0;color:var(--muted);font-size:15px}
+  .prow .when b{color:var(--fg);font-weight:600}
+  .prow.lead .pmark img{width:56px;height:56px}
+  .prow.lead{padding-bottom:30px}
+  .prow.lead .pname{font-size:24px}
+
+  /* ---- functional groups ---- */
+  .fgroup{margin-top:40px}
+  .fgroup .ghead{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;margin:0 0 16px;
+    padding-bottom:11px;border-bottom:1px solid color-mix(in srgb,var(--ac) 24%,transparent)}
+  .fgroup .gtag{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--abyss);background:var(--ac);border-radius:5px;padding:3px 9px;font-weight:700}
+  .fgroup .gname{font-family:var(--disp);font-weight:600;font-size:22px;color:var(--fg)}
+  .fgroup .gwhy{color:var(--muted);font-size:14px}
+  .fleet{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  .fleet.solo{grid-template-columns:1fr}
+  @media(max-width:780px){.fleet{grid-template-columns:1fr}}
+
+  .ship{position:relative;border:1px solid var(--line-2);border-radius:14px;padding:22px;
+    background:var(--deep);overflow:hidden;transition:transform .4s cubic-bezier(.2,.7,.2,1),border-color .4s}
+  .ship::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--ac);opacity:.7}
+  .ship:hover{transform:translateY(-5px);border-color:color-mix(in srgb,var(--ac) 45%,transparent)}
+  .ship .head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .ship .head img{width:32px;height:32px;border-radius:9px;flex:none}
+  .ship h3{font-family:var(--disp);font-weight:600;font-size:24px;margin:0;color:var(--fg)}
+  .ship .opt{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);
+    border:1px solid var(--line-2);border-radius:5px;padding:2px 7px}
+  .ship .gloss{font-family:var(--disp);font-style:italic;font-size:14.5px;color:var(--muted);margin:10px 0 0}
+  .ship .what{margin:11px 0 0;color:var(--fg);font-size:15px;line-height:1.55}
+  .ship .cmds{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 0}
+  .ship .cmd{font-family:var(--mono);font-size:11.5px;color:var(--ac);
+    background:color-mix(in srgb,var(--ac) 9%,transparent);
+    border:1px solid color-mix(in srgb,var(--ac) 22%,transparent);border-radius:6px;padding:4px 8px}
+  .ship .cmdsep{align-self:center;color:var(--faint);font-family:var(--mono);font-size:12px;margin:0 2px}
+  .ship .cli{align-self:center;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 32%,transparent);border-radius:5px;padding:2px 7px}
+
+  /* ---- voyage ---- */
+  .voyage{margin-top:26px;position:relative}
+  .voyage::before{content:"";position:absolute;left:18px;top:10px;bottom:10px;width:1px;background:var(--line)}
+  .leg{display:grid;grid-template-columns:38px 1fr;gap:22px;padding:0 0 24px;position:relative}
+  .leg:last-child{padding-bottom:0}
+  .leg .bead img{width:38px;height:38px;border-radius:11px;background:var(--sea);position:relative;z-index:1;
+    border:1px solid color-mix(in srgb,var(--ac) 50%,transparent);box-shadow:0 0 14px -4px var(--ac)}
+  .leg .lbody h3{font-family:var(--disp);font-weight:600;font-size:20px;margin:2px 0 5px;color:var(--fg)}
+  .leg .lbody h3 .inst{color:var(--ac);font-style:italic;font-weight:500}
+  .leg .lbody p{margin:0;color:var(--muted);font-size:15px}
+  .leg .lbody .opt{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.04em}
+  .leg .lbody .prompt{display:inline-flex;align-items:center;gap:9px;margin-top:11px;font-family:var(--mono);font-size:12.5px;
+    background:var(--abyss);border:1px solid var(--line-2);border-radius:8px;padding:8px 12px;color:var(--fg)}
+  .leg .lbody .prompt .cue{color:var(--ac)}
+
+  /* install block */
+  .install{margin-top:28px;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--abyss)}
+  .install .ibar{display:flex;align-items:center;gap:8px;padding:11px 15px;border-bottom:1px solid var(--line-2);background:rgba(255,255,255,.015)}
+  .install .ibar i{width:11px;height:11px;border-radius:50%;display:inline-block;background:var(--hull)}
+  .install .ibar i:nth-child(1){background:var(--red)}
+  .install .ibar i:nth-child(2){background:var(--orange)}
+  .install .ibar i:nth-child(3){background:var(--green)}
+  .install .ibar .ttl{margin-left:8px;font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.06em}
+  .install .ibody{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .install .ibody code{font-family:var(--mono);font-size:13.5px;color:var(--fg);line-height:1.7}
+  .install .ibody .pr{color:var(--green)}
+
+  /* copyable command + docs links */
+  .pacts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:13px 0 0}
+  .cmdcopy{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;cursor:pointer;text-align:left;
+    background:color-mix(in srgb,var(--ac) 8%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);
+    border-radius:8px;padding:7px 11px;color:var(--fg);transition:border-color .2s;max-width:100%}
+  .cmdcopy:hover{border-color:color-mix(in srgb,var(--ac) 55%,transparent)}
+  .cmdcopy .cc-cmd{color:var(--fg);word-break:break-word}
+  .cmdcopy .cc-ico{color:var(--ac);text-transform:uppercase;letter-spacing:.12em;font-size:10px;border-left:1px solid var(--line-2);padding-left:10px;flex:none}
+  .cmdcopy.solo .cc-ico{border-left:0;padding-left:0}
+  .cmdcopy.done{border-color:color-mix(in srgb,var(--green) 55%,transparent)}
+  .cmdcopy.done .cc-ico{color:var(--green)}
+  .pnamelink{text-decoration:none;color:inherit}
+  .pnamelink:hover b,.pnamelink:hover h3{text-decoration:underline;text-underline-offset:3px}
+  .goarrow{font-family:var(--mono);font-size:.6em;color:var(--ac);opacity:.5;margin-left:.3em;transition:opacity .2s;vertical-align:super}
+  .pnamelink:hover .goarrow{opacity:1}
+  .srclink{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.05em;align-self:center}
+  .srclink:hover{color:var(--ac);text-decoration:underline;text-underline-offset:3px}
+  .ship .head .srclink{margin-left:auto}
+
+  footer{padding:54px 0 64px;color:var(--faint);font-family:var(--mono);font-size:12.5px;letter-spacing:.05em;text-align:center}
+  footer .rose-mini{display:block;margin:0 auto 16px;width:34px;height:34px;opacity:.6}
+  footer a{color:var(--muted)}
+
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
+</style>
 </head>
 <body>
-  <div id="app">Loading...</div>
-  <script src="https://chris-peterson.github.io/js/docsify-shared.js"></script>
-  <script>
-    initProject({
-      name: 'claude-marketplace',
-      code_languages: ['bash', 'json'],
-      plugins: ['mermaid']
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="rose-mini" viewBox="0 0 40 40">
+    <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="1"/>
+    <path d="M20 3 L23 20 L20 37 L17 20 Z" fill="currentColor"/>
+    <path d="M3 20 L20 17 L37 20 L20 23 Z" fill="currentColor" opacity=".5"/>
+  </symbol>
+</svg>
+
+<nav class="sitenav">
+  <div class="nav-inner">
+    <a class="brand" href="#top"><svg viewBox="0 0 40 40"><use href="#rose-mini"/></svg><span>bridge<b>.ai</b></span></a>
+    <div class="nav-links">
+      <a href="#install">install</a>
+      <a href="#start">pick plugins</a>
+      <a href="#plugins">instruments</a>
+      <a href="#session">example usage</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap" id="top">
+
+  <header class="hero">
+    <div class="hero-main">
+      <div>
+        <p class="eyebrow">Claude Code plugins · chris-peterson</p>
+        <h1 class="title">bridge<span class="ai">.ai</span></h1>
+        <p class="tagline">Tools for navigating uncharted waters.</p>
+        <p class="lede"><strong class="claude">Claude</strong> writes code faster than <strong>you</strong> can track. These plugins keep you in charge: <b>block unsafe commands, review the code as it changes and redirect with in-context feedback, land what you approve as clean commits and change requests, and track your parallel efforts.</b></p>
+      </div>
+    </div>
+    <div class="bearings" style="margin-top:24px"><span class="tickline"></span></div>
+  </header>
+
+  <!-- ============ INSTALL ============ -->
+  <section id="install">
+    <h2>Install</h2>
+    <p class="sub">Register the marketplace once. After that, install any plugin with <code>claude plugin install &lt;name&gt;@chris-peterson</code> — each one below carries its exact command and a link to full docs.</p>
+    <div class="install" style="--ac:var(--cyan)">
+      <div class="ibar"><i></i><i></i><i></i><span class="ttl">one-time setup</span></div>
+      <div class="ibody">
+        <code><span class="pr">claude plugin marketplace add</span> chris-peterson/claude-marketplace</code>
+        <button class="cmdcopy solo" data-cmd="claude plugin marketplace add chris-peterson/claude-marketplace"><span class="cc-ico">copy</span></button>
+      </div>
+    </div>
+  </section>
+
+  <div class="bearings"><span class="tickline"></span></div>
+
+  <!-- ============ WHERE TO START ============ -->
+  <section id="start">
+    <h2>Pick your plugins</h2>
+    <p class="sub">These are Claude Code plugins; several also ship as standalone CLIs, true to the <a href="https://en.wikipedia.org/wiki/Unix_philosophy" target="_blank" rel="noopener">Unix philosophy</a>. They work together, but every link is soft: start at the top, then add whatever solves a problem you've hit, in any order. The bridge is where a ship is steered from; these are its instruments.</p>
+
+    <div class="path">
+      <div class="prow lead" style="--ac:var(--guard)">
+        <div class="pmark"><img src="https://chris-peterson.github.io/ClaudeWatch/favicon.svg" alt="ClaudeWatch"></div>
+        <div class="pbody">
+          <div class="pname"><b>ClaudeWatch</b></div>
+          <p class="when">If you find yourself rubber-stamping Claude's approval prompts without really reading them, here's why: its built-in permission model is <a href="https://github.com/anthropics/claude-code/issues/30519" target="_blank" rel="noopener">fundamentally broken</a> — a block on <code>git push --force</code> sails right past <code>git push -f</code> — so it asks about everything to stay safe, and the constant approvals wear you down into <a href="https://en.wikipedia.org/wiki/Decision_fatigue" target="_blank" rel="noopener">decision fatigue</a>. ClaudeWatch makes the checks actually match what they mean: dangerous commands get blocked, and you stop re-approving the same safe one. <b>Install this first.</b></p>
+        </div>
+      </div>
+      <div class="prow" style="--ac:var(--ship)">
+        <div class="pmark"><img src="https://chris-peterson.github.io/anchor/favicon.svg" alt="anchor"></div>
+        <div class="pbody">
+          <div class="pname"><b>anchor</b></div>
+          <p class="when">When you're nervous about keeping code you didn't write: it walks you through the diff (the exact lines Claude changed) first, then <b>commits with a message about why and opens the change request.</b> Uses whatever diff viewer git already opens for you.</p>
+        </div>
+      </div>
+      <div class="prow" style="--ac:var(--orient)">
+        <div class="pmark"><img src="https://chris-peterson.github.io/tack/favicon.svg" alt="tack"></div>
+        <div class="pbody">
+          <div class="pname"><b>tack</b></div>
+          <p class="when">Add it when you keep <b>losing your place between sessions</b> — it remembers what you were doing so you don't re-explain it every time.</p>
+        </div>
+      </div>
+      <div class="prow" style="--ac:var(--build)">
+        <div class="pmark"><img src="https://chris-peterson.github.io/logbook/favicon.svg" alt="logbook"></div>
+        <div class="pbody">
+          <div class="pname"><b>logbook</b></div>
+          <p class="when">Add it when you've <b>solved something the hard way and don't want to solve it again</b> — it writes up what you learned and shares it with your team.</p>
+        </div>
+      </div>
+      <div class="prow" style="--ac:var(--build)">
+        <div class="pmark"><img src="https://chris-peterson.github.io/sextant/favicon.svg" alt="sextant"></div>
+        <div class="pbody">
+          <div class="pname"><b>sextant</b></div>
+          <p class="when">Add it when you want <b>requirements captured in source control</b>, kept in sync with the code — either direction — so the spec, not the chat, is the source of truth.</p>
+        </div>
+      </div>
+      <div class="prow" style="--ac:var(--ship)">
+        <div class="pmark"><img src="https://chris-peterson.github.io/moor/favicon.svg" alt="moor"></div>
+        <div class="pbody">
+          <div class="pname"><b>moor</b></div>
+          <p class="when">Add it for <b>more integrated code review</b> — step through the AI's changes and send rejections straight back to Claude as a feedback loop. Or skip it; anchor works with whatever diff viewer git already opens.</p>
+        </div>
+      </div>
+      <div class="prow" style="--ac:var(--orient)">
+        <div class="pmark"><img src="https://chris-peterson.github.io/beacon/favicon.svg" alt="beacon"></div>
+        <div class="pbody">
+          <div class="pname"><b>beacon</b></div>
+          <p class="when">Add it when you've got <b>several Claude windows going at once</b> — each shows at a glance whether Claude is working or waiting on you.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="bearings"><span class="tickline"></span></div>
+
+  <!-- ============ THE PLUGINS (grouped) ============ -->
+  <section id="plugins">
+    <h2>The instruments</h2>
+    <p class="sub">What each one does, grouped by the job it handles.</p>
+
+    <!-- GUARD -->
+    <div class="fgroup reveal" style="--ac:var(--guard)">
+      <div class="ghead"><span class="gtag">Stay safe</span><span class="gname">Don't let a bad command through</span><span class="gwhy">— a check that runs before every shell command</span></div>
+      <div class="fleet solo">
+        <article class="ship" style="--ac:var(--guard)">
+          <div class="head"><img src="https://chris-peterson.github.io/ClaudeWatch/favicon.svg" alt=""><h3>ClaudeWatch</h3></div>
+          <p class="what">Checks every shell command before it runs. Blocks the genuinely dangerous ones (like <code>git push -f</code>) and asks first before anything that changes your files or project. Catches the tricks simple text-matching misses — commands chained together, flags written in a different order, and other ways a risky command can hide.</p>
+          <div class="cmds"><span class="cmd">/rules</span><span class="cmd">/learn</span></div>
+        </article>
+      </div>
+    </div>
+
+    <!-- ORIENT -->
+    <div class="fgroup reveal" style="--ac:var(--orient)">
+      <div class="ghead"><span class="gtag">Keep your bearings</span><span class="gname">Know where you are</span><span class="gwhy">— pick up where you left off, and stay on course across many workstreams at once</span></div>
+      <div class="fleet">
+        <article class="ship" style="--ac:var(--orient)">
+          <div class="head"><img src="https://chris-peterson.github.io/tack/favicon.svg" alt=""><h3>tack</h3><span class="cli">cli</span></div>
+          <p class="gloss">To tack is to change course. tack remembers every course you've held.</p>
+          <p class="what">Keeps track of what you're working on — even across crashes, context overflow, or jumping between projects. Start a fresh session and pick up right where you left off, instead of re-explaining everything.</p>
+          <div class="cmds"><span class="cmd">/tack</span></div>
+        </article>
+        <article class="ship" style="--ac:var(--orient)">
+          <div class="head"><img src="https://chris-peterson.github.io/beacon/favicon.svg" alt=""><h3>beacon</h3><span class="cli">cli</span></div>
+          <p class="gloss">A lighthouse you can read from across the harbor.</p>
+          <p class="what">Puts a colored badge on each terminal window so you can tell what every Claude session is doing at a glance: green = idle, amber = working, red = waiting on you. Look away and still know which window needs you.</p>
+          <div class="cmds"><span class="cmd">/beacon</span></div>
+        </article>
+      </div>
+    </div>
+
+    <!-- DOCK (anchor + moor) -->
+    <div class="fgroup reveal" style="--ac:var(--ship)">
+      <div class="ghead"><span class="gtag">Dock safely</span><span class="gname">Bring reviewed work into the record</span><span class="gwhy">— from dev commits to change requests delivered to main</span></div>
+      <div class="fleet">
+        <article class="ship" style="--ac:var(--ship)">
+          <div class="head"><img src="https://chris-peterson.github.io/anchor/favicon.svg" alt=""><h3>anchor</h3></div>
+          <p class="gloss">An anchor holds a boat in place. This holds your work in place.</p>
+          <p class="what">Keeps your commits, change requests, and review cycles consistent — the same quality, formatting, and content every time. It walks you through the diff first (keep it, or send back notes and it fixes them), then commits with a message about <em>why</em> and opens the change request, updated to sit on top of the latest main first. Uses whatever diff viewer git already opens.</p>
+          <div class="cmds"><span class="cmd">/preview</span><span class="cmd">/commit</span><span class="cmdsep">→</span><span class="cmd">/prepare-review</span><span class="cmd">/address-feedback</span></div>
+        </article>
+        <article class="ship" style="--ac:var(--ship)">
+          <div class="head"><img src="https://chris-peterson.github.io/moor/favicon.svg" alt=""><h3>moor</h3><span class="cli">cli</span></div>
+          <p class="gloss">To moor is to tie up alongside and look the hull over.</p>
+          <p class="what">A fast diff viewer for reading code the AI wrote — step through it one change at a time, accept or reject each with a note. anchor already opens whatever diff viewer git is set to use; moor is just a quick one built for this, and it feeds your notes back to Claude in context.</p>
+          <div class="cmds"><span class="cmd">/moor</span></div>
+        </article>
+      </div>
+    </div>
+
+    <!-- BUILD -->
+    <div class="fgroup reveal" style="--ac:var(--build)">
+      <div class="ghead"><span class="gtag">Build it right</span><span class="gname">Work to a plan, keep what you learn</span><span class="gwhy">— spec-checking and session write-ups</span></div>
+      <div class="fleet">
+        <article class="ship" style="--ac:var(--build)">
+          <div class="head"><img src="https://chris-peterson.github.io/sextant/favicon.svg" alt=""><h3>sextant</h3></div>
+          <p class="gloss">Fixes your position against a fixed reference — your spec.</p>
+          <p class="what">Keeps a plain-language spec — what the code must do — in source control alongside the code, and syncs the two in either direction (code→spec or spec→code), flagging whatever has drifted. The spec holds the knowledge, so an implementation can (in theory) be regenerated from it.</p>
+          <div class="cmds"><span class="cmd">/spec-[req|sync|status]</span><span class="cmd">/impl-[new|select]</span></div>
+        </article>
+        <article class="ship" style="--ac:var(--build)">
+          <div class="head"><img src="https://chris-peterson.github.io/logbook/favicon.svg" alt=""><h3>logbook</h3><span class="cli">cli</span></div>
+          <p class="gloss">The ship's log — what the last crew figured out.</p>
+          <p class="what">After a session, helps you write up what you learned and saves it to a shared team repository. Your chat transcript stays on your own machine — only the write-up gets shared, so the next person inherits the lesson, not just the code.</p>
+          <div class="cmds"><span class="cmd">/note</span><span class="cmd">/retro</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <div class="bearings"><span class="tickline"></span></div>
+
+  <!-- ============ A FULL SESSION ============ -->
+  <section id="session">
+    <h2>Example usage</h2>
+    <p class="sub">Once you've added them all, here's how a session flows — each step one plugin doing its job, and you still making every call. You won't have all of these on day one, and that's fine.</p>
+
+    <div class="voyage">
+      <div class="leg" style="--ac:var(--guard)"><div class="bead"><img src="https://chris-peterson.github.io/ClaudeWatch/favicon.svg" alt=""></div>
+        <div class="lbody"><h3>An always-running safety net — <span class="inst">ClaudeWatch</span></h3><p>It's already watching before the first command runs — nothing to type. Dangerous commands get stopped; risky ones ask you first.</p></div></div>
+      <div class="leg" style="--ac:var(--orient)"><div class="bead"><img src="https://chris-peterson.github.io/tack/favicon.svg" alt=""></div>
+        <div class="lbody"><h3>Where was I? — <span class="inst">tack</span></h3><p>You open a session. tack reminds you what you were doing and where you stopped — no scrolling back through old chats.</p><div class="prompt"><span class="cue">›</span>/tack</div></div></div>
+      <div class="leg" style="--ac:var(--orient)"><div class="bead"><img src="https://chris-peterson.github.io/beacon/favicon.svg" alt=""></div>
+        <div class="lbody"><h3>Stay on course across windows — <span class="inst">beacon</span></h3><p>Your window badge turns amber while Claude works and red when it needs you — so you can run several streams at once and still tell which one needs you.</p></div></div>
+      <div class="leg" style="--ac:var(--ship)"><div class="bead"><img src="https://chris-peterson.github.io/anchor/favicon.svg" alt=""></div>
+        <div class="lbody"><h3>Read the diff — <span class="inst">anchor</span> <span class="opt">(+ moor, or your own diff viewer)</span></h3><p>Claude hands you a diff. You read it — keep what works, send the rest back with a note, and it fixes them.</p><div class="prompt"><span class="cue">›</span>/anchor:preview</div></div></div>
+      <div class="leg" style="--ac:var(--ship)"><div class="bead"><img src="https://chris-peterson.github.io/anchor/favicon.svg" alt=""></div>
+        <div class="lbody"><h3>Commit, then deliver to main — <span class="inst">anchor</span></h3><p>What passed gets committed with a clear message and opened as a draft change request on its way to main, set to tidy up after itself once merged.</p><div class="prompt"><span class="cue">›</span>/anchor:commit</div></div></div>
+      <div class="leg" style="--ac:var(--build)"><div class="bead"><img src="https://chris-peterson.github.io/logbook/favicon.svg" alt=""></div>
+        <div class="lbody"><h3>Write down what you learned — <span class="inst">logbook</span></h3><p>Before you close out, jot the lesson and push it to the team repo — so the next person gets it too.</p><div class="prompt"><span class="cue">›</span>/logbook:retro</div></div></div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <svg class="rose-mini" viewBox="0 0 40 40" style="color:var(--muted)"><use href="#rose-mini"/></svg>
+  bridge.ai · chris-peterson/claude-marketplace · plugins for AI-assisted development<br>
+  <a href="https://github.com/chris-peterson/claude-marketplace">github.com/chris-peterson/claude-marketplace</a>
+</footer>
+
+<script>
+  // one source of truth per plugin: read its slug off the favicon URL
+  const slugOf = (scope)=>{
+    const img = scope.querySelector('img[src*="github.io"]');
+    const m = img && img.getAttribute('src').match(/github\.io\/([^/]+)\/favicon/);
+    return m ? m[1] : null;
+  };
+  const docsUrl = (slug)=>`https://chris-peterson.github.io/${slug}/#/`;
+  const srcUrl = (slug)=>`https://github.com/chris-peterson/${slug}`;
+  const installCmd = (slug)=>`claude plugin install ${slug}@chris-peterson`;
+  const nameLink = (slug)=>{ const a=document.createElement('a'); a.className='pnamelink'; a.href=docsUrl(slug); a.target='_blank'; a.rel='noopener'; return a; };
+  const sourceLink = (slug)=>`<a class="srclink" href="${srcUrl(slug)}" target="_blank" rel="noopener" title="View source on GitHub">source</a>`;
+
+  // start-here path: name → docs (double duty) + optional source link; chip copies the install command
+  document.querySelectorAll('#start .prow').forEach(row=>{
+    const slug = slugOf(row); if(!slug) return;
+    const pname = row.querySelector('.pname');
+    const name = pname && pname.querySelector('b');
+    if(name){
+      const a = nameLink(slug);
+      name.parentNode.insertBefore(a, name);
+      a.appendChild(name);
+      a.insertAdjacentHTML('beforeend', '<span class="goarrow">↗</span>');
+      pname.insertAdjacentHTML('beforeend', sourceLink(slug));
+    }
+    const cmd = installCmd(slug);
+    const acts = document.createElement('div');
+    acts.className = 'pacts';
+    acts.innerHTML = `<button class="cmdcopy" data-cmd="${cmd}"><span class="cc-cmd">${cmd}</span><span class="cc-ico">copy</span></button>`;
+    row.querySelector('.pbody').appendChild(acts);
+  });
+
+  // catalog cards: name → docs (double duty) + optional source link
+  document.querySelectorAll('#plugins .ship').forEach(card=>{
+    const slug = slugOf(card); if(!slug) return;
+    const head = card.querySelector('.head');
+    const h3 = head && head.querySelector('h3');
+    if(!h3) return;
+    const a = nameLink(slug);
+    h3.parentNode.insertBefore(a, h3);
+    a.appendChild(h3);
+    a.insertAdjacentHTML('beforeend', '<span class="goarrow">↗</span>');
+    head.insertAdjacentHTML('beforeend', sourceLink(slug));
+  });
+
+  // copy-to-clipboard (delegated)
+  document.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.cmdcopy'); if(!btn) return;
+    navigator.clipboard.writeText(btn.dataset.cmd).then(()=>{
+      const ico = btn.querySelector('.cc-ico'); const prev = ico.textContent;
+      btn.classList.add('done'); ico.textContent = 'copied';
+      setTimeout(()=>{ btn.classList.remove('done'); ico.textContent = prev; }, 1500);
     });
-  </script>
+  });
+
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach((e)=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach((el)=>io.observe(el));
+</script>
 </body>
 </html>
