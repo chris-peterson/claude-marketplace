@@ -68,6 +68,10 @@
   .lede b{color:var(--fg);font-weight:600}
   .lede strong{color:var(--gold);font-weight:700;font-style:normal}
   .lede strong.claude{color:var(--claude)}
+  .lede .g-safe{color:var(--red)} .lede .g-bear{color:var(--purple)} .lede .g-dock{color:var(--cyan)} .lede .g-build{color:var(--green)}
+  .lede a.g-safe,.lede a.g-bear,.lede a.g-dock,.lede a.g-build{font-weight:500;text-decoration:none;text-underline-offset:3px}
+  .lede a.g-safe:hover,.lede a.g-bear:hover,.lede a.g-dock:hover,.lede a.g-build:hover{text-decoration:underline}
+  .tagline .cy{color:var(--cyan);font-style:italic}
 
   section{padding:40px 0;position:relative}
   #install{padding:30px 0 40px}
@@ -97,7 +101,7 @@
   .prow.lead .pname{font-size:24px}
 
   /* ---- functional groups ---- */
-  .fgroup{margin-top:40px}
+  .fgroup{margin-top:40px;scroll-margin-top:72px}
   .fgroup .ghead{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;margin:0 0 16px;
     padding-bottom:11px;border-bottom:1px solid color-mix(in srgb,var(--ac) 24%,transparent)}
   .fgroup .gtag{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
@@ -200,6 +204,7 @@
   .pv-gloss{font-family:var(--disp);font-style:italic;font-size:18px;color:var(--muted);margin:18px 0 0}
   .pv-what{margin:14px 0 0;color:var(--fg);font-size:16px;line-height:1.62;max-width:66ch}
   .pv-sechead{font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ac);margin:36px 0 12px}
+  .ex-label{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ac);margin:18px 0 7px}
   .pv-install{margin-top:0}
   .pv-cmds{display:flex;flex-direction:column}
   .pv-cmd{display:grid;grid-template-columns:minmax(150px,auto) 1fr;gap:16px;align-items:baseline;padding:10px 0;border-bottom:1px dashed var(--line-2)}
@@ -210,13 +215,7 @@
 
   /* ---------- session viewer ---------- */
   .session{margin-top:14px;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--abyss);--ac:var(--cyan)}
-  .session .strip{display:flex;align-items:center;gap:9px;padding:10px 14px;border-bottom:1px solid var(--line-2);background:rgba(255,255,255,.015)}
-  .session .sbtn{font-family:var(--mono);font-size:12px;color:var(--fg);cursor:pointer;
-    background:color-mix(in srgb,var(--ac) 10%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);
-    border-radius:7px;padding:5px 11px;transition:border-color .2s}
-  .session .sbtn:hover{border-color:color-mix(in srgb,var(--ac) 55%,transparent)}
-  .session .scount{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--faint);letter-spacing:.08em}
-  .session .tape{padding:18px 20px;font-size:15px;line-height:1.55;display:flex;flex-direction:column;gap:12px}
+  .session .tape{padding:20px 22px;font-size:15px;line-height:1.55;display:flex;flex-direction:column;gap:12px}
   .fr{opacity:0;transform:translateY(6px);transition:opacity .45s ease,transform .45s ease}
   .fr.show{opacity:1;transform:none}
   .fr-you,.fr-claude,.fr-note{color:var(--faint)}
@@ -227,11 +226,24 @@
     background:color-mix(in srgb,var(--ac) 9%,transparent);border:1px solid color-mix(in srgb,var(--ac) 24%,transparent);border-radius:8px;padding:8px 12px}
   .fr .fr-out{color:var(--muted);font-size:14px;margin:7px 0 0 4px;border-left:1px solid var(--line-2);padding-left:12px}
   .fr-status{font-family:var(--mono);font-size:13px;color:var(--ac)}
-  .fr .fr-watch{border:1px solid color-mix(in srgb,var(--red) 42%,transparent);border-radius:8px;padding:10px 13px;
-    background:color-mix(in srgb,var(--red) 7%,transparent)}
-  .fr .fr-watch .wlbl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:5px}
-  .fr .fr-watch code{font-family:var(--mono);font-size:13px;color:var(--fg)}
-  .fr .fr-watch .wn{color:var(--muted)}
+  .fr-break{text-align:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);font-style:italic;margin:2px 0}
+  .fr-break .bk{font-style:normal;text-transform:uppercase;letter-spacing:.16em;font-size:10px;color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 32%,transparent);border-radius:5px;padding:1px 7px;margin-right:9px}
+  .fr-sep{height:1px;background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 8px);opacity:.7;margin:5px 0}
+  .fr .fr-tool{font-family:var(--mono);font-size:13px;line-height:1.55}
+  .fr .fr-tool .t-call{color:var(--fg)}
+  .fr .fr-tool .t-dot{color:var(--red);margin-right:7px}
+  .fr .fr-tool .t-cmd{color:var(--fg)}
+  .fr .fr-tool .t-err{color:var(--red);margin-top:4px}
+  .fr .fr-tool .t-err .t-branch{color:var(--faint);margin-right:6px}
+  .fr .fr-tool .t-err a{color:var(--red);text-decoration:underline;text-underline-offset:2px;word-break:break-all}
+  .fr .fr-ask .t-dot{color:var(--orange)}
+  .fr .fr-ask .t-conf{color:var(--orange);margin-top:4px}
+  .fr .fr-ask .t-conf .t-branch{color:var(--faint);margin-right:6px}
+  .fr .fr-ask .t-reason{color:var(--orange);margin:2px 0 0 18px;word-break:break-all}
+  .fr .fr-ask .t-reason a{color:var(--orange);text-decoration:underline;text-underline-offset:2px}
+  .fr .fr-ask .t-reason .t-plug{color:var(--faint)}
+  .fr .fr-ask .t-choices{margin:6px 0 0 18px;color:var(--muted)}
+  .fr .fr-ask .t-choices .t-cursor{color:var(--purple);margin-right:6px}
   .fr .fr-moor{border:1px solid color-mix(in srgb,var(--green) 34%,transparent);border-radius:8px;overflow:hidden;font-family:var(--mono);font-size:12.5px}
   .fr .fr-moor .mbar{padding:6px 12px;background:color-mix(in srgb,var(--green) 10%,transparent);color:var(--muted);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase}
   .fr .fr-moor .ml{padding:3px 12px;white-space:pre-wrap}
@@ -243,21 +255,47 @@
 <body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="mark" viewBox="0 0 40 40">
-    <rect x="4" y="4" width="15" height="14" rx="3.2" fill="var(--purple)"/>
-    <rect x="4" y="22" width="15" height="14" rx="3.2" fill="var(--green)"/>
-    <rect x="23" y="4" width="13" height="32" rx="3.2" fill="var(--cyan)"/>
+  <symbol id="mark" viewBox="0 0 41.8 34">
+    <!-- three conversations side by side, each a column of chat — mostly muted (Claude + human),
+         with the four group colors as rare plugin interjections -->
+    <g fill="var(--deep)" stroke="var(--line-h)" stroke-width="0.8">
+      <rect x="2"    y="2" width="11" height="30" rx="2.4"/>
+      <rect x="15.4" y="2" width="11" height="30" rx="2.4"/>
+      <rect x="28.8" y="2" width="11" height="30" rx="2.4"/>
+    </g>
+    <g fill="var(--muted)" opacity="0.5">
+      <rect x="3.7"  y="4"    width="6.99" height="1.6" rx="0.8"/>
+      <rect x="3.7"  y="10.6" width="5.32" height="1.6" rx="0.8"/>
+      <rect x="3.7"  y="13.9" width="4.41" height="1.6" rx="0.8"/>
+      <rect x="3.7"  y="17.2" width="4.86" height="1.6" rx="0.8"/>
+      <rect x="3.7"  y="23.8" width="6.08" height="1.6" rx="0.8"/>
+      <rect x="17.1" y="4"    width="3.42" height="1.6" rx="0.8"/>
+      <rect x="17.1" y="7.3"  width="6.99" height="1.6" rx="0.8"/>
+      <rect x="17.1" y="10.6" width="3.04" height="1.6" rx="0.8"/>
+      <rect x="17.1" y="13.9" width="5.32" height="1.6" rx="0.8"/>
+      <rect x="17.1" y="20.5" width="4.86" height="1.6" rx="0.8"/>
+      <rect x="17.1" y="23.8" width="3.95" height="1.6" rx="0.8"/>
+      <rect x="30.5" y="4"    width="6.54" height="1.6" rx="0.8"/>
+      <rect x="30.5" y="7.3"  width="3.42" height="1.6" rx="0.8"/>
+      <rect x="30.5" y="13.9" width="3.04" height="1.6" rx="0.8"/>
+      <rect x="30.5" y="17.2" width="5.32" height="1.6" rx="0.8"/>
+      <rect x="30.5" y="20.5" width="4.41" height="1.6" rx="0.8"/>
+      <rect x="30.5" y="23.8" width="4.86" height="1.6" rx="0.8"/>
+    </g>
+    <rect x="3.7"  y="7.3"  width="3.04" height="1.6" rx="0.8" fill="var(--cyan)"/>
+    <rect x="3.7"  y="20.5" width="3.95" height="1.6" rx="0.8" fill="var(--red)"/>
+    <rect x="17.1" y="17.2" width="4.41" height="1.6" rx="0.8" fill="var(--green)"/>
+    <rect x="30.5" y="10.6" width="6.99" height="1.6" rx="0.8" fill="var(--purple)"/>
   </symbol>
 </svg>
 
 <nav class="sitenav">
   <div class="nav-inner">
-    <a class="brand" href="#top"><svg viewBox="0 0 40 40"><use href="#mark"/></svg><span>bridge<b>.ai</b></span></a>
+    <a class="brand" href="#top"><svg viewBox="0 0 41.8 34"><use href="#mark"/></svg><span>bridge<b>.ai</b></span></a>
     <div class="nav-links">
-      <a href="#install">install</a>
-      <a href="#start">pick plugins</a>
-      <a href="#plugins">instruments</a>
-      <a href="#session">example usage</a>
+      <a href="#install">setup</a>
+      <a href="#start">plugins</a>
+      <a href="#plugins">interop</a>
     </div>
   </div>
 </nav>
@@ -271,10 +309,10 @@
       <div>
         <p class="eyebrow">Claude Code plugins · chris-peterson</p>
         <h1 class="title">bridge<span class="ai">.ai</span></h1>
-        <p class="tagline">Tools for navigating uncharted waters.</p>
-        <p class="lede"><strong class="claude">Claude</strong> writes code faster than <strong>you</strong> can track. These plugins keep you in charge: <b>block unsafe commands, review the code as it changes and redirect with in-context feedback, land what you approve as clean commits and change requests, and track your parallel efforts.</b></p>
+        <p class="tagline">Tools for navigating the uncharted waters of <span class="cy">AI-assisted development</span>.</p>
+        <p class="lede"><strong class="claude">Claude</strong> writes code faster than <strong>you</strong> can track. These plugins keep you in charge: <a class="g-safe" href="#g-safe">block unsafe commands</a>, <a class="g-bear" href="#g-bearings">keep your place across parallel work</a>, <a class="g-dock" href="#g-dock">review the diff and land clean commits and change requests</a>, and <a class="g-build" href="#g-build">build to a plan, keeping what you learn</a>.</p>
       </div>
-      <svg class="heromark" viewBox="0 0 40 40" aria-hidden="true"><use href="#mark"/></svg>
+      <svg class="heromark" viewBox="0 0 41.8 34" aria-hidden="true"><use href="#mark"/></svg>
     </div>
     <div class="bearings" style="margin-top:24px"><span class="tickline"></span></div>
   </header>
@@ -294,10 +332,10 @@
 
   <div class="bearings"><span class="tickline"></span></div>
 
-  <!-- ============ WHERE TO START ============ -->
+  <!-- ============ PLUGIN CATALOG ============ -->
   <section id="start">
-    <h2>Pick your plugins</h2>
-    <p class="sub">These are Claude Code plugins; several also ship as standalone CLIs, true to the <a href="https://en.wikipedia.org/wiki/Unix_philosophy" target="_blank" rel="noopener">Unix philosophy</a>. They work together, but every link is soft: start at the top, then add whatever solves a problem you've hit, in any order. The bridge is where a ship is steered from; these are its instruments.</p>
+    <h2>Plugin Catalog</h2>
+    <p class="sub">These are Claude Code plugins; several also ship as standalone CLIs, true to the <a href="https://en.wikipedia.org/wiki/Unix_philosophy" target="_blank" rel="noopener">Unix philosophy</a>. Start at the top, then add whatever solves a problem you've hit, in any order.</p>
 
     <div class="path">
       <div class="prow lead" style="--ac:var(--guard)">
@@ -354,22 +392,12 @@
 
   <div class="bearings"><span class="tickline"></span></div>
 
-  <!-- ============ THE PLUGINS (grouped) ============ -->
+  <!-- ============ INTEROPERABILITY (grouped) ============ -->
   <section id="plugins">
-    <h2>The instruments</h2>
-    <p class="sub">What each one does, grouped by responsibility.</p>
+    <h2>Interoperability</h2>
+    <p class="sub">Built to work together: related plugins reinforce each other, so a pair does more than either alone. Every dependency stays soft — take only what you need.</p>
 
     <div id="catalog"></div>
-  </section>
-
-  <div class="bearings"><span class="tickline"></span></div>
-
-  <!-- ============ A FULL SESSION ============ -->
-  <section id="session">
-    <h2>Example usage</h2>
-    <p class="sub">A real session, played back — the tools in context. anchor and logbook do the heavy lifting; ClaudeWatch steps in on its own.</p>
-
-    <div class="session" id="homesession" style="--ac:var(--cyan)"></div>
   </section>
 
   </div><!-- /#home -->
@@ -379,7 +407,7 @@
 </div>
 
 <footer>
-  <svg class="fmark" viewBox="0 0 40 40"><use href="#mark"/></svg>
+  <svg class="fmark" viewBox="0 0 41.8 34"><use href="#mark"/></svg>
   bridge.ai · chris-peterson/claude-marketplace · plugins for AI-assisted development<br>
   <a href="https://github.com/chris-peterson/claude-marketplace">github.com/chris-peterson/claude-marketplace</a>
 </footer>
@@ -391,93 +419,74 @@
 
   // per-plugin content + a sample session (its own commands/behaviors are the emphasized frames)
   const PLUGINS = {
-    ClaudeWatch:{ ac:"--guard", group:"stay safe",
+    ClaudeWatch:{ ac:"--guard", group:"stay safe", passive:true,
       gloss:"The lookout posted on watch.",
       what:"Screens every shell command — and the code Claude writes to disk — before it runs, matching real patterns rather than naive prefixes, so reordered flags and chained commands don't slip past. Blocks the genuinely dangerous; asks before anything that changes state.",
       cmds:[["/ClaudeWatch:rules","See and edit the rule sets that guard your commands"],["/ClaudeWatch:learn","Tune the rules from what's been prompting you"]],
+      examples:[
+        {label:"Block",ac:"--red",frames:[
+          {t:"claude",text:"Tidying history — I'll force-push the rebase."},
+          {t:"watch",cmd:"git push --force",err:"watch-git — overwrites shared remote history",link:"https://git-scm.com/docs/git-push#Documentation/git-push.txt--f"}]},
+        {label:"Ask",ac:"--orange",frames:[
+          {t:"claude",text:"Clearing the scratch directories."},
+          {t:"ask",cmd:"rm -rf .playwright-mcp",reason:"watch-files — recursively deletes directories",link:"https://man7.org/linux/man-pages/man1/rm.1.html"}]}],
       session:[
-        {t:"you",text:"Clean up the stale migration files and tidy the history."},
-        {t:"claude",text:"Removing them and force-pushing the rebased branch."},
-        {t:"watch",cmd:"git push --force",note:"blocked — overwrites shared history on origin/main."},
-        {t:"claude",text:"Understood — pushing without --force."},
-        {t:"watch",cmd:"git push",note:"confirm? pushes 2 commits to origin/main."},
-        {t:"you",text:"Yep, go ahead."}]},
-    anchor:{ ac:"--ship", group:"dock safely",
+        {t:"claude",text:"Wrapping up — I'll force-push the rebase, then clear the scratch dirs."},
+        {t:"watch",cmd:"git push --force",err:"watch-git — overwrites shared remote history",link:"https://git-scm.com/docs/git-push#Documentation/git-push.txt--f"},
+        {t:"ask",cmd:"rm -rf .playwright-mcp",reason:"watch-files — recursively deletes directories",link:"https://man7.org/linux/man-pages/man1/rm.1.html"}]},
+    anchor:{ ac:"--ship", group:"create checkpoints",
       gloss:"An anchor holds a boat in place. This holds your work in place.",
       what:"Keeps your commits, change requests, and review cycles consistent — the same quality, formatting, and content every time. It walks you through the diff, then commits with a why-first message and opens the change request.",
       cmds:[["/anchor:preview","Review the working tree before you commit"],["/anchor:commit","Commit with a why-first message, with a diff review"],["/anchor:prepare-review","Rebase on main and open a draft change request"],["/anchor:address-feedback","Work a CR's review threads to done, one by one"]],
       session:[
-        {t:"you",text:"Add input validation to the signup endpoint."},
-        {t:"claude",text:"Added validation and a few tests."},
-        {t:"cmd",cmd:"/anchor:preview",out:"Staged everything; opening the diff for review."},
-        {t:"you",text:"Reads well — commit it."},
-        {t:"cmd",cmd:"/anchor:commit",out:"Committed b2e9 — “validate signup input (why: reject malformed payloads early)”"},
-        {t:"cmd",cmd:"/anchor:prepare-review",out:"Rebased on main; opened a draft change request, assigned to you."}]},
-    moor:{ ac:"--ship", cli:true, group:"dock safely",
+        {t:"claude",text:"Validation and tests are in."},
+        {t:"thought",text:"time to land this"},
+        {t:"cmd",cmd:"/anchor:commit",out:"Walks you through the diff, commits with a why-first message, and opens a draft change request."}]},
+    moor:{ ac:"--ship", cli:true, group:"create checkpoints",
       gloss:"To moor is to tie up alongside and look the hull over.",
       what:"A fast diff viewer for reading code the AI wrote — step through it one change at a time, accept or reject each with a note. anchor opens whatever diff viewer git is set to use; moor is a quick one built for this, and it feeds your notes back to Claude in context.",
-      cmds:[["/moor:moor","Open a diff for review"],["git difftool moor","Wire moor in as your git diff tool"]],
+      cmds:[["/moor:moor","Open a diff for review"]],
+      setup:{ head:"Use as your git diff tool",
+        note:"moor isn't wired in by <code>claude plugin install</code>, and there's no CLI flag for it — it's a one-time git setting. <code>just git-install</code> builds the app and points git at moor: it sets <code>diff.tool</code> to <code>moor</code> and <code>difftool.moor.cmd</code> to moor's launcher. After that, <code>git difftool</code> — and anchor — open moor for review.",
+        cmd:"just git-install" },
       session:[
-        {t:"you",text:"Refactor the date parser."},
-        {t:"claude",text:"Done — here's the diff."},
-        {t:"cmd",cmd:"/anchor:preview",out:"Opening the changes in moor."},
-        {t:"moor",del:"return new Date(s)",add:"return parseISO(s)   // assumes ISO-8601",rej:"reject — non-ISO inputs still reach here; handle them too"},
-        {t:"claude",text:"Good catch — added a format guard and a fallback path."}]},
+        {t:"claude",text:"Refactored the date parser — here's the diff."},
+        {t:"thought",text:"let me actually read it"},
+        {t:"cmd",cmd:"/anchor:preview",out:"Opens the change in moor."},
+        {t:"moor",del:"return new Date(s)",add:"return parseISO(s)",rej:"reject — non-ISO inputs still reach here → sent back as a fix"}]},
     tack:{ ac:"--orient", cli:true, group:"keep your bearings",
       gloss:"To tack is to change course; tack remembers every course you've held.",
       what:"Tracks what you're working on — across crashes, context overflow, or jumping between projects. Start a fresh session and pick up exactly where you left off, instead of re-explaining everything.",
-      cmds:[["/tack:tack","Resume — what you were doing, and where you stopped"],["tack (cli)","Track routes, tasks, and deliverables from any terminal"]],
+      cmds:[["/tack:tack","Resume — what you were doing, and where you stopped"],["tack","Track routes, tasks, and deliverables from any terminal"]],
       session:[
-        {t:"note",text:"Yesterday: mid-refactor across two repos, then the context window filled up."},
-        {t:"you",text:"where was I?"},
-        {t:"cmd",cmd:"/tack:tack",out:"Route “auth-rewrite”: 3 of 5 tasks done. Next: wire the client SDK — was blocked on the server PR you opened."},
-        {t:"you",text:"Right — the server PR merged. Let's do the SDK task."}]},
+        {t:"note",text:"Mid-refactor across two repos; the context window is filling up."},
+        {t:"event",text:"a fresh session, next morning"},
+        {t:"cmd",cmd:"/tack:tack",out:"Replays the route — 3 of 5 tasks done, next is the client SDK."}]},
     beacon:{ ac:"--orient", cli:true, group:"keep your bearings",
       gloss:"A lighthouse you can read from across the harbor.",
       what:"Puts a colored badge on each terminal window so you can tell what every Claude session is doing at a glance: green idle, amber working, red waiting on you. Look away and still know which window needs you.",
-      cmds:[["/beacon:beacon","Label a pane, or set status / pause with a note"],["beacon (cli)","Read the resolved project / task / status anywhere"]],
+      cmds:[["/beacon:beacon","Label a pane, or set status / pause with a note"],["beacon","Read the resolved project / task / status anywhere"]],
       session:[
-        {t:"note",text:"Three Claude windows open across projects; you're heads-down in one."},
-        {t:"status",text:"window 2  ● amber — Claude is working"},
-        {t:"status",text:"window 3  ● red — waiting on a prompt"},
-        {t:"you",text:"(glance across) window 3 needs me — switch to it."}]},
-    sextant:{ ac:"--build", group:"build it right",
+        {t:"note",text:"Three Claude windows running; you're heads-down in one."},
+        {t:"event",text:"a glance across the windows"},
+        {t:"status",text:"window 3  ● red — it has been waiting on you while you weren't looking."}]},
+    sextant:{ ac:"--build", group:"learn as you go",
       gloss:"Fixes your position against a fixed reference — your spec.",
       what:"Keeps a plain-language spec — what the code must do — under source control, and reconciles it with the code in either direction. The spec stays the durable source of truth — enough to rebuild an implementation from, not just describe one.",
       cmds:[["/sextant:spec-sync","Reconcile code and spec, either direction"],["/sextant:spec-req","Look up, trace, or draft requirements"],["/sextant:spec-status","Refresh the coverage ledger"],["/sextant:impl-new · :impl-select","Scaffold candidate implementations, graduate the winner (one-way)"]],
       session:[
-        {t:"you",text:"Did the implementation drift from the spec?"},
-        {t:"cmd",cmd:"/sextant:spec-sync",out:"12 requirements: 10 covered, 1 missing (retry budget), 1 drifted (auth TTL: spec 15m, code 60m)."},
-        {t:"you",text:"The code's right on the TTL — update the spec to match."},
-        {t:"cmd",cmd:"/sextant:spec-sync --to-spec",out:"Drafts a 60m TTL requirement for your confirmation; on yes, writes it to the spec. Coverage now 11 of 12."}]},
-    logbook:{ ac:"--build", cli:true, group:"build it right",
+        {t:"claude",text:"Auth changes shipped."},
+        {t:"thought",text:"did this drift from the spec?"},
+        {t:"cmd",cmd:"/sextant:spec-sync",out:"10 of 12 requirements covered; the auth TTL drifted — spec says 15m, the code does 60m."}]},
+    logbook:{ ac:"--build", cli:true, group:"learn as you go",
       gloss:"The ship's log — what the last crew figured out.",
       what:"Turns a session into a retrospective committed to a team-owned repo. Your chat transcript stays on your machine — only the write-up is shared, so the next person inherits the lesson, not just the code.",
-      cmds:[["/logbook:note","Capture a process/tooling observation; fix now or defer"],["/logbook:retro","Publish a session retro to the team repo"],["logbook (cli)","Same notes + retros from any terminal"]],
+      cmds:[["/logbook:note","Capture a process/tooling observation; fix now or defer"],["/logbook:retro","Publish a session retro to the team repo"],["logbook","Same notes + retros from any terminal"]],
       session:[
-        {t:"you",text:"Third tenant-isolation bug this week — our cache-key convention isn't written down anywhere."},
-        {t:"cmd",cmd:"/logbook:note",out:"Target: CLAUDE.md · fix now, or defer? → This Session: document the tenant-prefix rule and sweep the helpers that miss it."},
-        {t:"claude",text:"Done — added the convention to CLAUDE.md and fixed the two helpers that skipped the prefix."},
-        {t:"note",text:"…work continues; end of session…"},
-        {t:"cmd",cmd:"/logbook:retro",out:"Published a retro to the team repo — the tenant-isolation lesson. Transcript stays local."}]}
+        {t:"claude",text:"Third tenant-isolation bug this week."},
+        {t:"thought",text:"this convention isn't written down anywhere"},
+        {t:"cmd",cmd:"/logbook:note",out:"Documents the tenant-prefix rule in CLAUDE.md and sweeps the helpers that miss it — now, this session."}]}
   };
-
-  const HOME_SESSION = [
-    {t:"you",text:"Add retry with backoff to the API client."},
-    {t:"claude",text:"Done — exponential backoff, with tests."},
-    {t:"you",text:"Two things stand out: it skipped jitter, and it clearly doesn't know our backoff convention."},
-    {t:"cmd",cmd:"/logbook:note",out:"“full-jitter backoff is our convention — it's missing from CLAUDE.md.”  Target: CLAUDE.md · fix now, or defer? → deferred to a future session (note + issue link saved)."},
-    {t:"you",text:"The code I'll fix right now — let me read the diff."},
-    {t:"cmd",cmd:"/anchor:preview",out:"Staged everything; opening the diff."},
-    {t:"moor",del:"delay = base * 2 ** attempt",add:"delay = random(0, base * 2 ** attempt)",rej:"reject — use full jitter, not a fixed delay"},
-    {t:"claude",text:"Fixed — full-jitter backoff, test updated."},
-    {t:"cmd",cmd:"/anchor:commit",out:"Committed a4f1 — “add jittered retry/backoff (why: avoid thundering herd)”"},
-    {t:"cmd",cmd:"/anchor:prepare-review",out:"Rebased on main; opening a draft change request…"},
-    {t:"watch",cmd:"git push",note:"confirm? pushes to origin/main."},
-    {t:"you",text:"It's my draft — confirm."},
-    {t:"claude",text:"Draft change request opened; branch deletes on merge."},
-    {t:"cmd",cmd:"/logbook:retro",out:"Published a retro to the team repo — the convention gap and the fix. Transcript stays local."}
-  ];
 
   // ---- session viewer: transcript + playback ----
   function frameEl(f){
@@ -485,29 +494,30 @@
     if(f.t==="you"){ el.classList.add("fr-you"); el.innerHTML=`<span class="lbl">you</span>${f.text}`; }
     else if(f.t==="claude"){ el.classList.add("fr-claude"); el.innerHTML=`<span class="lbl">Claude</span>${f.text}`; }
     else if(f.t==="note"){ el.classList.add("fr-note"); el.textContent=f.text; }
+    else if(f.t==="thought"){ el.classList.add("fr-break"); el.innerHTML=`<span class="bk">thought</span> ⟨${f.text}⟩`; }
+    else if(f.t==="event"){ el.classList.add("fr-break"); el.innerHTML=`<span class="bk">event</span> (${f.text})`; }
+    else if(f.t==="sep"){ el.classList.add("fr-sep"); }
     else if(f.t==="status"){ el.classList.add("fr-status"); el.textContent=f.text; }
     else if(f.t==="cmd"){ el.innerHTML=`<span class="fr-cmd"><span class="cue">›</span>${f.cmd}</span>`+(f.out?`<div class="fr-out">${f.out}</div>`:""); }
-    else if(f.t==="watch"){ el.innerHTML=`<div class="fr-watch"><span class="wlbl">ClaudeWatch · watch-git</span><code>${f.cmd}</code> <span class="wn">— ${f.note}</span></div>`; }
+    else if(f.t==="watch"){ el.innerHTML=`<div class="fr-tool"><div class="t-call"><span class="t-dot">●</span> Bash(<span class="t-cmd">${f.cmd}</span>)</div><div class="t-err"><span class="t-branch">⎿</span> Error: ${f.err}${f.link?` — <a href="${f.link}" target="_blank" rel="noopener">${f.link}</a>`:""}</div></div>`; }
+    else if(f.t==="ask"){ el.innerHTML=`<div class="fr-tool fr-ask"><div class="t-call"><span class="t-dot">●</span> Bash(<span class="t-cmd">${f.cmd}</span>)</div><div class="t-conf"><span class="t-branch">⎿</span> PreToolUse:Bash requires confirmation</div><div class="t-reason">${f.reason} — <a href="${f.link}" target="_blank" rel="noopener">${f.link}</a> <span class="t-plug">[plugin:ClaudeWatch]</span></div><div class="t-choices"><span class="t-cursor">❯</span> 1. Yes &nbsp;&nbsp; 2. No</div></div>`; }
     else if(f.t==="moor"){ el.innerHTML=`<div class="fr-moor"><div class="mbar">moor · reviewing</div><div class="ml del">- ${f.del}</div><div class="ml add">+ ${f.add}</div><div class="ml rej">${f.rej}</div></div>`; }
     return el;
   }
-  const delayFor=(f)=>{ if(!f)return 900; if(f.t==="cmd")return 1300; if(f.t==="moor")return 1700; if(f.t==="watch")return 1400; return 1100; };
+  const delayFor=(f)=>{ if(!f)return 1200; if(f.t==="sep")return 700; if(f.t==="thought"||f.t==="event")return 1500; if(f.t==="cmd")return 1900; if(f.t==="moor")return 2100; if(f.t==="watch")return 1900; if(f.t==="ask")return 2500; if(f.t==="status")return 1600; return 1400; };
+  // plays like a gif: autostarts on scroll-in, loops, pauses off-screen, no controls
   function mountSession(container, frames){
-    container.innerHTML=`<div class="strip"><button class="sbtn" data-s="toggle">▶ play</button><button class="sbtn" data-s="step">⏭</button><button class="sbtn" data-s="restart">↻</button><span class="scount"></span></div><div class="tape"></div>`;
-    const tape=container.querySelector(".tape"), count=container.querySelector(".scount"), toggle=container.querySelector('[data-s="toggle"]');
+    container.innerHTML=`<div class="tape"></div>`;
+    const tape=container.querySelector(".tape");
     const els=frames.map(f=>{ const e=frameEl(f); tape.appendChild(e); return e; });
-    let i=0, playing=false, timer=null;
-    const setCount=()=>{ count.textContent=`${i} / ${frames.length}`; };
-    const stop=()=>{ playing=false; clearTimeout(timer); toggle.textContent = i>=frames.length ? "↻ replay" : "▶ play"; };
-    const reveal=()=>{ if(i<frames.length){ els[i].classList.add("show"); i++; setCount(); } };
-    const tick=()=>{ const prev=frames[i]; reveal(); if(i>=frames.length){ stop(); return; } timer=setTimeout(tick, delayFor(prev)); };
-    const play=()=>{ if(playing)return; if(i>=frames.length){ i=0; els.forEach(e=>e.classList.remove("show")); } playing=true; toggle.textContent="⏸ pause"; tick(); };
-    toggle.addEventListener("click",()=>{ playing?stop():play(); });
-    container.querySelector('[data-s="step"]').addEventListener("click",()=>{ stop(); reveal(); if(i>=frames.length)toggle.textContent="↻ replay"; });
-    container.querySelector('[data-s="restart"]').addEventListener("click",()=>{ stop(); i=0; els.forEach(e=>e.classList.remove("show")); setCount(); toggle.textContent="▶ play"; });
-    setCount();
-    if(matchMedia("(prefers-reduced-motion:reduce)").matches){ els.forEach(e=>e.classList.add("show")); i=frames.length; setCount(); stop(); return; }
-    const sio=new IntersectionObserver((ents)=>{ ents.forEach(en=>{ if(en.isIntersecting){ play(); sio.disconnect(); } }); },{threshold:.3});
+    if(matchMedia("(prefers-reduced-motion:reduce)").matches){ els.forEach(e=>e.classList.add("show")); return; }
+    let i=0, vis=false, timer=null;
+    const tick=()=>{
+      if(!vis) return;
+      if(i>=frames.length){ timer=setTimeout(()=>{ els.forEach(e=>e.classList.remove("show")); i=0; tick(); }, 2800); return; }
+      els[i].classList.add("show"); i++; timer=setTimeout(tick, delayFor(frames[i-1]));
+    };
+    const sio=new IntersectionObserver((ents)=>{ ents.forEach(en=>{ if(en.isIntersecting){ if(!vis){ vis=true; tick(); } } else { vis=false; clearTimeout(timer); } }); },{threshold:.2});
     sio.observe(container);
   }
 
@@ -515,21 +525,30 @@
   function renderPlugin(slug){
     const p=PLUGINS[slug], pv=document.getElementById("pluginview");
     pv.style.setProperty("--ac", `var(${p.ac})`);
-    pv.innerHTML =
-      `<a class="back" href="#"><span>←</span> all instruments</a>`+
+    const head =
+      `<a class="back" href="#"><span>←</span> all plugins</a>`+
       `<div class="pv-head"><img src="https://chris-peterson.github.io/${slug}/favicon.svg" alt=""><h1>${slug}</h1>`+
         (p.cli?`<span class="pv-cli">cli</span>`:``)+`<span class="pv-tag">${p.group}</span></div>`+
       (p.gloss?`<p class="pv-gloss">${p.gloss}</p>`:``)+
       `<p class="pv-what">${p.what}</p>`+
       `<div class="pv-sechead">Install</div>`+
       `<div class="install pv-install" style="--ac:var(${p.ac})"><div class="ibody"><code><span class="pr">claude plugin install</span> ${slug}@chris-peterson</code>`+
-        `<button class="cmdcopy solo" data-cmd="claude plugin install ${slug}@chris-peterson"><span class="cc-ico">copy</span></button></div></div>`+
+        `<button class="cmdcopy solo" data-cmd="claude plugin install ${slug}@chris-peterson"><span class="cc-ico">copy</span></button></div></div>`;
+    const commands =
       `<div class="pv-sechead">Commands</div>`+
-      `<div class="pv-cmds">`+p.cmds.map(c=>`<div class="pv-cmd"><code>${c[0]}</code><span class="d">${c[1]}</span></div>`).join("")+`</div>`+
-      `<div class="pv-sechead">In a session</div>`+
-      `<div class="session"></div>`+
-      `<div class="pv-links"><a href="${docsUrl(slug)}" target="_blank" rel="noopener">full docs ↗</a><a href="${srcUrl(slug)}" target="_blank" rel="noopener">source ↗</a></div>`;
-    mountSession(pv.querySelector(".session"), p.session);
+      `<div class="pv-cmds">`+p.cmds.map(c=>`<div class="pv-cmd"><code>${c[0]}</code><span class="d">${c[1]}</span></div>`).join("")+`</div>`;
+    const examples = p.examples
+      ? `<div class="pv-sechead">Examples</div>`+p.examples.map((e,n)=>`<div class="ex-label" style="--ac:var(${e.ac||p.ac})">${e.label}</div><div class="session" data-ex="${n}" style="--ac:var(${e.ac||p.ac})"></div>`).join("")
+      : `<div class="pv-sechead">In a session</div><div class="session"></div>`;
+    const setup = p.setup
+      ? `<div class="pv-sechead">${p.setup.head}</div><p class="sub">${p.setup.note}</p>`+
+        `<div class="install pv-install" style="--ac:var(${p.ac})"><div class="ibody"><code><span class="pr">just</span> ${p.setup.cmd.replace(/^just\s+/,"")}</code>`+
+        `<button class="cmdcopy solo" data-cmd="${p.setup.cmd}"><span class="cc-ico">copy</span></button></div></div>`
+      : ``;
+    const links = `<div class="pv-links"><a href="${docsUrl(slug)}" target="_blank" rel="noopener">full docs ↗</a><a href="${srcUrl(slug)}" target="_blank" rel="noopener">source ↗</a></div>`;
+    pv.innerHTML = head + (p.passive ? examples+commands : commands+examples) + setup + links;
+    if(p.examples){ pv.querySelectorAll("[data-ex]").forEach(c=> mountSession(c, p.examples[+c.dataset.ex].frames)); }
+    else { mountSession(pv.querySelector(".session"), p.session); }
   }
   function route(){
     const m=location.hash.match(/^#\/(.+)$/);
@@ -543,10 +562,10 @@
 
   // ---- catalog: render grouped cards from PLUGINS (single source — no HTML dupe) ----
   const GROUPS=[
-    {ac:"--guard",  tag:"Stay safe",          name:"Don't let a bad command through",   why:"— a check that runs before every shell command",                                slugs:["ClaudeWatch"]},
-    {ac:"--orient", tag:"Keep your bearings", name:"Know where you are",                 why:"— pick up where you left off, and stay on course across many workstreams at once", slugs:["tack","beacon"]},
-    {ac:"--ship",   tag:"Dock safely",        name:"Bring reviewed work into the record", why:"— from dev commits to change requests delivered to main",                       slugs:["anchor","moor"]},
-    {ac:"--build",  tag:"Build it right",     name:"Work to a plan, keep what you learn", why:"— spec-checking and session write-ups",                                         slugs:["sextant","logbook"]}
+    {key:"safe",     ac:"--guard",  tag:"Stay safe",          name:"An extra safeguard that costs you nothing", slugs:["ClaudeWatch"]},
+    {key:"bearings", ac:"--orient", tag:"Keep your bearings", name:"Know where you are",                        slugs:["tack","beacon"]},
+    {key:"dock",     ac:"--ship",   tag:"Create checkpoints", name:"Bring reviewed work into the record",       slugs:["anchor","moor"]},
+    {key:"build",    ac:"--build",  tag:"Learn as you go",    name:"Work to a plan, keep what you learn",        slugs:["logbook","sextant"]}
   ];
   const catCard=(slug)=>{
     const p=PLUGINS[slug];
@@ -559,8 +578,8 @@
       `<div class="cmds">${chips}</div></article>`;
   };
   document.getElementById("catalog").innerHTML = GROUPS.map(g=>
-    `<div class="fgroup reveal" style="--ac:var(${g.ac})">`+
-      `<div class="ghead"><span class="gtag">${g.tag}</span><span class="gname">${g.name}</span><span class="gwhy">${g.why}</span></div>`+
+    `<div class="fgroup reveal" id="g-${g.key}" style="--ac:var(${g.ac})">`+
+      `<div class="ghead"><span class="gtag">${g.tag}</span><span class="gname">${g.name}</span></div>`+
       `<div class="fleet${g.slugs.length===1?' solo':''}">${g.slugs.map(catCard).join("")}</div></div>`
   ).join("");
   document.querySelectorAll("#catalog .ship").forEach(c=> cardNav(c, c.dataset.slug));
@@ -588,8 +607,6 @@
   const io=new IntersectionObserver((entries)=>{ entries.forEach((e)=>{ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target);} }); },{threshold:.12});
   document.querySelectorAll(".reveal").forEach((el)=>io.observe(el));
 
-  // ---- home example-usage session + initial route ----
-  mountSession(document.getElementById("homesession"), HOME_SESSION);
   route();
 </script>
 </body>

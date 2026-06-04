@@ -1,6 +1,33 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <rect width="64" height="64" rx="14" fill="#282a36"/>
-  <rect x="9" y="11" width="25" height="19" rx="4" fill="#bd93f9"/>
-  <rect x="9" y="34" width="25" height="19" rx="4" fill="#50fa7b"/>
-  <rect x="38" y="11" width="17" height="42" rx="4" fill="#8be9fd"/>
+  <g transform="translate(6,10.85) scale(1.244)">
+    <g fill="#21222c" stroke="#44475a" stroke-width="0.8">
+      <rect x="2"    y="2" width="11" height="30" rx="2.4"/>
+      <rect x="15.4" y="2" width="11" height="30" rx="2.4"/>
+      <rect x="28.8" y="2" width="11" height="30" rx="2.4"/>
+    </g>
+    <g fill="#6272a4" opacity="0.5">
+      <rect x="3.7"  y="4"    width="6.99" height="1.6" rx="0.8"/>
+      <rect x="3.7"  y="10.6" width="5.32" height="1.6" rx="0.8"/>
+      <rect x="3.7"  y="13.9" width="4.41" height="1.6" rx="0.8"/>
+      <rect x="3.7"  y="17.2" width="4.86" height="1.6" rx="0.8"/>
+      <rect x="3.7"  y="23.8" width="6.08" height="1.6" rx="0.8"/>
+      <rect x="17.1" y="4"    width="3.42" height="1.6" rx="0.8"/>
+      <rect x="17.1" y="7.3"  width="6.99" height="1.6" rx="0.8"/>
+      <rect x="17.1" y="10.6" width="3.04" height="1.6" rx="0.8"/>
+      <rect x="17.1" y="13.9" width="5.32" height="1.6" rx="0.8"/>
+      <rect x="17.1" y="20.5" width="4.86" height="1.6" rx="0.8"/>
+      <rect x="17.1" y="23.8" width="3.95" height="1.6" rx="0.8"/>
+      <rect x="30.5" y="4"    width="6.54" height="1.6" rx="0.8"/>
+      <rect x="30.5" y="7.3"  width="3.42" height="1.6" rx="0.8"/>
+      <rect x="30.5" y="13.9" width="3.04" height="1.6" rx="0.8"/>
+      <rect x="30.5" y="17.2" width="5.32" height="1.6" rx="0.8"/>
+      <rect x="30.5" y="20.5" width="4.41" height="1.6" rx="0.8"/>
+      <rect x="30.5" y="23.8" width="4.86" height="1.6" rx="0.8"/>
+    </g>
+    <rect x="3.7"  y="7.3"  width="3.04" height="1.6" rx="0.8" fill="#8be9fd"/>
+    <rect x="3.7"  y="20.5" width="3.95" height="1.6" rx="0.8" fill="#ff5555"/>
+    <rect x="17.1" y="17.2" width="4.41" height="1.6" rx="0.8" fill="#50fa7b"/>
+    <rect x="30.5" y="10.6" width="6.99" height="1.6" rx="0.8" fill="#bd93f9"/>
+  </g>
 </svg>
