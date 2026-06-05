@@ -107,6 +107,7 @@
   .fgroup .gtag{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
     color:var(--abyss);background:var(--ac);border-radius:5px;padding:3px 9px;font-weight:700}
   .fgroup .gname{font-family:var(--disp);font-weight:600;font-size:22px;color:var(--fg)}
+  .fgroup .glead{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 40%,transparent);border-radius:999px;padding:3px 9px}
   .fgroup .gwhy{color:var(--muted);font-size:14px}
   .fleet{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
   .fleet.solo{grid-template-columns:1fr}
@@ -123,6 +124,10 @@
     border:1px solid var(--line-2);border-radius:5px;padding:2px 7px}
   .ship .gloss{font-family:var(--disp);font-style:italic;font-size:14.5px;color:var(--muted);margin:10px 0 0}
   .ship .what{margin:11px 0 0;color:var(--fg);font-size:15px;line-height:1.55}
+  .ship .cwith{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin:9px 0 0}
+  .ship .cwith b{color:var(--ac);font-weight:600}
+  .ship .cdetails{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--muted);text-decoration:none;white-space:nowrap;margin-left:auto}
+  .ship .cdetails:hover{color:var(--ac)}
   .ship .cmds{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 0}
   .ship .cmd{font-family:var(--mono);font-size:11.5px;color:var(--ac);
     background:color-mix(in srgb,var(--ac) 9%,transparent);
@@ -164,8 +169,10 @@
     background:color-mix(in srgb,var(--ac) 8%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);
     border-radius:8px;padding:7px 11px;color:var(--fg);transition:border-color .2s;max-width:100%}
   .cmdcopy:hover{border-color:color-mix(in srgb,var(--ac) 55%,transparent)}
-  .cmdcopy .cc-cmd{color:var(--fg);word-break:break-word}
-  .cmdcopy .cc-ico{color:var(--ac);text-transform:uppercase;letter-spacing:.12em;font-size:10px;border-left:1px solid var(--line-2);padding-left:10px;flex:none}
+  .cmdcopy .cc-cmd{color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .cmdcopy .cc-ico{color:var(--ac);border-left:1px solid var(--line-2);padding-left:10px;flex:none;display:inline-flex;align-items:center}
+  .cmdcopy .cc-ico svg{display:block}
+  .ship .cmdcopy{max-width:100%;overflow:hidden}
   .cmdcopy.solo .cc-ico{border-left:0;padding-left:0}
   .cmdcopy.done{border-color:color-mix(in srgb,var(--green) 55%,transparent)}
   .cmdcopy.done .cc-ico{color:var(--green)}
@@ -293,9 +300,8 @@
   <div class="nav-inner">
     <a class="brand" href="#top"><svg viewBox="0 0 41.8 34"><use href="#mark"/></svg><span>bridge<b>.ai</b></span></a>
     <div class="nav-links">
-      <a href="#install">setup</a>
-      <a href="#start">plugins</a>
-      <a href="#plugins">interop</a>
+      <a href="#install">install</a>
+      <a href="#plugins">plugins</a>
     </div>
   </div>
 </nav>
@@ -325,77 +331,17 @@
       <div class="ibar"><i></i><i></i><i></i><span class="ttl">one-time setup</span></div>
       <div class="ibody">
         <code><span class="pr">claude plugin marketplace add</span> chris-peterson/claude-marketplace</code>
-        <button class="cmdcopy solo" data-cmd="claude plugin marketplace add chris-peterson/claude-marketplace"><span class="cc-ico">copy</span></button>
+        <button class="cmdcopy solo" data-cmd="claude plugin marketplace add chris-peterson/claude-marketplace"><span class="cc-ico"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></span></button>
       </div>
     </div>
   </section>
 
   <div class="bearings"><span class="tickline"></span></div>
 
-  <!-- ============ PLUGIN CATALOG ============ -->
-  <section id="start">
-    <h2>Plugin Catalog</h2>
-    <p class="sub">These are Claude Code plugins; several also ship as standalone CLIs, true to the <a href="https://en.wikipedia.org/wiki/Unix_philosophy" target="_blank" rel="noopener">Unix philosophy</a>. Start at the top, then add whatever solves a problem you've hit, in any order.</p>
-
-    <div class="path">
-      <div class="prow lead" style="--ac:var(--guard)">
-        <div class="pmark"><img src="https://chris-peterson.github.io/ClaudeWatch/favicon.svg" alt="ClaudeWatch"></div>
-        <div class="pbody">
-          <div class="pname"><b>ClaudeWatch</b></div>
-          <p class="when">If you find yourself rubber-stamping Claude's approval prompts without really reading them, here's why: its built-in permission model is <a href="https://github.com/anthropics/claude-code/issues/30519" target="_blank" rel="noopener">fundamentally broken</a> — a block on <code>git push --force</code> sails right past <code>git push -f</code> — so it asks about everything to stay safe, and the constant approvals wear you down into <a href="https://en.wikipedia.org/wiki/Decision_fatigue" target="_blank" rel="noopener">decision fatigue</a>. ClaudeWatch makes the checks actually match what they mean: dangerous commands get blocked, and you stop re-approving the same safe one. <b>Install this first.</b></p>
-        </div>
-      </div>
-      <div class="prow" style="--ac:var(--ship)">
-        <div class="pmark"><img src="https://chris-peterson.github.io/anchor/favicon.svg" alt="anchor"></div>
-        <div class="pbody">
-          <div class="pname"><b>anchor</b></div>
-          <p class="when">When you're nervous about keeping code you didn't write: it walks you through the diff (the exact lines Claude changed) first, then <b>commits with a message about why and opens the change request.</b> Uses whatever diff viewer git already opens for you.</p>
-        </div>
-      </div>
-      <div class="prow" style="--ac:var(--orient)">
-        <div class="pmark"><img src="https://chris-peterson.github.io/tack/favicon.svg" alt="tack"></div>
-        <div class="pbody">
-          <div class="pname"><b>tack</b></div>
-          <p class="when">Add it when you keep <b>losing your place between sessions</b> — it remembers what you were doing so you don't re-explain it every time.</p>
-        </div>
-      </div>
-      <div class="prow" style="--ac:var(--build)">
-        <div class="pmark"><img src="https://chris-peterson.github.io/logbook/favicon.svg" alt="logbook"></div>
-        <div class="pbody">
-          <div class="pname"><b>logbook</b></div>
-          <p class="when">Add it when you've <b>solved something the hard way and don't want to solve it again</b> — it writes up what you learned and shares it with your team.</p>
-        </div>
-      </div>
-      <div class="prow" style="--ac:var(--build)">
-        <div class="pmark"><img src="https://chris-peterson.github.io/sextant/favicon.svg" alt="sextant"></div>
-        <div class="pbody">
-          <div class="pname"><b>sextant</b></div>
-          <p class="when">Add it when you want <b>requirements captured in source control</b>, kept in sync with the code — either direction — so the spec, not the chat, is the source of truth.</p>
-        </div>
-      </div>
-      <div class="prow" style="--ac:var(--ship)">
-        <div class="pmark"><img src="https://chris-peterson.github.io/moor/favicon.svg" alt="moor"></div>
-        <div class="pbody">
-          <div class="pname"><b>moor</b></div>
-          <p class="when">Add it for <b>more integrated code review</b> — step through the AI's changes and send rejections straight back to Claude as a feedback loop. Or skip it; anchor works with whatever diff viewer git already opens.</p>
-        </div>
-      </div>
-      <div class="prow" style="--ac:var(--orient)">
-        <div class="pmark"><img src="https://chris-peterson.github.io/beacon/favicon.svg" alt="beacon"></div>
-        <div class="pbody">
-          <div class="pname"><b>beacon</b></div>
-          <p class="when">Add it when you've got <b>several Claude windows going at once</b> — each shows at a glance whether Claude is working or waiting on you.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="bearings"><span class="tickline"></span></div>
-
-  <!-- ============ INTEROPERABILITY (grouped) ============ -->
+  <!-- ============ PLUGINS (grouped by capability) ============ -->
   <section id="plugins">
-    <h2>Interoperability</h2>
-    <p class="sub">Built to work together: related plugins reinforce each other, so a pair does more than either alone. Every dependency stays soft — take only what you need.</p>
+    <h2>Plugins</h2>
+    <p class="sub">Grouped by what they let you do. Pick what you need — one, some, or all.</p>
 
     <div id="catalog"></div>
   </section>
@@ -415,12 +361,13 @@
 <script>
   const docsUrl = (s)=>`https://chris-peterson.github.io/${s}/#/`;
   const srcUrl  = (s)=>`https://github.com/chris-peterson/${s}`;
-  const slugOf = (scope)=>{ const img=scope.querySelector('img[src*="github.io"]'); const m=img&&img.getAttribute('src').match(/github\.io\/([^/]+)\/favicon/); return m?m[1]:null; };
+  const COPY_ICO = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
 
   // per-plugin content + a sample session (its own commands/behaviors are the emphasized frames)
   const PLUGINS = {
     ClaudeWatch:{ ac:"--guard", group:"stay safe", passive:true,
       gloss:"The lookout posted on watch.",
+      pitch:"Screens every command before it runs — blocks the genuinely dangerous, asks before the rest, and stops you rubber-stamping the safe ones.",
       what:"Screens every shell command — and the code Claude writes to disk — before it runs, matching real patterns rather than naive prefixes, so reordered flags and chained commands don't slip past. Blocks the genuinely dangerous; asks before anything that changes state.",
       cmds:[["/ClaudeWatch:rules","See and edit the rule sets that guard your commands"],["/ClaudeWatch:learn","Tune the rules from what's been prompting you"]],
       examples:[
@@ -436,6 +383,7 @@
         {t:"ask",cmd:"rm -rf .playwright-mcp",reason:"watch-files — recursively deletes directories",link:"https://man7.org/linux/man-pages/man1/rm.1.html"}]},
     anchor:{ ac:"--ship", group:"create checkpoints",
       gloss:"An anchor holds a boat in place. This holds your work in place.",
+      pitch:"Nervous about keeping code you didn't write? It walks you through the diff first, then commits with a why-first message and opens the change request.",
       what:"Keeps your commits, change requests, and review cycles consistent — the same quality, formatting, and content every time. It walks you through the diff, then commits with a why-first message and opens the change request.",
       cmds:[["/anchor:preview","Review the working tree before you commit"],["/anchor:commit","Commit with a why-first message, with a diff review"],["/anchor:prepare-review","Rebase on main and open a draft change request"],["/anchor:address-feedback","Work a CR's review threads to done, one by one"]],
       session:[
@@ -444,6 +392,7 @@
         {t:"cmd",cmd:"/anchor:commit",out:"Walks you through the diff, commits with a why-first message, and opens a draft change request."}]},
     moor:{ ac:"--ship", cli:true, group:"create checkpoints",
       gloss:"To moor is to tie up alongside and look the hull over.",
+      pitch:"A tighter review loop — step through the AI's changes and send each rejection straight back to Claude.", with:"anchor",
       what:"A fast diff viewer for reading code the AI wrote — step through it one change at a time, accept or reject each with a note. anchor opens whatever diff viewer git is set to use; moor is a quick one built for this, and it feeds your notes back to Claude in context.",
       cmds:[["/moor:moor","Open a diff for review"]],
       setup:{ head:"Use as your git diff tool",
@@ -456,6 +405,7 @@
         {t:"moor",del:"return new Date(s)",add:"return parseISO(s)",rej:"reject — non-ISO inputs still reach here → sent back as a fix"}]},
     tack:{ ac:"--orient", cli:true, group:"keep your bearings",
       gloss:"To tack is to change course; tack remembers every course you've held.",
+      pitch:"Keep losing your place between sessions? It remembers what you were doing so you don't re-explain it every time.",
       what:"Tracks what you're working on — across crashes, context overflow, or jumping between projects. Start a fresh session and pick up exactly where you left off, instead of re-explaining everything.",
       cmds:[["/tack:tack","Resume — what you were doing, and where you stopped"],["tack","Track routes, tasks, and deliverables from any terminal"]],
       session:[
@@ -464,6 +414,7 @@
         {t:"cmd",cmd:"/tack:tack",out:"Replays the route — 3 of 5 tasks done, next is the client SDK."}]},
     beacon:{ ac:"--orient", cli:true, group:"keep your bearings",
       gloss:"A lighthouse you can read from across the harbor.",
+      pitch:"Running several Claude windows? Each gets a badge showing whether it's working or waiting on you.", with:"tack",
       what:"Puts a colored badge on each terminal window so you can tell what every Claude session is doing at a glance: green idle, amber working, red waiting on you. Look away and still know which window needs you.",
       cmds:[["/beacon:beacon","Label a pane, or set status / pause with a note"],["beacon","Read the resolved project / task / status anywhere"]],
       session:[
@@ -472,6 +423,7 @@
         {t:"status",text:"window 3  ● red — it has been waiting on you while you weren't looking."}]},
     sextant:{ ac:"--build", group:"learn as you go",
       gloss:"Fixes your position against a fixed reference — your spec.",
+      pitch:"Keeps requirements in source control, synced with the code either direction — so the spec, not the chat, is the source of truth.",
       what:"Keeps a plain-language spec — what the code must do — under source control, and reconciles it with the code in either direction. The spec stays the durable source of truth — enough to rebuild an implementation from, not just describe one.",
       cmds:[["/sextant:spec-sync","Reconcile code and spec, either direction"],["/sextant:spec-req","Look up, trace, or draft requirements"],["/sextant:spec-status","Refresh the coverage ledger"],["/sextant:impl-new · :impl-select","Scaffold candidate implementations, graduate the winner (one-way)"]],
       session:[
@@ -480,6 +432,7 @@
         {t:"cmd",cmd:"/sextant:spec-sync",out:"10 of 12 requirements covered; the auth TTL drifted — spec says 15m, the code does 60m."}]},
     logbook:{ ac:"--build", cli:true, group:"learn as you go",
       gloss:"The ship's log — what the last crew figured out.",
+      pitch:"Solved something the hard way? It writes up what you learned and shares it with the team, so no one re-solves it.",
       what:"Turns a session into a retrospective committed to a team-owned repo. Your chat transcript stays on your machine — only the write-up is shared, so the next person inherits the lesson, not just the code.",
       cmds:[["/logbook:note","Capture a process/tooling observation; fix now or defer"],["/logbook:retro","Publish a session retro to the team repo"],["logbook","Same notes + retros from any terminal"]],
       session:[
@@ -504,8 +457,8 @@
     else if(f.t==="moor"){ el.innerHTML=`<div class="fr-moor"><div class="mbar">moor · reviewing</div><div class="ml del">- ${f.del}</div><div class="ml add">+ ${f.add}</div><div class="ml rej">${f.rej}</div></div>`; }
     return el;
   }
-  const delayFor=(f)=>{ if(!f)return 1200; if(f.t==="sep")return 700; if(f.t==="thought"||f.t==="event")return 1500; if(f.t==="cmd")return 1900; if(f.t==="moor")return 2100; if(f.t==="watch")return 1900; if(f.t==="ask")return 2500; if(f.t==="status")return 1600; return 1400; };
-  // plays like a gif: autostarts on scroll-in, loops, pauses off-screen, no controls
+  const delayFor=(f)=>{ if(!f)return 1000; if(f.t==="sep")return 550; if(f.t==="thought"||f.t==="event")return 1200; if(f.t==="cmd")return 1500; if(f.t==="moor")return 1700; if(f.t==="watch")return 1500; if(f.t==="ask")return 2000; if(f.t==="status")return 1300; return 1150; };
+  // autostarts on scroll-in, pauses off-screen, plays once then pins the final state (no loop)
   function mountSession(container, frames){
     container.innerHTML=`<div class="tape"></div>`;
     const tape=container.querySelector(".tape");
@@ -514,7 +467,7 @@
     let i=0, vis=false, timer=null;
     const tick=()=>{
       if(!vis) return;
-      if(i>=frames.length){ timer=setTimeout(()=>{ els.forEach(e=>e.classList.remove("show")); i=0; tick(); }, 2800); return; }
+      if(i>=frames.length) return;   // finished — hold the final state, don't loop
       els[i].classList.add("show"); i++; timer=setTimeout(tick, delayFor(frames[i-1]));
     };
     const sio=new IntersectionObserver((ents)=>{ ents.forEach(en=>{ if(en.isIntersecting){ if(!vis){ vis=true; tick(); } } else { vis=false; clearTimeout(timer); } }); },{threshold:.2});
@@ -533,7 +486,7 @@
       `<p class="pv-what">${p.what}</p>`+
       `<div class="pv-sechead">Install</div>`+
       `<div class="install pv-install" style="--ac:var(${p.ac})"><div class="ibody"><code><span class="pr">claude plugin install</span> ${slug}@chris-peterson</code>`+
-        `<button class="cmdcopy solo" data-cmd="claude plugin install ${slug}@chris-peterson"><span class="cc-ico">copy</span></button></div></div>`;
+        `<button class="cmdcopy solo" data-cmd="claude plugin install ${slug}@chris-peterson"><span class="cc-ico">${COPY_ICO}</span></button></div></div>`;
     const commands =
       `<div class="pv-sechead">Commands</div>`+
       `<div class="pv-cmds">`+p.cmds.map(c=>`<div class="pv-cmd"><code>${c[0]}</code><span class="d">${c[1]}</span></div>`).join("")+`</div>`;
@@ -543,7 +496,7 @@
     const setup = p.setup
       ? `<div class="pv-sechead">${p.setup.head}</div><p class="sub">${p.setup.note}</p>`+
         `<div class="install pv-install" style="--ac:var(${p.ac})"><div class="ibody"><code><span class="pr">just</span> ${p.setup.cmd.replace(/^just\s+/,"")}</code>`+
-        `<button class="cmdcopy solo" data-cmd="${p.setup.cmd}"><span class="cc-ico">copy</span></button></div></div>`
+        `<button class="cmdcopy solo" data-cmd="${p.setup.cmd}"><span class="cc-ico">${COPY_ICO}</span></button></div></div>`
       : ``;
     const links = `<div class="pv-links"><a href="${docsUrl(slug)}" target="_blank" rel="noopener">full docs ↗</a><a href="${srcUrl(slug)}" target="_blank" rel="noopener">source ↗</a></div>`;
     pv.innerHTML = head + (p.passive ? examples+commands : commands+examples) + setup + links;
@@ -562,45 +515,34 @@
 
   // ---- catalog: render grouped cards from PLUGINS (single source — no HTML dupe) ----
   const GROUPS=[
-    {key:"safe",     ac:"--guard",  tag:"Stay safe",          name:"An extra safeguard that costs you nothing", slugs:["ClaudeWatch"]},
+    {key:"safe",     ac:"--guard",  tag:"Stay safe",          name:"An extra safeguard", lead:true, slugs:["ClaudeWatch"]},
     {key:"bearings", ac:"--orient", tag:"Keep your bearings", name:"Know where you are",                        slugs:["tack","beacon"]},
-    {key:"dock",     ac:"--ship",   tag:"Create checkpoints", name:"Bring reviewed work into the record",       slugs:["anchor","moor"]},
-    {key:"build",    ac:"--build",  tag:"Learn as you go",    name:"Work to a plan, keep what you learn",        slugs:["logbook","sextant"]}
+    {key:"dock",     ac:"--ship",   tag:"Create checkpoints", name:"Review every change before it lands",       slugs:["anchor","moor"]},
+    {key:"build",    ac:"--build",  tag:"Learn as you go",    name:"Measure twice; cut once",                    slugs:["logbook","sextant"]}
   ];
   const catCard=(slug)=>{
     const p=PLUGINS[slug];
-    const chips=p.cmds.map(c=>`<span class="cmd">${c[0]}</span>`).join("");
+    const cmd=`claude plugin install ${slug}@chris-peterson`;
     return `<article class="ship" data-slug="${slug}" style="--ac:var(${p.ac})">`+
       `<div class="head"><img src="https://chris-peterson.github.io/${slug}/favicon.svg" alt="">`+
       `<a class="pnamelink" href="#/${slug}"><h3>${slug}</h3></a>`+(p.cli?`<span class="cli">cli</span>`:``)+`</div>`+
-      (p.gloss?`<p class="gloss">${p.gloss}</p>`:``)+
-      `<p class="what">${p.what}</p>`+
-      `<div class="cmds">${chips}</div></article>`;
+      `<p class="what">${p.pitch||p.what}</p>`+
+      (p.with?`<p class="cwith">works with <b>${p.with}</b></p>`:``)+
+      `<div class="pacts"><button class="cmdcopy" data-cmd="${cmd}"><span class="cc-cmd">${cmd}</span><span class="cc-ico">${COPY_ICO}</span></button>`+
+      `<a class="pnamelink cdetails" href="#/${slug}">details →</a></div></article>`;
   };
   document.getElementById("catalog").innerHTML = GROUPS.map(g=>
     `<div class="fgroup reveal" id="g-${g.key}" style="--ac:var(${g.ac})">`+
-      `<div class="ghead"><span class="gtag">${g.tag}</span><span class="gname">${g.name}</span></div>`+
+      `<div class="ghead"><span class="gtag">${g.tag}</span><span class="gname">${g.name}</span>${g.lead?'<span class="glead">recommended first</span>':''}</div>`+
       `<div class="fleet${g.slugs.length===1?' solo':''}">${g.slugs.map(catCard).join("")}</div></div>`
   ).join("");
   document.querySelectorAll("#catalog .ship").forEach(c=> cardNav(c, c.dataset.slug));
-
-  // ---- wire home path rows to the in-site view + install command ----
-  document.querySelectorAll("#start .prow").forEach(row=>{
-    const slug=slugOf(row); if(!slug) return;
-    const n=row.querySelector(".pname b");
-    if(n){ const a=document.createElement("a"); a.className="pnamelink"; a.href="#/"+slug; n.parentNode.insertBefore(a,n); a.appendChild(n); }
-    const cmd=`claude plugin install ${slug}@chris-peterson`;
-    const acts=document.createElement("div"); acts.className="pacts";
-    acts.innerHTML=`<button class="cmdcopy" data-cmd="${cmd}"><span class="cc-cmd">${cmd}</span><span class="cc-ico">copy</span></button>`;
-    row.querySelector(".pbody").appendChild(acts);
-    cardNav(row, slug);
-  });
 
   // ---- copy-to-clipboard (delegated) ----
   document.addEventListener("click",(e)=>{
     const btn=e.target.closest(".cmdcopy"); if(!btn) return;
     e.stopPropagation();
-    navigator.clipboard.writeText(btn.dataset.cmd).then(()=>{ const ico=btn.querySelector(".cc-ico"); const prev=ico.textContent; btn.classList.add("done"); ico.textContent="copied"; setTimeout(()=>{ btn.classList.remove("done"); ico.textContent=prev; },1500); });
+    navigator.clipboard.writeText(btn.dataset.cmd).then(()=>{ btn.classList.add("done"); setTimeout(()=>btn.classList.remove("done"),1500); });
   });
 
   // ---- reveal-on-scroll for catalog groups ----
