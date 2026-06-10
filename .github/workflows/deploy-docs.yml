@@ -3,10 +3,14 @@ name: Deploy docs
 on:
   push:
     branches: [main]
-    paths: ['docs/**']
+    # ignore the build's own artifacts.csv commit, else it would retrigger
+    paths-ignore: ['suite/artifacts.csv']
+  repository_dispatch:
+    types: [plugin-released]
   workflow_dispatch:
 
 permissions:
+  contents: write   # to commit the artifact-counts series (suite/artifacts.csv)
   pages: write
   id-token: write
 
@@ -15,16 +19,49 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+
+      - run: pip install pyyaml
+
+      - name: Sync sibling plugin repos
+        run: bash suite/sync.sh
+
+      - name: Generate SPA data and dependency graph (ephemeral)
+        run: |
+          python3 suite/build-spa-data.py
+          python3 suite/trace-deps.py
+
+      - name: Record artifact counts
+        run: bash suite/count-artifacts.sh
+
+      - name: Commit artifact time series
+        run: |
+          if ! git diff --quiet -- suite/artifacts.csv; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add suite/artifacts.csv
+            git commit -m "chore: record artifact counts ($(date -u +%F))"
+            git push origin HEAD:main
+          fi
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
           path: docs
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v4
