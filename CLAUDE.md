@@ -28,6 +28,7 @@ dispatch token. The scripts:
 - `build-spa-data.py` — per-plugin SPA content from each `plugin.yml` → `docs/plugins.js`.
 - `count-artifacts.sh` — skills/rules/hooks/commands/agents tallies → `suite/artifacts.csv` (committed; git history is the time series).
 - `trace-deps.py` — heuristic cross-plugin dependency edges → `docs/deps.json`, cross-checked against declared `soft_deps`.
+- `check-spa-coverage.py` — fails the build if a `marketplace.json` plugin isn't placed in a SPA `GROUPS` slug list (or vice versa). Runs first in CI and in `just build`.
 - `spa-legacy.json` — verbatim snapshot of the original inline SPA content; supplies ordering + fallback for plugins not yet migrated to `plugin.yml`. Dropped once all plugins have one.
 
 ## Structure
@@ -46,6 +47,10 @@ dispatch token. The scripts:
   `docs/plugins.js`, which `index.html` loads — edit gloss/what/commands in the
   plugin's `plugin.yml`, never in `index.html` or `plugins.js`. (Plugins not yet
   migrated still come from `suite/spa-legacy.json`.)
+- **Adding a plugin takes two edits**: register it in `marketplace.json`, and
+  add its slug to a `GROUPS` group in `docs/index.html` — the catalog renders
+  only grouped slugs, so a plugin in `marketplace.json` alone has data but no
+  card. `suite/check-spa-coverage.py` enforces this (CI + `just build`).
 - **Verify plugin behavior against the real skills** before describing it —
   read `../<plugin>/skills/*/SKILL.md`, don't guess.
 - **Namespace every command** as `plugin:skill` (e.g. `/anchor:commit`,

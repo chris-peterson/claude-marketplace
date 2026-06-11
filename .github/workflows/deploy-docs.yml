@@ -38,6 +38,9 @@ jobs:
           python3 suite/build-spa-data.py
           python3 suite/trace-deps.py
 
+      - name: Check every plugin is grouped and renderable on the SPA
+        run: python3 suite/check-spa-coverage.py
+
       - name: Record artifact counts
         run: bash suite/count-artifacts.sh
 

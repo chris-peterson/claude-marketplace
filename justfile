@@ -14,12 +14,16 @@ spa-data:
 deps:
     python3 suite/trace-deps.py
 
+# fail if any plugin is missing from the SPA catalog or its data (run after spa-data)
+check-coverage:
+    python3 suite/check-spa-coverage.py
+
 # record per-plugin artifact counts into suite/artifacts.csv (committed time series)
 counts:
     bash suite/count-artifacts.sh
 
 # full aggregation: sync siblings, then build all generated outputs
-build: sync spa-data deps counts
+build: sync spa-data deps counts check-coverage
 
 # set/rotate the MARKETPLACE_DISPATCH_TOKEN secret across the plugin repos
 set-dispatch-secret:
