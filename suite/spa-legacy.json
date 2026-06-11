@@ -69,6 +69,20 @@
       }
     ]
   },
+  "shipshape": {
+    "ac": "--guard",
+    "group": "stay safe",
+    "passive": true,
+    "gloss": "Nautical: everything stowed, secured, and ready for sea.",
+    "pitch": "Keeps your other plugins current and your plugin dir tidy — out-of-date tooling is its own kind of risk.",
+    "what": "Reconciles the plugins you have installed against the set you've declared, updates them, and reaps the stale caches and orphan data dirs that uninstall leaves behind — without touching a version a live session still holds. A load-time hook turns on marketplace auto-update so plugins keep themselves current.",
+    "cmds": [
+      [
+        "/plugin-maintenance",
+        "Reconcile, update, and prune your installed plugins"
+      ]
+    ]
+  },
   "anchor": {
     "ac": "--ship",
     "group": "create checkpoints",

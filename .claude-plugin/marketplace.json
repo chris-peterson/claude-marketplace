@@ -85,6 +85,19 @@
       "homepage": "https://chris-peterson.github.io/sextant/#/"
     },
     {
+      "name": "shipshape",
+      "description": "Keep your Claude Code plugins up to date — reconcile installed plugins against your desired set, update them, prune stale caches, and enforce marketplace auto-update.",
+      "author": {
+        "name": "chris-peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/shipshape.git"
+      },
+      "category": "development",
+      "homepage": "https://chris-peterson.github.io/shipshape/#/"
+    },
+    {
       "name": "tack",
       "description": "Route-aware agent that tracks AI-assisted development work — pivots, deliverables, and dependencies — across session boundaries",
       "author": {

@@ -40,6 +40,10 @@ A fast, keyboard-driven diff viewer for reviewing AI-generated code. Opens insta
 
 AI-assisted SPEC-driven development. Maintains a `SPEC.md` contract, audits implementations against it for coverage and drift, and scaffolds candidate implementations so the winner can be graduated to the repo root.
 
+### [shipshape](https://github.com/chris-peterson/shipshape)
+
+Keeps your *other* Claude Code plugins up to date. A `/plugin-maintenance` skill reconciles installed plugins against your desired set, updates them, and prunes the stale caches and orphan data dirs that uninstall leaves behind — while respecting the `.in_use` leases of live sessions. A `SessionStart` hook enforces marketplace auto-update so plugins stay current on their own.
+
 ### [tack](https://github.com/chris-peterson/tack)
 
 Route-aware work tracker for AI-assisted development. Captures pivots, context switches, and multi-repo changes so that work-in-progress survives session boundaries.
