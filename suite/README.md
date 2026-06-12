@@ -9,11 +9,37 @@ and aggregate from it.
 |:---|:---|:---|
 | `sync.sh` | sibling checkouts | clone/fast-forward every plugin in `marketplace.json` |
 | `build-spa-data.py` | `docs/plugins.js` | per-plugin SPA content from each `plugin.yml` |
-| `count-artifacts.sh` | `suite/artifacts.csv` | artifact tallies, committed so git history is the time series |
+| `record-artifacts.py` | `suite/artifacts.csv` | append a change-point row when a plugin's artifact set changes |
+| `build-artifacts-data.py` | `docs/artifacts.json` | project the rolling log into the growth view's series + changelog |
 | `trace-deps.py` | `docs/deps.json` | cross-plugin soft-dependency edges, cross-checked against declared `soft_deps` |
+| `check-spa-coverage.py` | (gate) | fail the build if a plugin isn't grouped/renderable on the SPA |
 
-`just build` runs all four. `docs/plugins.js` and `docs/deps.json` are
-regenerated each deploy and git-ignored; only `artifacts.csv` is committed.
+`just build` runs the whole pipeline. `docs/plugins.js`, `docs/deps.json`, and
+`docs/artifacts.json` are regenerated each deploy and git-ignored; only
+`artifacts.csv` is committed.
+
+### The artifact log
+
+`suite/artifacts.csv` is a **rolling change-point log**, one row per change to a
+plugin's artifact set:
+
+```text
+date,plugin,skills,rules,hooks,commands,agents,change
+2026-06-12,anchor,6,2,2,0,0,+skill:issue
+```
+
+The `change` column names what moved (`+skill:issue`, or a rename as a paired
+`-skill:address-feedback +skill:resolve-feedback`). Replaying every row's `+/-`
+tokens from empty reconstructs each plugin's current set, so `record-artifacts.py`
+needs no state file and the growth view rebuilds from this file alone — never
+re-walking git. `record-artifacts.py` compares the committed `HEAD` of each
+sibling repo to the replayed set and appends only when it changed; a re-run with
+nothing newly committed is a no-op.
+
+`seed-artifacts-history.py` is the one-time bootstrap (`just seed-artifacts`): it
+walks each sibling repo's full git history to lay down the initial change points.
+Run it only to recreate the log from scratch — the recurring build appends in
+place.
 
 ## Releasing a bridge.ai plugin
 

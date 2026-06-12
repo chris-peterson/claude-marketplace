@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write   # to commit the artifact-counts series (suite/artifacts.csv)
+  contents: write   # to commit the rolling artifact log (suite/artifacts.csv)
   pages: write
   id-token: write
 
@@ -41,16 +41,19 @@ jobs:
       - name: Check every plugin is grouped and renderable on the SPA
         run: python3 suite/check-spa-coverage.py
 
-      - name: Record artifact counts
-        run: bash suite/count-artifacts.sh
+      - name: Record artifact changes into the rolling log
+        run: python3 suite/record-artifacts.py
 
-      - name: Commit artifact time series
+      - name: Project the growth-view data (ephemeral)
+        run: python3 suite/build-artifacts-data.py
+
+      - name: Commit the artifact log if it changed
         run: |
           if ! git diff --quiet -- suite/artifacts.csv; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add suite/artifacts.csv
-            git commit -m "chore: record artifact counts ($(date -u +%F))"
+            git commit -m "chore: record artifact changes ($(date -u +%F))"
             git push origin HEAD:main
           fi
 

@@ -45,5 +45,5 @@ dump (`suite/build-spa-data.py`):
 
 Derived data is computed, never declared, so it can't drift:
 
-- **artifact counts** — tallied from the repo by `suite/count-artifacts.sh`.
+- **artifact counts** — tracked from each repo's git state by `suite/record-artifacts.py` (the rolling `suite/artifacts.csv` log).
 - **discovered dependency edges** — found in code by `suite/trace-deps.py` (then cross-checked against `soft_deps`).

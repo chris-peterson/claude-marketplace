@@ -1,6 +1,7 @@
 # Generated each build, not committed.
 docs/plugins.js
 docs/deps.json
+docs/artifacts.json
 
 __pycache__/
 *.pyc

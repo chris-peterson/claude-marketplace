@@ -18,12 +18,20 @@ deps:
 check-coverage:
     python3 suite/check-spa-coverage.py
 
-# record per-plugin artifact counts into suite/artifacts.csv (committed time series)
-counts:
-    bash suite/count-artifacts.sh
+# append a change-point row to suite/artifacts.csv when a plugin's artifacts changed
+record-artifacts:
+    python3 suite/record-artifacts.py
+
+# project the rolling suite/artifacts.csv into docs/artifacts.json (the growth view)
+artifacts-data:
+    python3 suite/build-artifacts-data.py
+
+# one-time: (re)bootstrap suite/artifacts.csv from each plugin repo's git history
+seed-artifacts:
+    python3 suite/seed-artifacts-history.py
 
 # full aggregation: sync siblings, then build all generated outputs
-build: sync spa-data deps counts check-coverage
+build: sync spa-data deps record-artifacts artifacts-data check-coverage
 
 # set/rotate the MARKETPLACE_DISPATCH_TOKEN secret across the plugin repos
 set-dispatch-secret:

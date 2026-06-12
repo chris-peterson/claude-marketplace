@@ -1,16 +1,29 @@
-date,plugin,skills,rules,hooks,commands,agents
-2026-06-10,anchor,5,2,2,0,0
-2026-06-10,beacon,1,0,2,1,0
-2026-06-10,ClaudeWatch,3,11,2,0,0
-2026-06-10,logbook,3,0,2,1,0
-2026-06-10,moor,0,1,3,1,0
-2026-06-10,sextant,5,0,0,0,0
-2026-06-10,tack,1,0,4,1,0
-2026-06-11,anchor,5,2,2,0,0
-2026-06-11,beacon,1,0,2,1,0
-2026-06-11,ClaudeWatch,3,11,2,0,0
-2026-06-11,logbook,3,0,2,1,0
-2026-06-11,moor,0,1,3,1,0
-2026-06-11,sextant,5,0,0,0,0
-2026-06-11,shipshape,1,0,2,0,0
-2026-06-11,tack,1,0,4,1,0
+date,plugin,skills,rules,hooks,commands,agents,change
+2026-03-15,ClaudeWatch,1,0,1,0,0,+skill:rules +hook:hooks
+2026-03-23,ClaudeWatch,1,4,1,0,0,+rule:watch-files +rule:watch-git +rule:watch-installs +rule:watch-secrets
+2026-04-01,tack,1,0,2,0,0,+skill:tack +hook:capture-urls +hook:hooks
+2026-04-02,tack,1,0,3,0,0,+hook:session-nudge
+2026-04-27,ClaudeWatch,2,4,1,0,0,+skill:help
+2026-04-28,beacon,1,0,1,1,0,+skill:beacon +hook:hooks +command:beacon
+2026-04-29,logbook,1,0,0,1,0,+skill:retro +command:logbook
+2026-04-29,tack,1,0,3,1,0,+command:tack
+2026-05-01,logbook,2,0,0,1,0,+skill:session-id
+2026-05-06,ClaudeWatch,2,4,2,0,0,+hook:cli-freshness
+2026-05-06,beacon,1,0,2,1,0,+hook:cli-freshness
+2026-05-06,logbook,2,0,2,1,0,+hook:cli-freshness +hook:hooks
+2026-05-06,tack,1,0,4,1,0,+hook:cli-freshness
+2026-05-11,ClaudeWatch,2,6,2,0,0,+rule:watch-pwsh +rule:watch-python
+2026-05-17,logbook,3,0,2,1,0,+skill:note
+2026-05-18,sextant,4,0,0,0,0,+skill:impl-new +skill:impl-select +skill:spec-audit +skill:spec-req
+2026-05-19,ClaudeWatch,2,7,2,0,0,+rule:watch-dotnet
+2026-05-23,ClaudeWatch,2,10,2,0,0,+rule:watch-bash +rule:watch-node +rule:watch-ruby
+2026-05-30,ClaudeWatch,2,11,2,0,0,+rule:watch-aws
+2026-05-30,moor,0,0,2,1,0,+hook:cli-freshness +hook:hooks +command:moor
+2026-05-31,ClaudeWatch,3,11,2,0,0,+skill:learn
+2026-05-31,anchor,3,0,0,0,0,+skill:commit +skill:prepare-review +skill:preview
+2026-06-01,sextant,5,0,0,0,0,+skill:spec-status +skill:spec-sync -skill:spec-audit
+2026-06-02,anchor,4,2,2,0,0,+skill:address-feedback +rule:rewrite-history-through-anchor +rule:use-forge-clis +hook:emit-rules +hook:hooks
+2026-06-02,moor,0,1,3,1,0,+rule:launch-with-sidecar +hook:emit-rules
+2026-06-09,anchor,5,2,2,0,0,+skill:pipeline +skill:resolve-feedback -skill:address-feedback
+2026-06-11,shipshape,1,0,2,0,0,+skill:plugin-maintenance +hook:enforce-autoupdate +hook:hooks
+2026-06-12,anchor,6,2,2,0,0,+skill:issue
