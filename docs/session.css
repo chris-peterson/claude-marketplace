@@ -21,11 +21,12 @@
 .session .tape{padding:20px 22px;font-size:15px;line-height:1.55;display:flex;flex-direction:column;gap:12px}
 .fr{opacity:0;transform:translateY(6px);transition:opacity .45s ease,transform .45s ease}
 .fr.show{opacity:1;transform:none}
-.fr-you,.fr-note{color:var(--faint)}
-.fr-claude{color:var(--claude)}
-.fr-note{font-style:italic}
-.fr-you .lbl,.fr-claude .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-right:9px}
-.fr-you .lbl{color:var(--gold)} .fr-claude .lbl{color:var(--claude)}
+/* User and Claude lines use white text, like a real terminal session; the
+   speaker is shown by a dim prompt marker (> for you, * for Claude) rather
+   than a colored word label. */
+.fr-you,.fr-claude{color:var(--fg)}
+.fr-note{color:var(--faint);font-style:italic}
+.fr-you .lbl,.fr-claude .lbl{font-family:var(--mono);color:var(--muted);margin-right:9px}
 .fr .fr-cmd{font-family:var(--mono);font-size:13.5px;color:var(--ac);display:inline-flex;align-items:center;gap:9px;
   background:color-mix(in srgb,var(--ac) 9%,transparent);border:1px solid color-mix(in srgb,var(--ac) 24%,transparent);border-radius:8px;padding:8px 12px}
 .fr .fr-out{color:var(--muted);font-size:14px;margin:7px 0 0 4px;border-left:1px solid var(--line-2);padding-left:12px}
