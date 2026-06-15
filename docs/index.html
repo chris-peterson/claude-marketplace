@@ -171,7 +171,8 @@
     background:color-mix(in srgb,var(--ac) 8%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);
     border-radius:8px;padding:7px 11px;color:var(--fg);transition:border-color .2s;max-width:100%}
   .cmdcopy:hover{border-color:color-mix(in srgb,var(--ac) 55%,transparent)}
-  .cmdcopy .cc-cmd{color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .cmdcopy .cc-cmd{color:var(--fg);white-space:normal;min-width:0;line-height:1.5}
+  .cmdcopy .cc-cmd .cc-at{display:inline-block;padding-left:2ch}
   .cmdcopy .cc-ico{color:var(--ac);border-left:1px solid var(--line-2);padding-left:10px;flex:none;display:inline-flex;align-items:center}
   .cmdcopy .cc-ico svg{display:block}
   .ship .cmdcopy{max-width:100%;overflow:hidden}
@@ -429,6 +430,10 @@
   const catCard=(slug)=>{
     const p=PLUGINS[slug];
     const cmd=`claude plugin install ${slug}@chris-peterson`;
+    // Display the command on two lines, breaking after `install`, so the full
+    // <plugin>@chris-peterson stays visible in the narrow card; the copied text
+    // (data-cmd) is the verbatim single line, so a terminal paste is unaffected.
+    const cmdHtml=`claude plugin install<br><span class="cc-at">${slug}@chris-peterson</span>`;
     // Migrated plugins (suite.spoke) link out to the full session on their docs
     // site; the rest open the in-hub detail view.
     const href = p.spoke ? docsUrl(slug) : `#/${slug}`;
@@ -438,7 +443,7 @@
       `<a class="pnamelink" href="${href}"><h3>${slug}</h3></a>`+(p.cli?`<span class="cli">cli</span>`:``)+`</div>`+
       `<p class="what">${p.pitch||p.what}</p>`+
       (p.with?`<p class="cwith">works with <b>${p.with}</b></p>`:``)+
-      `<div class="pacts"><button class="cmdcopy" data-cmd="${cmd}"><span class="cc-cmd">${cmd}</span><span class="cc-ico">${COPY_ICO}</span></button>`+
+      `<div class="pacts"><button class="cmdcopy" data-cmd="${cmd}"><span class="cc-cmd">${cmdHtml}</span><span class="cc-ico">${COPY_ICO}</span></button>`+
       `<a class="pnamelink cdetails" href="${href}">${detailLabel}</a></div></article>`;
   };
   document.getElementById("catalog").innerHTML = GROUPS.map(g=>
