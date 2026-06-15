@@ -429,19 +429,15 @@
   const catCard=(slug)=>{
     const p=PLUGINS[slug];
     const cmd=`claude plugin install ${slug}@chris-peterson`;
-    // Migrated plugins (suite.spoke) preview their examples inline and link out
-    // to the full session on their docs site; the rest open the in-hub detail.
+    // Migrated plugins (suite.spoke) link out to the full session on their docs
+    // site; the rest open the in-hub detail view.
     const href = p.spoke ? docsUrl(slug) : `#/${slug}`;
     const detailLabel = p.spoke ? "full session + docs →" : "details →";
-    const teaser = (p.spoke && p.examples)
-      ? `<div class="card-ex">`+p.examples.map((e,n)=>`<div class="cw-ex-label" style="--ac:var(${e.ac||p.ac})">${e.label}</div><div class="session" data-slug="${slug}" data-ex="${n}" style="--ac:var(${e.ac||p.ac})"></div>`).join("")+`</div>`
-      : ``;
     return `<article class="ship" data-slug="${slug}" style="--ac:${PLUGIN_AC[slug]}">`+
       `<div class="head"><img src="https://chris-peterson.github.io/${slug}/favicon.svg" alt="">`+
       `<a class="pnamelink" href="${href}"><h3>${slug}</h3></a>`+(p.cli?`<span class="cli">cli</span>`:``)+`</div>`+
       `<p class="what">${p.pitch||p.what}</p>`+
       (p.with?`<p class="cwith">works with <b>${p.with}</b></p>`:``)+
-      teaser+
       `<div class="pacts"><button class="cmdcopy" data-cmd="${cmd}"><span class="cc-cmd">${cmd}</span><span class="cc-ico">${COPY_ICO}</span></button>`+
       `<a class="pnamelink cdetails" href="${href}">${detailLabel}</a></div></article>`;
   };
@@ -451,8 +447,6 @@
       `<div class="fleet${g.slugs.length===1?' solo':''}">${g.slugs.map(catCard).join("")}</div></div>`
   ).join("");
   document.querySelectorAll("#catalog .ship").forEach(c=> cardNav(c, c.dataset.slug));
-  // animate the inline example teasers on migrated plugins' cards
-  document.querySelectorAll("#catalog .session[data-ex]").forEach(c=>{ const p=PLUGINS[c.dataset.slug]; mountSession(c, p.examples[+c.dataset.ex].frames); });
 
   // ---- copy-to-clipboard (delegated) ----
   document.addEventListener("click",(e)=>{
