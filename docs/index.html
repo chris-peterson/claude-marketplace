@@ -231,12 +231,14 @@
   .changelog .clrow{display:grid;grid-template-columns:92px 104px 1fr;gap:14px;align-items:baseline;
     padding:9px 18px;border-bottom:1px solid var(--line-2);font-family:var(--mono);font-size:12.5px}
   .changelog .clrow:last-child{border-bottom:0}
-  .changelog .cldate{color:var(--faint);font-variant-numeric:tabular-nums}
+  /* Changelog text meets WCAG AA on the --deep panel: --faint/--muted fall
+     below 4.5:1, so brighten via color-mix toward white. */
+  .changelog .cldate{color:color-mix(in srgb, var(--muted) 64%, white);font-variant-numeric:tabular-nums}
   .changelog .clplug{font-weight:600}
-  .changelog .clchange{color:var(--muted);word-break:break-word}
+  .changelog .clchange{color:color-mix(in srgb, var(--muted) 70%, white);word-break:break-word}
   .changelog .clchange .add{color:var(--green)}
   .changelog .clchange .rem{color:var(--red)}
-  .changelog .clchange .init{color:var(--muted);font-style:italic}
+  .changelog .clchange .init{color:color-mix(in srgb, var(--muted) 70%, white);font-style:italic}
   @media(max-width:560px){.changelog .clrow{grid-template-columns:78px 1fr;row-gap:3px}
     .changelog .clchange{grid-column:1/-1}}
 
@@ -337,7 +339,7 @@
   <!-- ============ GROWTH (artifact counts over time) ============ -->
   <section id="growth">
     <h2>The suite over time</h2>
-    <p class="sub">Every skill, rule, hook, command, and agent across the suite, reconstructed from each plugin's history. Each bar is a change point; the stack height is the whole suite. Hover for the breakdown, and read the changelog below for what each release added.</p>
+    <p class="sub">How the suite has grown — every skill, rule, hook, command, and agent, reconstructed from each plugin's git history. See when capabilities landed and how the suite expanded over time; the changelog below records what each release added or removed.</p>
     <div class="growthbox"><canvas id="growthchart"></canvas></div>
     <div class="changelog" id="changelog"></div>
   </section>
