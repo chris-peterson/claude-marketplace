@@ -1,0 +1,55 @@
+/* Session player styling — paired with session-player.js, a bridge.ai suite
+   asset served from the marketplace. The transcript is a terminal-style panel,
+   so it carries its own Dracula palette scoped to the container rather than
+   inheriting the host page's theme: identical on the marketplace hub (dark) and
+   on a plugin's docsify site in either light or dark mode. --ac (the per-example
+   accent) is intentionally left to inherit from the mount's inline style. */
+.session, .cw-ex-label {
+  --abyss:#191a21; --deep:#21222c; --sea:#282a36; --hull:#343746;
+  --fg:#f8f8f2; --muted:#6272a4; --faint:#4b527a;
+  --cyan:#8be9fd; --green:#50fa7b; --orange:#ffb86c; --pink:#ff79c6;
+  --purple:#bd93f9; --red:#ff5555; --yellow:#f1fa8c; --gold:#e3b341; --claude:#d97757;
+  /* four functional areas → four colors */
+  --ship:#8be9fd; --guard:#ff5555; --orient:#bd93f9; --build:#50fa7b;
+  --line:rgba(139,233,253,.14); --line-2:rgba(248,248,242,.07);
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+
+.cw-ex-label{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ac,var(--cyan));margin:18px 0 7px}
+
+.session{margin-top:14px;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--abyss);--ac:var(--cyan)}
+.session .tape{padding:20px 22px;font-size:15px;line-height:1.55;display:flex;flex-direction:column;gap:12px}
+.fr{opacity:0;transform:translateY(6px);transition:opacity .45s ease,transform .45s ease}
+.fr.show{opacity:1;transform:none}
+.fr-you,.fr-claude,.fr-note{color:var(--faint)}
+.fr-note{font-style:italic}
+.fr-you .lbl,.fr-claude .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-right:9px}
+.fr-you .lbl{color:var(--gold)} .fr-claude .lbl{color:var(--claude)}
+.fr .fr-cmd{font-family:var(--mono);font-size:13.5px;color:var(--ac);display:inline-flex;align-items:center;gap:9px;
+  background:color-mix(in srgb,var(--ac) 9%,transparent);border:1px solid color-mix(in srgb,var(--ac) 24%,transparent);border-radius:8px;padding:8px 12px}
+.fr .fr-out{color:var(--muted);font-size:14px;margin:7px 0 0 4px;border-left:1px solid var(--line-2);padding-left:12px}
+.fr-status{font-family:var(--mono);font-size:13px;color:var(--ac)}
+.fr-break{text-align:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);font-style:italic;margin:2px 0}
+.fr-break .bk{font-style:normal;text-transform:uppercase;letter-spacing:.16em;font-size:10px;color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 32%,transparent);border-radius:5px;padding:1px 7px;margin-right:9px}
+.fr-sep{height:1px;background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 8px);opacity:.7;margin:5px 0}
+.fr .fr-tool{font-family:var(--mono);font-size:13px;line-height:1.55}
+.fr .fr-tool .t-call{color:var(--fg)}
+.fr .fr-tool .t-dot{color:var(--red);margin-right:7px}
+.fr .fr-tool .t-cmd{color:var(--fg)}
+.fr .fr-tool .t-err{color:var(--red);margin-top:4px}
+.fr .fr-tool .t-err .t-branch{color:var(--faint);margin-right:6px}
+.fr .fr-tool .t-err a{color:var(--red);text-decoration:underline;text-underline-offset:2px;word-break:break-all}
+.fr .fr-ask .t-dot{color:var(--orange)}
+.fr .fr-ask .t-conf{color:var(--orange);margin-top:4px}
+.fr .fr-ask .t-conf .t-branch{color:var(--faint);margin-right:6px}
+.fr .fr-ask .t-reason{color:var(--orange);margin:2px 0 0 18px;word-break:break-all}
+.fr .fr-ask .t-reason a{color:var(--orange);text-decoration:underline;text-underline-offset:2px}
+.fr .fr-ask .t-reason .t-plug{color:var(--faint)}
+.fr .fr-ask .t-choices{margin:6px 0 0 18px;color:var(--muted)}
+.fr .fr-ask .t-choices .t-cursor{color:var(--purple);margin-right:6px}
+.fr .fr-moor{border:1px solid color-mix(in srgb,var(--green) 34%,transparent);border-radius:8px;overflow:hidden;font-family:var(--mono);font-size:12.5px}
+.fr .fr-moor .mbar{padding:6px 12px;background:color-mix(in srgb,var(--green) 10%,transparent);color:var(--muted);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase}
+.fr .fr-moor .ml{padding:3px 12px;white-space:pre-wrap}
+.fr .fr-moor .del{color:var(--red);background:color-mix(in srgb,var(--red) 8%,transparent)}
+.fr .fr-moor .add{color:var(--green);background:color-mix(in srgb,var(--green) 8%,transparent)}
+.fr .fr-moor .rej{color:var(--orange);padding:7px 12px;border-top:1px solid var(--line-2);font-style:italic}
