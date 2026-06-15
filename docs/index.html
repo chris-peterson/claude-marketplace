@@ -13,7 +13,7 @@
 <style>
   :root{
     --abyss:#191a21; --deep:#21222c; --sea:#282a36; --hull:#343746; --line-h:#44475a;
-    --fg:#f8f8f2; --muted:#6272a4; --faint:#4b527a;
+    --fg:#f8f8f2; --muted:#8e99bd; --faint:#4b527a;  /* --muted brightened to meet WCAG AA (~5:1) on the dark panels; --faint stays dim for decoration only */
     --cyan:#8be9fd; --green:#50fa7b; --orange:#ffb86c; --pink:#ff79c6;
     --purple:#bd93f9; --red:#ff5555; --yellow:#f1fa8c; --gold:#e3b341; --claude:#d97757;
     /* four functional areas → four colors */
@@ -122,7 +122,7 @@
   .ship .head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   .ship .head img{width:32px;height:32px;border-radius:9px;flex:none}
   .ship h3{font-family:var(--disp);font-weight:600;font-size:24px;margin:0;color:var(--fg)}
-  .ship .opt{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);
+  .ship .opt{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
     border:1px solid var(--line-2);border-radius:5px;padding:2px 7px}
   .ship .gloss{font-family:var(--disp);font-style:italic;font-size:14.5px;color:var(--muted);margin:10px 0 0}
   .ship .what{margin:11px 0 0;color:var(--fg);font-size:15px;line-height:1.55}
@@ -134,7 +134,7 @@
   .ship .cmd{font-family:var(--mono);font-size:11.5px;color:var(--ac);
     background:color-mix(in srgb,var(--ac) 9%,transparent);
     border:1px solid color-mix(in srgb,var(--ac) 22%,transparent);border-radius:6px;padding:4px 8px}
-  .ship .cmdsep{align-self:center;color:var(--faint);font-family:var(--mono);font-size:12px;margin:0 2px}
+  .ship .cmdsep{align-self:center;color:var(--muted);font-family:var(--mono);font-size:12px;margin:0 2px}
   .ship .cli{align-self:center;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
     color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 32%,transparent);border-radius:5px;padding:2px 7px}
 
@@ -148,7 +148,7 @@
   .leg .lbody h3{font-family:var(--disp);font-weight:600;font-size:20px;margin:2px 0 5px;color:var(--fg)}
   .leg .lbody h3 .inst{color:var(--ac);font-style:italic;font-weight:500}
   .leg .lbody p{margin:0;color:var(--muted);font-size:15px}
-  .leg .lbody .opt{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.04em}
+  .leg .lbody .opt{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em}
   .leg .lbody .prompt{display:inline-flex;align-items:center;gap:9px;margin-top:11px;font-family:var(--mono);font-size:12.5px;
     background:var(--abyss);border:1px solid var(--line-2);border-radius:8px;padding:8px 12px;color:var(--fg)}
   .leg .lbody .prompt .cue{color:var(--ac)}
@@ -160,7 +160,7 @@
   .install .ibar i:nth-child(1){background:var(--red)}
   .install .ibar i:nth-child(2){background:var(--orange)}
   .install .ibar i:nth-child(3){background:var(--green)}
-  .install .ibar .ttl{margin-left:8px;font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.06em}
+  .install .ibar .ttl{margin-left:8px;font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.06em}
   .install .ibody{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
   .install .ibody code{font-family:var(--mono);font-size:13.5px;color:var(--fg);line-height:1.7}
   .install .ibody .pr{color:var(--green)}
@@ -183,11 +183,11 @@
   .pnamelink:hover b,.pnamelink:hover h3{text-decoration:underline;text-underline-offset:3px}
   .goarrow{font-family:var(--mono);font-size:.6em;color:var(--ac);opacity:.5;margin-left:.3em;transition:opacity .2s;vertical-align:super}
   .pnamelink:hover .goarrow{opacity:1}
-  .srclink{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.05em;align-self:center}
+  .srclink{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.05em;align-self:center}
   .srclink:hover{color:var(--ac);text-decoration:underline;text-underline-offset:3px}
   .ship .head .srclink{margin-left:auto}
 
-  footer{padding:54px 0 64px;color:var(--faint);font-family:var(--mono);font-size:12.5px;letter-spacing:.05em;text-align:center}
+  footer{padding:54px 0 64px;color:var(--muted);font-family:var(--mono);font-size:12.5px;letter-spacing:.05em;text-align:center}
   footer .fmark{display:block;margin:0 auto 16px;width:30px;height:30px;opacity:.7}
   footer a{color:var(--muted)}
 
@@ -231,14 +231,12 @@
   .changelog .clrow{display:grid;grid-template-columns:92px 104px 1fr;gap:14px;align-items:baseline;
     padding:9px 18px;border-bottom:1px solid var(--line-2);font-family:var(--mono);font-size:12.5px}
   .changelog .clrow:last-child{border-bottom:0}
-  /* Changelog text meets WCAG AA on the --deep panel: --faint/--muted fall
-     below 4.5:1, so brighten via color-mix toward white. */
-  .changelog .cldate{color:color-mix(in srgb, var(--muted) 64%, white);font-variant-numeric:tabular-nums}
+  .changelog .cldate{color:var(--muted);font-variant-numeric:tabular-nums}
   .changelog .clplug{font-weight:600}
-  .changelog .clchange{color:color-mix(in srgb, var(--muted) 70%, white);word-break:break-word}
+  .changelog .clchange{color:var(--muted);word-break:break-word}
   .changelog .clchange .add{color:var(--green)}
   .changelog .clchange .rem{color:var(--red)}
-  .changelog .clchange .init{color:color-mix(in srgb, var(--muted) 70%, white);font-style:italic}
+  .changelog .clchange .init{color:var(--muted);font-style:italic}
   @media(max-width:560px){.changelog .clrow{grid-template-columns:78px 1fr;row-gap:3px}
     .changelog .clchange{grid-column:1/-1}}
 
