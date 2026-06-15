@@ -22,8 +22,8 @@
 .fr{opacity:0;transform:translateY(6px);transition:opacity .45s ease,transform .45s ease}
 .fr.show{opacity:1;transform:none}
 /* User and Claude lines use white text, like a real terminal session; the
-   speaker is shown by a dim prompt marker (> for you, * for Claude) rather
-   than a colored word label. */
+   speaker is shown by a dim marker (❯ for you, ⏺ for Claude — the Claude Code
+   glyphs) rather than a colored word label. */
 .fr-you,.fr-claude{color:var(--fg)}
 .fr-note{color:var(--faint);font-style:italic}
 .fr-you .lbl,.fr-claude .lbl{font-family:var(--mono);color:var(--muted);margin-right:9px}

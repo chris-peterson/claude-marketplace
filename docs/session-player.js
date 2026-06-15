@@ -16,8 +16,8 @@
   function frameEl(f) {
     var el = document.createElement("div");
     el.className = "fr";
-    if (f.t === "you") { el.classList.add("fr-you"); el.innerHTML = '<span class="lbl">&gt;</span>' + f.text; }
-    else if (f.t === "claude") { el.classList.add("fr-claude"); el.innerHTML = '<span class="lbl">*</span>' + f.text; }
+    if (f.t === "you") { el.classList.add("fr-you"); el.innerHTML = '<span class="lbl">❯</span>' + f.text; }
+    else if (f.t === "claude") { el.classList.add("fr-claude"); el.innerHTML = '<span class="lbl">⏺</span>' + f.text; }
     else if (f.t === "note") { el.classList.add("fr-note"); el.textContent = f.text; }
     else if (f.t === "thought") { el.classList.add("fr-break"); el.innerHTML = '<span class="bk">thought</span> ⟨' + f.text + '⟩'; }
     else if (f.t === "event") { el.classList.add("fr-break"); el.innerHTML = '<span class="bk">event</span> (' + f.text + ')'; }
