@@ -27,3 +27,4 @@ date,plugin,skills,rules,hooks,commands,agents,change
 2026-06-09,anchor,5,2,2,0,0,+skill:pipeline +skill:resolve-feedback -skill:address-feedback
 2026-06-11,shipshape,1,0,2,0,0,+skill:plugin-maintenance +hook:enforce-autoupdate +hook:hooks
 2026-06-12,anchor,6,2,2,0,0,+skill:issue
+2026-06-17,beacon,1,0,2,2,0,+command:pause
