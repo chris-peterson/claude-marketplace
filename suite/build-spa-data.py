@@ -5,30 +5,55 @@ plugins that haven't migrated yet. spa-legacy.json (a verbatim snapshot of the
 original inline PLUGINS object) supplies both the display order and the content
 for not-yet-migrated plugins. docs/plugins.js is ephemeral — regenerated each
 deploy, not committed.
+
+Two fields are merged in beyond the suite: block, both kept fresh by the
+on-release rebuild:
+  - version    — authoritative in plugin.yml; the catalog card shows it as a badge.
+  - components — the current named skills/rules/hooks/commands/agents, derived by
+                 replaying suite/artifacts.csv (never declared, per the schema's
+                 "Not in plugin.yml" rule); the card's expander lists them.
 """
+import csv
 import json
 import pathlib
 import sys
 
-from _common import ROOT, load_plugin
+from _common import CATS, ROOT, load_plugin, replay
 
 LEGACY = ROOT / "suite" / "spa-legacy.json"
+ARTIFACTS = ROOT / "suite" / "artifacts.csv"
 TARGET = ROOT / "docs" / "plugins.js"
+
+
+def component_sets() -> dict[str, dict[str, list[str]]]:
+    """Each plugin's current named artifacts, by category, from the replayed log.
+    Empty categories are dropped so the card renders only what a plugin has."""
+    rows = list(csv.DictReader(ARTIFACTS.open(newline="")))
+    return {
+        name: {c: sorted(members[c]) for c in CATS if members[c]}
+        for name, members in replay(rows).items()
+    }
 
 
 def main() -> int:
     legacy = json.loads(LEGACY.read_text())
+    components = component_sets()
     plugins = {}
     migrated = []
     for name in legacy:  # legacy key order is the display order
         spec = load_plugin(name)
         if spec is not None and "suite" in spec:
-            plugins[name] = spec["suite"]
+            entry = spec["suite"]
             migrated.append(name)
         else:
             if spec is not None:
                 print(f"WARNING: {name}/plugin.yml has no suite: block — using legacy entry", file=sys.stderr)
-            plugins[name] = legacy[name]
+            entry = legacy[name]
+        if spec is not None and "version" in spec:
+            entry["version"] = str(spec["version"])
+        if name in components:
+            entry["components"] = components[name]
+        plugins[name] = entry
 
     body = json.dumps(plugins, indent=2, ensure_ascii=False)
     TARGET.write_text(

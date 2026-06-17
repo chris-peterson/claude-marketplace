@@ -137,6 +137,19 @@
   .ship .cmdsep{align-self:center;color:var(--muted);font-family:var(--mono);font-size:12px;margin:0 2px}
   .ship .cli{align-self:center;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
     color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 32%,transparent);border-radius:5px;padding:2px 7px}
+  .ship .ver{align-self:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--muted);
+    border:1px solid var(--line-2);border-radius:5px;padding:2px 7px;font-variant-numeric:tabular-nums}
+  .ship .pcomp{margin:13px 0 0;border-top:1px solid var(--line-2);padding-top:12px}
+  .ship .pcomp summary{font-family:var(--mono);font-size:11.5px;color:var(--muted);cursor:pointer;list-style:none;
+    display:flex;align-items:center;gap:8px}
+  .ship .pcomp summary::-webkit-details-marker{display:none}
+  .ship .pcomp summary::before{content:"\25B8";color:var(--ac);font-size:11px;transition:transform .2s}
+  .ship .pcomp[open] summary::before{transform:rotate(90deg)}
+  .ship .pcomp summary:hover{color:var(--fg)}
+  .ship .compbody{margin-top:11px;display:flex;flex-direction:column;gap:8px}
+  .ship .compcat{display:grid;grid-template-columns:68px 1fr;gap:11px;align-items:baseline;font-family:var(--mono);font-size:11.5px}
+  .ship .compk{color:var(--ac)}
+  .ship .compv{color:var(--muted);word-break:break-word;line-height:1.55}
 
   /* ---- voyage ---- */
   .voyage{margin-top:26px;position:relative}
@@ -410,7 +423,7 @@
   }
   addEventListener("hashchange", route);
 
-  const cardNav=(el, slug)=> el.addEventListener("click",(e)=>{ if(e.target.closest("button,a,code")) return; if(PLUGINS[slug] && PLUGINS[slug].spoke){ window.location.href=docsUrl(slug); } else { location.hash="#/"+slug; } });
+  const cardNav=(el, slug)=> el.addEventListener("click",(e)=>{ if(e.target.closest("button,a,code,details")) return; if(PLUGINS[slug] && PLUGINS[slug].spoke){ window.location.href=docsUrl(slug); } else { location.hash="#/"+slug; } });
 
   // ---- catalog: render grouped cards from PLUGINS (single source — no HTML dupe) ----
   const GROUPS=[
@@ -427,6 +440,12 @@
     : `var(${token})`;
   const PLUGIN_AC={};
   GROUPS.forEach(g=> g.slugs.forEach((slug,idx)=>{ PLUGIN_AC[slug]=accentVar(g.ac,idx); }));
+  // ---- artifact inventory (from plugins.js `components`, derived from suite/artifacts.csv) ----
+  const COMP_ORDER=["skills","rules","hooks","commands","agents"];
+  const compSummary=(c)=> COMP_ORDER.filter(k=>c[k]&&c[k].length)
+    .map(k=>`${c[k].length} ${c[k].length===1?k.slice(0,-1):k}`).join(" · ");
+  const compDetails=(c)=> COMP_ORDER.filter(k=>c[k]&&c[k].length).map(k=>
+    `<div class="compcat"><span class="compk">${k}</span><span class="compv">${c[k].join(", ")}</span></div>`).join("");
   const catCard=(slug)=>{
     const p=PLUGINS[slug];
     const cmd=`claude plugin install ${slug}@chris-peterson`;
@@ -440,9 +459,11 @@
     const detailLabel = p.spoke ? "full session + docs →" : "details →";
     return `<article class="ship" data-slug="${slug}" style="--ac:${PLUGIN_AC[slug]}">`+
       `<div class="head"><img src="https://chris-peterson.github.io/${slug}/favicon.svg" alt="">`+
-      `<a class="pnamelink" href="${href}"><h3>${slug}</h3></a>`+(p.cli?`<span class="cli">cli</span>`:``)+`</div>`+
+      `<a class="pnamelink" href="${href}"><h3>${slug}</h3></a>`+(p.cli?`<span class="cli">cli</span>`:``)+
+      (p.version?`<span class="ver">v${p.version}</span>`:``)+`</div>`+
       `<p class="what">${p.pitch||p.what}</p>`+
       (p.with?`<p class="cwith">works with <b>${p.with}</b></p>`:``)+
+      (p.components?`<details class="pcomp"><summary>${compSummary(p.components)}</summary><div class="compbody">${compDetails(p.components)}</div></details>`:``)+
       `<div class="pacts"><button class="cmdcopy" data-cmd="${cmd}"><span class="cc-cmd">${cmdHtml}</span><span class="cc-ico">${COPY_ICO}</span></button>`+
       `<a class="pnamelink cdetails" href="${href}">${detailLabel}</a></div></article>`;
   };
