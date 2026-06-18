@@ -70,10 +70,16 @@
   .lede b{color:var(--fg);font-weight:600}
   .lede strong{color:var(--gold);font-weight:700;font-style:normal}
   .lede strong.claude{color:var(--claude)}
-  .lede .g-safe{color:var(--red)} .lede .g-bear{color:var(--purple)} .lede .g-dock{color:var(--cyan)} .lede .g-build{color:var(--green)}
-  .lede a.g-safe,.lede a.g-bear,.lede a.g-dock,.lede a.g-build{font-weight:500;text-decoration:none;text-underline-offset:3px}
-  .lede a.g-safe:hover,.lede a.g-bear:hover,.lede a.g-dock:hover,.lede a.g-build:hover{text-decoration:underline}
+  .g-safe{color:var(--red)} .g-bear{color:var(--purple)} .g-dock{color:var(--cyan)} .g-build{color:var(--green)}
+  a.g-safe,a.g-bear,a.g-dock,a.g-build{font-weight:500;text-decoration:none;text-underline-offset:3px}
+  a.g-safe:hover,a.g-bear:hover,a.g-dock:hover,a.g-build:hover{text-decoration:underline}
   .tagline .cy{color:var(--cyan);font-style:italic}
+  .lede-note{position:relative;margin:24px 0 0;max-width:60ch;color:var(--muted);font-size:15.5px;line-height:1.6;
+    background:linear-gradient(135deg,rgba(40,42,54,.55),rgba(33,34,44,.2));
+    border:1px solid var(--line-2);border-radius:12px;padding:15px 20px 15px 24px;overflow:hidden}
+  .lede-note::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+    background:linear-gradient(180deg,var(--guard),var(--orient),var(--ship),var(--build))}
+  .lede-note b{color:var(--fg);font-weight:600}
 
   section{padding:40px 0;position:relative}
   #install{padding:30px 0 40px}
@@ -108,14 +114,16 @@
     padding-bottom:11px;border-bottom:1px solid color-mix(in srgb,var(--ac) 24%,transparent)}
   .fgroup .gtag{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
     color:var(--abyss);background:var(--ac);border-radius:5px;padding:3px 9px;font-weight:700}
-  .fgroup .gname{font-family:var(--disp);font-weight:600;font-size:22px;color:var(--fg)}
-  .fgroup .glead{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 40%,transparent);border-radius:999px;padding:3px 9px}
+  .fgroup a.gtag{text-decoration:none;cursor:pointer;transition:filter .2s}
+  .fgroup a.gtag::after{content:"#";margin-left:7px;opacity:0;transition:opacity .2s}
+  .fgroup a.gtag:hover{filter:brightness(1.12);text-decoration:none}
+  .fgroup a.gtag:hover::after{opacity:.5}
   .fgroup .gwhy{color:var(--muted);font-size:14px}
   .fleet{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
   .fleet.solo{grid-template-columns:1fr}
   @media(max-width:780px){.fleet{grid-template-columns:1fr}}
 
-  .ship{position:relative;border:1px solid var(--line-2);border-radius:14px;padding:22px;
+  .ship{position:relative;display:flex;flex-direction:column;border:1px solid var(--line-2);border-radius:14px;padding:22px;
     background:var(--deep);overflow:hidden;transition:transform .4s cubic-bezier(.2,.7,.2,1),border-color .4s}
   .ship::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--ac);opacity:.7}
   .ship:hover{transform:translateY(-5px);border-color:color-mix(in srgb,var(--ac) 45%,transparent)}
@@ -128,8 +136,6 @@
   .ship .what{margin:11px 0 0;color:var(--fg);font-size:15px;line-height:1.55}
   .ship .cwith{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin:9px 0 0}
   .ship .cwith b{color:var(--ac);font-weight:600}
-  .ship .cdetails{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--muted);text-decoration:none;white-space:nowrap;margin-left:auto}
-  .ship .cdetails:hover{color:var(--ac)}
   .ship .cmds{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 0}
   .ship .cmd{font-family:var(--mono);font-size:11.5px;color:var(--ac);
     background:color-mix(in srgb,var(--ac) 9%,transparent);
@@ -178,8 +184,8 @@
   .install .ibody code{font-family:var(--mono);font-size:13.5px;color:var(--fg);line-height:1.7}
   .install .ibody .pr{color:var(--green)}
 
-  /* copyable command + docs links */
-  .pacts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:13px 0 0}
+  /* copyable command — pinned full-width to the bottom of each card */
+  .pacts{margin-top:auto;padding-top:16px}
   .cmdcopy{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;cursor:pointer;text-align:left;
     background:color-mix(in srgb,var(--ac) 8%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);
     border-radius:8px;padding:7px 11px;color:var(--fg);transition:border-color .2s;max-width:100%}
@@ -188,7 +194,7 @@
   .cmdcopy .cc-cmd .cc-at{display:inline-block;padding-left:2ch}
   .cmdcopy .cc-ico{color:var(--ac);border-left:1px solid var(--line-2);padding-left:10px;flex:none;display:inline-flex;align-items:center}
   .cmdcopy .cc-ico svg{display:block}
-  .ship .cmdcopy{max-width:100%;overflow:hidden}
+  .ship .cmdcopy{width:100%;max-width:100%;justify-content:space-between;overflow:hidden}
   .cmdcopy.solo .cc-ico{border-left:0;padding-left:0}
   .cmdcopy.done{border-color:color-mix(in srgb,var(--green) 55%,transparent)}
   .cmdcopy.done .cc-ico{color:var(--green)}
@@ -198,11 +204,10 @@
   .pnamelink:hover .goarrow{opacity:1}
   .srclink{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.05em;align-self:center}
   .srclink:hover{color:var(--ac);text-decoration:underline;text-underline-offset:3px}
-  .ship .head .srclink{margin-left:auto}
+  .ship .head .srclink{margin-left:auto;display:inline-flex;align-items:center;color:var(--muted)}
+  .ship .head .srclink:hover{color:var(--ac);text-decoration:none}
+  .ship .head .srclink svg{display:block}
 
-  footer{padding:54px 0 64px;color:var(--muted);font-family:var(--mono);font-size:12.5px;letter-spacing:.05em;text-align:center}
-  footer .fmark{display:block;margin:0 auto 16px;width:30px;height:30px;opacity:.7}
-  footer a{color:var(--muted)}
 
   .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
   .reveal.in{opacity:1;transform:none}
@@ -300,7 +305,7 @@
     <div class="nav-links">
       <a href="#install">install</a>
       <a href="#plugins">plugins</a>
-      <a href="#growth">growth</a>
+      <a href="#growth">what's new</a>
     </div>
   </div>
 </nav>
@@ -315,7 +320,8 @@
         <p class="eyebrow">Claude Code plugins</p>
         <h1 class="title">bridge<span class="ai">.ai</span></h1>
         <p class="tagline">Tools for navigating the uncharted waters of <span class="cy">AI-assisted development</span>.</p>
-        <p class="lede"><strong class="claude">Claude</strong> writes code faster than <strong>you</strong> can track. These plugins keep you in charge: <a class="g-safe" href="#g-safe">block unsafe commands</a>, <a class="g-bear" href="#g-bearings">keep your place across parallel work</a>, <a class="g-dock" href="#g-dock">review the diff and land clean commits and change requests</a>, and <a class="g-build" href="#g-build">build to a plan, keeping what you learn</a>.</p>
+        <p class="lede"><strong class="claude">Claude</strong> writes code faster than any of us are used to — a force multiplier increasing <b>speed</b> without confirming <b>direction</b>.</p>
+        <p class="lede-note"><b>AI-assistance does not shift accountability.</b><br>Use these instruments to <a class="g-safe" href="#g-safe">stay safe</a>, <a class="g-bear" href="#g-bearings">keep your bearings</a>, <a class="g-dock" href="#g-dock">hit your waypoints</a>, and re-route based on <a class="g-build" href="#g-build">lessons learned</a>.</p>
       </div>
       <svg class="heromark" viewBox="0 0 41.8 34" aria-hidden="true"><use href="#mark"/></svg>
     </div>
@@ -325,7 +331,7 @@
   <!-- ============ INSTALL ============ -->
   <section id="install">
     <h2>Install</h2>
-    <p class="sub">Register the marketplace once. After that, install any plugin with <code>claude plugin install &lt;name&gt;@chris-peterson</code> — each one below carries its exact command and a link to full docs.</p>
+    <p class="sub">Register the marketplace once, then choose your <a href="#plugins">plugins</a>.</p>
     <div class="install" style="--ac:var(--cyan)">
       <div class="ibar"><i></i><i></i><i></i><span class="ttl">one-time setup</span></div>
       <div class="ibody">
@@ -340,7 +346,6 @@
   <!-- ============ PLUGINS (grouped by capability) ============ -->
   <section id="plugins">
     <h2>Plugins</h2>
-    <p class="sub">Grouped by what they let you do. Pick what you need — one, some, or all.</p>
 
     <div id="catalog"></div>
   </section>
@@ -349,10 +354,9 @@
 
   <!-- ============ GROWTH (artifact counts over time) ============ -->
   <section id="growth">
-    <h2>The suite over time</h2>
-    <p class="sub">How the suite has grown — every skill, rule, hook, command, and agent, reconstructed from each plugin's git history. See when capabilities landed and how the suite expanded over time; the changelog below records what each release added or removed.</p>
-    <div class="growthbox"><canvas id="growthchart"></canvas></div>
+    <h2>What's new</h2>
     <div class="changelog" id="changelog"></div>
+    <div class="growthbox"><canvas id="growthchart"></canvas></div>
   </section>
 
   </div><!-- /#home -->
@@ -360,12 +364,6 @@
   <section id="pluginview" class="pview" hidden></section>
 
 </div>
-
-<footer>
-  <svg class="fmark" viewBox="0 0 41.8 34"><use href="#mark"/></svg>
-  bridge.ai · plugins for AI-assisted development<br>
-  <a href="https://github.com/chris-peterson/claude-marketplace">github.com/chris-peterson/claude-marketplace</a>
-</footer>
 
 <!-- Generated by suite/build-spa-data.py from each plugin's plugin.yml. -->
 <script src="plugins.js"></script>
@@ -377,6 +375,7 @@
   const docsUrl = (s)=>`https://chris-peterson.github.io/${s}/#/`;
   const srcUrl  = (s)=>`https://github.com/chris-peterson/${s}`;
   const COPY_ICO = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+  const GH_ICO = `<svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 .2a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.13 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.11.16 1.93.08 2.13.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A8 8 0 0 0 8 .2Z"/></svg>`;
 
 
   // The session renderer (window.mountSession) is loaded from the shared
@@ -423,14 +422,14 @@
   }
   addEventListener("hashchange", route);
 
-  const cardNav=(el, slug)=> el.addEventListener("click",(e)=>{ if(e.target.closest("button,a,code,details")) return; if(PLUGINS[slug] && PLUGINS[slug].spoke){ window.location.href=docsUrl(slug); } else { location.hash="#/"+slug; } });
+  const cardNav=(el, slug)=> el.addEventListener("click",(e)=>{ if(e.target.closest("button,a,code,details")) return; if(window.getSelection && String(window.getSelection()).trim()) return; /* a drag-select ends in a click — let text selection win over navigation */ if(PLUGINS[slug] && PLUGINS[slug].spoke){ window.location.href=docsUrl(slug); } else { location.hash="#/"+slug; } });
 
   // ---- catalog: render grouped cards from PLUGINS (single source — no HTML dupe) ----
   const GROUPS=[
-    {key:"safe",     ac:"--guard",  tag:"Stay safe",          name:"An extra safeguard", lead:true, slugs:["ClaudeWatch","shipshape"]},
-    {key:"bearings", ac:"--orient", tag:"Keep your bearings", name:"Know where you are",                        slugs:["tack","beacon"]},
-    {key:"dock",     ac:"--ship",   tag:"Create checkpoints", name:"Review every change before it lands",       slugs:["anchor","moor"]},
-    {key:"build",    ac:"--build",  tag:"Learn as you go",    name:"Measure twice; cut once",                    slugs:["logbook","sextant"]}
+    {key:"safe",     ac:"--guard",  tag:"Stay safe",          slugs:["ClaudeWatch","shipshape"]},
+    {key:"bearings", ac:"--orient", tag:"Keep your bearings",            slugs:["tack","beacon"]},
+    {key:"dock",     ac:"--ship",   tag:"Hit your waypoints",            slugs:["anchor","moor"]},
+    {key:"build",    ac:"--build",  tag:"Lessons learned",               slugs:["logbook","sextant"]}
   ];
   // each plugin's accent = its category color, lightened a step per same-category
   // sibling so the two cards in a group are distinct — matching the growth chart's
@@ -449,27 +448,22 @@
   const catCard=(slug)=>{
     const p=PLUGINS[slug];
     const cmd=`claude plugin install ${slug}@chris-peterson`;
-    // Display the command on two lines, breaking after `install`, so the full
-    // <plugin>@chris-peterson stays visible in the narrow card; the copied text
-    // (data-cmd) is the verbatim single line, so a terminal paste is unaffected.
-    const cmdHtml=`claude plugin install<br><span class="cc-at">${slug}@chris-peterson</span>`;
-    // Migrated plugins (suite.spoke) link out to the full session on their docs
-    // site; the rest open the in-hub detail view.
+    // Spoke plugins open their own docs site on card click; the rest open the
+    // in-hub detail view. Clicking the card itself navigates (see cardNav).
     const href = p.spoke ? docsUrl(slug) : `#/${slug}`;
-    const detailLabel = p.spoke ? "full session + docs →" : "details →";
     return `<article class="ship" data-slug="${slug}" style="--ac:${PLUGIN_AC[slug]}">`+
       `<div class="head"><img src="https://chris-peterson.github.io/${slug}/favicon.svg" alt="">`+
       `<a class="pnamelink" href="${href}"><h3>${slug}</h3></a>`+(p.cli?`<span class="cli">cli</span>`:``)+
-      (p.version?`<span class="ver">v${p.version}</span>`:``)+`</div>`+
+      (p.version?`<span class="ver">v${p.version}</span>`:``)+
+      `<a class="srclink" href="${srcUrl(slug)}" target="_blank" rel="noopener" aria-label="${slug} source on GitHub">${GH_ICO}</a></div>`+
       `<p class="what">${p.pitch||p.what}</p>`+
       (p.with?`<p class="cwith">works with <b>${p.with}</b></p>`:``)+
       (p.components?`<details class="pcomp"><summary>${compSummary(p.components)}</summary><div class="compbody">${compDetails(p.components)}</div></details>`:``)+
-      `<div class="pacts"><button class="cmdcopy" data-cmd="${cmd}"><span class="cc-cmd">${cmdHtml}</span><span class="cc-ico">${COPY_ICO}</span></button>`+
-      `<a class="pnamelink cdetails" href="${href}">${detailLabel}</a></div></article>`;
+      `<div class="pacts"><button class="cmdcopy" data-cmd="${cmd}"><span class="cc-cmd">claude plugin install<br>${slug}@chris-peterson</span><span class="cc-ico">${COPY_ICO}</span></button></div></article>`;
   };
   document.getElementById("catalog").innerHTML = GROUPS.map(g=>
     `<div class="fgroup reveal" id="g-${g.key}" style="--ac:var(${g.ac})">`+
-      `<div class="ghead"><span class="gtag">${g.tag}</span><span class="gname">${g.name}</span>${g.lead?'<span class="glead">recommended first</span>':''}</div>`+
+      `<div class="ghead"><a class="gtag" href="#g-${g.key}">${g.tag}</a></div>`+
       `<div class="fleet${g.slugs.length===1?' solo':''}">${g.slugs.map(catCard).join("")}</div></div>`
   ).join("");
   document.querySelectorAll("#catalog .ship").forEach(c=> cardNav(c, c.dataset.slug));
