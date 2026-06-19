@@ -49,6 +49,13 @@ def members_at(name: str, ref: str = "HEAD") -> dict[str, set]:
     for path in out.splitlines():
         seg = path.split("/", 2)
         if len(seg) >= 2 and seg[0] in members:
+            # rules/ holds two unrelated things across the suite: Claude-facing
+            # ambient rules (markdown prose, injected at session start) and
+            # plugin-internal config such as ClaudeWatch's watch-*.yml rule sets.
+            # Only the markdown rules are plugin artifacts; skip the rest so
+            # config files aren't miscounted as rules.
+            if seg[0] == "rules" and not path.endswith(".md"):
+                continue
             members[seg[0]].add(os.path.splitext(seg[1])[0])
     return members
 

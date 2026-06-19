@@ -24,7 +24,7 @@
     --body:'Spline Sans',ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   }
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
+  html{scroll-behavior:smooth;color-scheme:dark}
   body{margin:0;background:var(--abyss);color:var(--fg);font-family:var(--body);
     font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
   body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
@@ -72,23 +72,30 @@
     font-size:clamp(20px,2.5vw,28px);line-height:1.3;color:var(--fg);max-width:40ch;margin:22px 0 0}
   .lede{margin:20px 0 0;max-width:62ch;color:var(--muted)}
   .lede b{color:var(--fg);font-weight:600}
+  .lede .caveat{display:block;margin-top:.7em}
   .lede strong{color:var(--gold);font-weight:700;font-style:normal}
   .lede strong.claude{color:var(--claude)}
   .g-safe{color:var(--red)} .g-bear{color:var(--purple)} .g-dock{color:var(--cyan)} .g-build{color:var(--green)}
   a.g-safe,a.g-bear,a.g-dock,a.g-build{font-weight:500;text-decoration:none;text-underline-offset:3px}
   a.g-safe:hover,a.g-bear:hover,a.g-dock:hover,a.g-build:hover{text-decoration:underline}
   .tagline .cy{color:var(--cyan);font-style:italic}
-  .lede-note{position:relative;margin:24px 0 0;max-width:60ch;color:var(--muted);font-size:15.5px;line-height:1.6;
+  .lede-note{position:relative;margin:24px 0 0;color:var(--muted);font-size:15.5px;line-height:1.6;
     background:linear-gradient(135deg,rgba(40,42,54,.55),rgba(33,34,44,.2));
-    border:1px solid var(--line-2);border-radius:12px;padding:15px 20px 15px 24px;overflow:hidden}
+    border:1px solid var(--line-2);border-radius:12px;padding:17px 22px 17px 26px;overflow:hidden}
   .lede-note::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
-    background:linear-gradient(180deg,var(--guard),var(--orient),var(--ship),var(--build))}
+    background:linear-gradient(180deg,var(--guard) 0 25%,var(--orient) 25% 50%,var(--ship) 50% 75%,var(--build) 75% 100%)}
   .lede-note b{color:var(--fg);font-weight:600}
 
-  section{padding:40px 0;position:relative}
-  #install{padding:30px 0 40px}
+  section{padding:22px 0;position:relative}
+  #install{padding:16px 0 22px}
   h2{font-family:var(--disp);font-weight:600;font-size:clamp(30px,4.4vw,44px);
     letter-spacing:-.02em;line-height:1.04;margin:8px 0 8px;color:var(--fg)}
+  h2 a.secanchor{color:inherit;text-decoration:none}
+  h2 a.secanchor::after{content:"#";margin-left:.26em;color:var(--cyan);opacity:0;font-weight:400;
+    font-size:.62em;vertical-align:.08em;transition:opacity .2s}
+  h2 a.secanchor:hover{text-decoration:none}
+  h2 a.secanchor:hover::after{opacity:.5}
+  h2 a.secanchor.copied::after{content:"\2713";opacity:1;color:var(--green)}
   .sub{color:var(--muted);max-width:66ch;margin:0 0 8px}
   .sub b{color:var(--fg);font-weight:600}
   .sub a{color:var(--muted);text-decoration:underline;text-decoration-color:var(--faint);text-underline-offset:3px}
@@ -178,6 +185,8 @@
 
   /* install block */
   .install{margin-top:28px;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--abyss)}
+  /* size the install panel to its command rather than the full column */
+  #install .install{width:fit-content;max-width:100%}
   .install .ibar{display:flex;align-items:center;gap:8px;padding:11px 15px;border-bottom:1px solid var(--line-2);background:rgba(255,255,255,.015)}
   .install .ibar i{width:11px;height:11px;border-radius:50%;display:inline-block;background:var(--hull)}
   .install .ibar i:nth-child(1){background:var(--red)}
@@ -217,6 +226,31 @@
   .reveal.in{opacity:1;transform:none}
   @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
 
+  /* orchestrated hero entrance — one staggered reveal on load, the page's
+     high-impact moment. each line rises as the eye reaches it; the mark blooms
+     in last. gated on no-preference so reduced-motion users see it static. */
+  @keyframes riseIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:none}}
+  @keyframes markIn{from{opacity:0;transform:translateY(15px) scale(.96);filter:drop-shadow(0 0 0 rgba(139,233,253,0))}
+    to{opacity:1;transform:none;filter:drop-shadow(0 0 32px rgba(139,233,253,.12))}}
+  @media(prefers-reduced-motion:no-preference){
+    .hero .eyebrow,.hero h1.title,.hero .tagline,.hero .lede,.hero .lede-note,.hero .bearings{
+      opacity:0;animation:riseIn .68s cubic-bezier(.2,.7,.2,1) both}
+    .hero .eyebrow{animation-delay:.04s}
+    .hero h1.title{animation-delay:.12s}
+    .hero .tagline{animation-delay:.26s}
+    .hero .lede{animation-delay:.38s}
+    .hero .lede-note{animation-delay:.5s}
+    .hero .bearings{animation-delay:.62s}
+    .heromark{animation:markIn .9s cubic-bezier(.2,.7,.2,1) .22s both}
+  }
+
+  /* keyboard focus — a refined accent ring instead of the UA default, keyed to
+     each surface's --ac so it reads as part of the system. pointer clicks stay
+     ring-free via :focus-visible. */
+  a:focus-visible,button:focus-visible,summary:focus-visible,.ship:focus-visible{
+    outline:2px solid var(--ac,var(--cyan));outline-offset:3px;border-radius:4px}
+  .cmdcopy:focus-visible,.ship:focus-visible{outline-offset:2px;border-radius:9px}
+
   /* ---------- SPA: routing + plugin view ---------- */
   [hidden]{display:none!important}
   .ship,.prow{cursor:pointer}
@@ -249,7 +283,12 @@
   #growth .growthbox{position:relative;height:380px;margin-top:26px;
     border:1px solid var(--line-2);border-radius:14px;background:var(--deep);padding:18px}
   .changelog{margin-top:24px;border:1px solid var(--line-2);border-radius:14px;
-    background:var(--deep);overflow:hidden;max-height:360px;overflow-y:auto}
+    background:var(--deep);overflow:hidden;max-height:360px;overflow-y:auto;
+    scrollbar-width:thin;scrollbar-color:var(--line-h) transparent}
+  .changelog::-webkit-scrollbar{width:11px}
+  .changelog::-webkit-scrollbar-track{background:transparent}
+  .changelog::-webkit-scrollbar-thumb{background:var(--line-h);border-radius:8px;border:3px solid var(--deep)}
+  .changelog::-webkit-scrollbar-thumb:hover{background:var(--muted)}
   .changelog .clrow{display:grid;grid-template-columns:92px 104px 1fr;gap:14px;align-items:baseline;
     padding:9px 18px;border-bottom:1px solid var(--line-2);font-family:var(--mono);font-size:12.5px}
   .changelog .clrow:last-child{border-bottom:0}
@@ -300,10 +339,12 @@
       <rect x="30.5" y="20.5" width="4.41" height="1.6" rx="0.8"/>
       <rect x="30.5" y="23.8" width="4.86" height="1.6" rx="0.8"/>
     </g>
-    <rect x="3.7"  y="7.3"  width="3.04" height="1.6" rx="0.8" fill="var(--cyan)"/>
-    <rect x="3.7"  y="20.5" width="3.95" height="1.6" rx="0.8" fill="var(--red)"/>
-    <rect x="17.1" y="17.2" width="4.41" height="1.6" rx="0.8" fill="var(--green)"/>
+    <!-- the four plugin interjections, ordered top-to-bottom to echo the site's
+         flow: safe (red) → bearings (purple) → waypoints (cyan) → learn (green) -->
+    <rect x="3.7"  y="7.3"  width="3.04" height="1.6" rx="0.8" fill="var(--red)"/>
     <rect x="30.5" y="10.6" width="6.99" height="1.6" rx="0.8" fill="var(--purple)"/>
+    <rect x="17.1" y="17.2" width="4.41" height="1.6" rx="0.8" fill="var(--cyan)"/>
+    <rect x="3.7"  y="20.5" width="3.95" height="1.6" rx="0.8" fill="var(--green)"/>
   </symbol>
 </svg>
 
@@ -314,7 +355,7 @@
       <div class="nav-links">
         <a href="#install">install</a>
         <a href="#plugins">plugins</a>
-        <a href="#growth">what's new</a>
+        <a href="#growth">changelog</a>
       </div>
       <a class="nav-gh" href="https://github.com/chris-peterson/claude-marketplace" target="_blank" rel="noopener" aria-label="GitHub repository"><svg viewBox="0 0 16 16" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M8 .2a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.13 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.11.16 1.93.08 2.13.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A8 8 0 0 0 8 .2Z"/></svg></a>
     </div>
@@ -330,9 +371,9 @@
       <div>
         <p class="eyebrow">Claude Code plugins</p>
         <h1 class="title">bridge<span class="ai">.ai</span></h1>
-        <p class="tagline">Tools for navigating the uncharted waters of <span class="cy">AI-assisted development</span>.</p>
-        <p class="lede"><strong class="claude">Claude</strong> writes code faster than any of us are used to — a force multiplier increasing <b>speed</b> without confirming <b>direction</b>.</p>
-        <p class="lede-note"><b>AI-assistance does not shift accountability.</b><br>Use these instruments to <a class="g-safe" href="#g-safe">stay safe</a>, <a class="g-bear" href="#g-bearings">keep your bearings</a>, <a class="g-dock" href="#g-dock">hit your waypoints</a>, and re-route based on <a class="g-build" href="#g-build">lessons learned</a>.</p>
+        <p class="tagline">Tools for navigating the uncharted waters of <span class="cy">AI-assisted software development</span>.</p>
+        <p class="lede"><strong class="claude">Claude</strong> writes code faster than any of us are used to — a force multiplier increasing <b>speed</b> without scrutinizing <b>direction</b>.<span class="caveat">Despite this higher velocity — using AI does <b>NOT</b> shift accountability.</span></p>
+        <p class="lede-note">These tools help you <a class="g-safe" href="#g-safe">stay safe</a>, <a class="g-bear" href="#g-bearings">keep your bearings</a>, and <a class="g-dock" href="#g-dock">reach waypoints</a>.<br>On the voyage, you'll learn stuff; <a class="g-build" href="#g-build">write it down</a>.</p>
       </div>
       <svg class="heromark" viewBox="0 0 41.8 34" aria-hidden="true"><use href="#mark"/></svg>
     </div>
@@ -341,7 +382,7 @@
 
   <!-- ============ INSTALL ============ -->
   <section id="install">
-    <h2>Install</h2>
+    <h2><a class="secanchor" href="#install">Install</a></h2>
     <p class="sub">Register the marketplace once, then choose your <a href="#plugins">plugins</a>.</p>
     <div class="install" style="--ac:var(--cyan)">
       <div class="ibar"><i></i><i></i><i></i><span class="ttl">one-time setup</span></div>
@@ -356,7 +397,7 @@
 
   <!-- ============ PLUGINS (grouped by capability) ============ -->
   <section id="plugins">
-    <h2>Plugins</h2>
+    <h2><a class="secanchor" href="#plugins">Plugins</a></h2>
 
     <div id="catalog"></div>
   </section>
@@ -365,7 +406,7 @@
 
   <!-- ============ GROWTH (artifact counts over time) ============ -->
   <section id="growth">
-    <h2>What's new</h2>
+    <h2><a class="secanchor" href="#growth">Changelog</a></h2>
     <div class="changelog" id="changelog"></div>
     <div class="growthbox"><canvas id="growthchart"></canvas></div>
   </section>
@@ -439,8 +480,8 @@
   const GROUPS=[
     {key:"safe",     ac:"--guard",  tag:"Stay safe",          slugs:["ClaudeWatch","shipshape"]},
     {key:"bearings", ac:"--orient", tag:"Keep your bearings",            slugs:["tack","beacon"]},
-    {key:"dock",     ac:"--ship",   tag:"Hit your waypoints",            slugs:["anchor","moor"]},
-    {key:"build",    ac:"--build",  tag:"Lessons learned",               slugs:["logbook","sextant"]}
+    {key:"dock",     ac:"--ship",   tag:"Reach your waypoints",          slugs:["anchor","moor"]},
+    {key:"build",    ac:"--build",  tag:"Write it down",                 slugs:["logbook","sextant"]}
   ];
   // each plugin's accent = its category color, lightened a step per same-category
   // sibling so the two cards in a group are distinct — matching the growth chart's
@@ -484,6 +525,14 @@
     const btn=e.target.closest(".cmdcopy"); if(!btn) return;
     e.stopPropagation();
     navigator.clipboard.writeText(btn.dataset.cmd).then(()=>{ btn.classList.add("done"); setTimeout(()=>btn.classList.remove("done"),1500); });
+  });
+
+  // ---- section headings: clicking the heading anchor copies its deep link and
+  // jumps to the section — same `#`-on-hover affordance as the category tags. ----
+  document.addEventListener("click",(e)=>{
+    const a=e.target.closest("h2 a.secanchor"); if(!a) return;
+    const url=location.origin+location.pathname+a.getAttribute("href");
+    navigator.clipboard.writeText(url).then(()=>{ a.classList.add("copied"); setTimeout(()=>a.classList.remove("copied"),1400); });
   });
 
   // ---- growth: artifact counts over time (lazy: builds when scrolled in) ----
