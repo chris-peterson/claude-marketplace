@@ -54,6 +54,10 @@
   .nav-links{display:flex;align-items:center;gap:24px;font-family:var(--mono);font-size:12.5px;letter-spacing:.07em}
   .nav-links a{color:var(--muted);padding:4px 0}.nav-links a:hover{color:var(--fg);text-decoration:none}
   @media(max-width:720px){.nav-links{display:none}}
+  .nav-right{display:flex;align-items:center;gap:22px}
+  .nav-gh{display:inline-flex;align-items:center;color:var(--muted)}
+  .nav-gh:hover{color:var(--fg);text-decoration:none}
+  .nav-gh svg{display:block}
   section[id]{scroll-margin-top:70px}
 
   header.hero{padding:44px 0 26px;position:relative}
@@ -191,7 +195,7 @@
     border-radius:8px;padding:7px 11px;color:var(--fg);transition:border-color .2s;max-width:100%}
   .cmdcopy:hover{border-color:color-mix(in srgb,var(--ac) 55%,transparent)}
   .cmdcopy .cc-cmd{color:var(--fg);white-space:normal;min-width:0;line-height:1.5}
-  .cmdcopy .cc-cmd .cc-at{display:inline-block;padding-left:2ch}
+  .cmdcopy .cc-cmd .cc-nb{white-space:nowrap}
   .cmdcopy .cc-ico{color:var(--ac);border-left:1px solid var(--line-2);padding-left:10px;flex:none;display:inline-flex;align-items:center}
   .cmdcopy .cc-ico svg{display:block}
   .ship .cmdcopy{width:100%;max-width:100%;justify-content:space-between;overflow:hidden}
@@ -255,6 +259,10 @@
   .changelog .clchange .add{color:var(--green)}
   .changelog .clchange .rem{color:var(--red)}
   .changelog .clchange .init{color:var(--muted);font-style:italic}
+  .changelog .clrow.release{background:color-mix(in srgb,var(--gold) 7%,transparent)}
+  .changelog .clrelease{color:var(--gold);font-weight:600;text-decoration:none;white-space:nowrap}
+  .changelog .clrelease:hover{text-decoration:underline;text-underline-offset:2px}
+  .changelog .clsep{color:var(--faint)}
   @media(max-width:560px){.changelog .clrow{grid-template-columns:78px 1fr;row-gap:3px}
     .changelog .clchange{grid-column:1/-1}}
 
@@ -302,10 +310,13 @@
 <nav class="sitenav">
   <div class="nav-inner">
     <a class="brand" href="#top"><svg viewBox="0 0 41.8 34"><use href="#mark"/></svg><span>bridge<b>.ai</b></span></a>
-    <div class="nav-links">
-      <a href="#install">install</a>
-      <a href="#plugins">plugins</a>
-      <a href="#growth">what's new</a>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="#install">install</a>
+        <a href="#plugins">plugins</a>
+        <a href="#growth">what's new</a>
+      </div>
+      <a class="nav-gh" href="https://github.com/chris-peterson/claude-marketplace" target="_blank" rel="noopener" aria-label="GitHub repository"><svg viewBox="0 0 16 16" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M8 .2a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.13 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.11.16 1.93.08 2.13.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A8 8 0 0 0 8 .2Z"/></svg></a>
     </div>
   </div>
 </nav>
@@ -459,7 +470,7 @@
       `<p class="what">${p.pitch||p.what}</p>`+
       (p.with?`<p class="cwith">works with <b>${p.with}</b></p>`:``)+
       (p.components?`<details class="pcomp"><summary>${compSummary(p.components)}</summary><div class="compbody">${compDetails(p.components)}</div></details>`:``)+
-      `<div class="pacts"><button class="cmdcopy" data-cmd="${cmd}"><span class="cc-cmd">claude plugin install<br>${slug}@chris-peterson</span><span class="cc-ico">${COPY_ICO}</span></button></div></article>`;
+      `<div class="pacts"><button class="cmdcopy" data-cmd="${cmd}"><span class="cc-cmd"><span class="cc-nb">claude plugin install</span> <span class="cc-nb">${slug}@chris-peterson</span></span><span class="cc-ico">${COPY_ICO}</span></button></div></article>`;
   };
   document.getElementById("catalog").innerHTML = GROUPS.map(g=>
     `<div class="fgroup reveal" id="g-${g.key}" style="--ac:var(${g.ac})">`+
@@ -489,10 +500,12 @@
         const base=hex(c.token); return c.shade ? lighten(base, .26+.2*c.shade) : base; };
       document.getElementById("changelog").innerHTML = data.changelog.map((r)=>{
         const col=colorFor(r.plugin);
-        const change = r.change==="init"
-          ? `<span class="init">created</span>`
-          : r.change.split(" ").map((t)=> t[0]==="+"?`<span class="add">${t}</span>`:`<span class="rem">${t}</span>`).join(" ");
-        return `<div class="clrow"><span class="cldate">${r.date}</span><span class="clplug" style="color:${col}">${r.plugin}</span><span class="clchange">${change}</span></div>`;
+        const rels=(r.releases||[]).map((x)=>`<a class="clrelease" href="${x.url}" target="_blank" rel="noopener">released ${x.tag} ↗</a>`);
+        let chg="";
+        if(r.change==="init") chg=`<span class="init">created</span>`;
+        else if(r.change) chg=r.change.split(" ").map((t)=> t[0]==="+"?`<span class="add">${t}</span>`:`<span class="rem">${t}</span>`).join(" ");
+        const inner=[...rels,chg].filter(Boolean).join(`<span class="clsep"> · </span>`);
+        return `<div class="clrow${rels.length?" release":""}"><span class="cldate">${r.date}</span><span class="clplug" style="color:${col}">${r.plugin}</span><span class="clchange">${inner}</span></div>`;
       }).join("");
       const datasets = data.plugins.map((p)=>({label:p, data:data.series[p],
         backgroundColor:colorFor(p), stack:"suite", borderWidth:0, maxBarThickness:34}));

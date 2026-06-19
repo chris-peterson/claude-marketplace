@@ -13,14 +13,17 @@ docs/artifacts.json is ephemeral — regenerated each deploy, not committed.
 """
 import csv
 import json
+import os
 import re
 import sys
+import urllib.request
 
 from _common import CATS, ROOT, plugin_names
 
 CSV = ROOT / "suite" / "artifacts.csv"
 INDEX = ROOT / "docs" / "index.html"
 TARGET = ROOT / "docs" / "artifacts.json"
+RELEASES_API = "https://api.github.com/repos/chris-peterson/{}/releases"
 
 
 def catalog_groups() -> list[tuple[str, list[str]]]:
@@ -32,6 +35,27 @@ def catalog_groups() -> list[tuple[str, list[str]]]:
     for m in re.finditer(r'ac:\s*"([^"]+)".*?slugs:\s*\[([^\]]*)\]', block.group(1), re.S):
         groups.append((m.group(1), re.findall(r'"([^"]+)"', m.group(2))))
     return groups
+
+
+def fetch_releases(plugin: str) -> list[dict]:
+    """Published (non-draft) GitHub releases for a plugin: [{date, tag, url}, ...].
+    Network/HTTP failure raises — release enrichment is not optional, so a bad
+    fetch fails the build loudly rather than silently dropping events. A
+    GITHUB_TOKEN in the env (CI) is used for the higher API rate limit."""
+    req = urllib.request.Request(
+        RELEASES_API.format(plugin),
+        headers={"Accept": "application/vnd.github+json",
+                 "User-Agent": "claude-marketplace-build"},
+    )
+    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    if token:
+        req.add_header("Authorization", f"Bearer {token}")
+    with urllib.request.urlopen(req, timeout=20) as resp:
+        data = json.load(resp)
+    return [
+        {"date": r["published_at"][:10], "tag": r["tag_name"], "url": r["html_url"]}
+        for r in data if not r.get("draft")
+    ]
 
 
 def main() -> int:
@@ -57,10 +81,25 @@ def main() -> int:
             totals.append(cur)  # None before the plugin's first change point
         series[p] = totals
 
-    changelog = [
-        {"date": r["date"], "plugin": r["plugin"], "change": r["change"]}
-        for r in sorted(rows, key=lambda r: (r["date"], r["plugin"]), reverse=True)
-    ]
+    # One changelog entry per (date, plugin): the day's artifact change tokens
+    # plus any releases published that day (fetched live from GitHub). The SPA
+    # shows releases first, then what changed. Only a few plugins publish
+    # releases so far; the rest stay artifact-only.
+    entries: dict[tuple[str, str], dict] = {}
+
+    def entry(date: str, plugin: str) -> dict:
+        return entries.setdefault((date, plugin),
+            {"date": date, "plugin": plugin, "change": "", "releases": []})
+
+    for r in rows:
+        entry(r["date"], r["plugin"])["change"] = r["change"]
+    for p in plugins:
+        for rel in fetch_releases(p):
+            entry(rel["date"], p)["releases"].append({"tag": rel["tag"], "url": rel["url"]})
+
+    changelog = sorted(entries.values(),
+                       key=lambda r: (r["date"], r["plugin"]), reverse=True)
+    n_releases = sum(len(e["releases"]) for e in entries.values())
 
     TARGET.write_text(json.dumps({
         "dates": dates,
@@ -70,7 +109,7 @@ def main() -> int:
         "changelog": changelog,
     }, indent=2))
     print(f"wrote {TARGET.relative_to(ROOT)} — {len(plugins)} plugins, "
-          f"{len(dates)} change points")
+          f"{len(dates)} change points, {n_releases} releases")
     return 0
 
 

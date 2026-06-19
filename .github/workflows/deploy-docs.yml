@@ -46,6 +46,8 @@ jobs:
 
       - name: Project the growth-view data (ephemeral)
         run: python3 suite/build-artifacts-data.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit the artifact log if it changed
         run: |
