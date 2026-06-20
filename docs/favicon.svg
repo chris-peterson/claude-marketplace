@@ -1,33 +1,33 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <rect width="64" height="64" rx="14" fill="#282a36"/>
-  <g transform="translate(6,10.85) scale(1.244)">
+  <!-- the command bridge: four Claude session windows in a 2×2 grid. The plugin
+       interjection steps down a row per window — safe (red, line 1) → bearings
+       (purple, 2) → waypoints (cyan, 3) → learn (green, 4) — so green lands on
+       the last line of the last window. Mirrors the inline #mark in index.html. -->
+  <g transform="translate(12,12) scale(1.0)">
     <g fill="#21222c" stroke="#44475a" stroke-width="0.8">
-      <rect x="2"    y="2" width="11" height="30" rx="2.4"/>
-      <rect x="15.4" y="2" width="11" height="30" rx="2.4"/>
-      <rect x="28.8" y="2" width="11" height="30" rx="2.4"/>
+      <rect x="3"  y="3"  width="16" height="16" rx="2.6"/>
+      <rect x="21" y="3"  width="16" height="16" rx="2.6"/>
+      <rect x="3"  y="21" width="16" height="16" rx="2.6"/>
+      <rect x="21" y="21" width="16" height="16" rx="2.6"/>
     </g>
     <g fill="#6272a4" opacity="0.5">
-      <rect x="3.7"  y="4"    width="6.99" height="1.6" rx="0.8"/>
-      <rect x="3.7"  y="10.6" width="5.32" height="1.6" rx="0.8"/>
-      <rect x="3.7"  y="13.9" width="4.41" height="1.6" rx="0.8"/>
-      <rect x="3.7"  y="17.2" width="4.86" height="1.6" rx="0.8"/>
-      <rect x="3.7"  y="23.8" width="6.08" height="1.6" rx="0.8"/>
-      <rect x="17.1" y="4"    width="3.42" height="1.6" rx="0.8"/>
-      <rect x="17.1" y="7.3"  width="6.99" height="1.6" rx="0.8"/>
-      <rect x="17.1" y="10.6" width="3.04" height="1.6" rx="0.8"/>
-      <rect x="17.1" y="13.9" width="5.32" height="1.6" rx="0.8"/>
-      <rect x="17.1" y="20.5" width="4.86" height="1.6" rx="0.8"/>
-      <rect x="17.1" y="23.8" width="3.95" height="1.6" rx="0.8"/>
-      <rect x="30.5" y="4"    width="6.54" height="1.6" rx="0.8"/>
-      <rect x="30.5" y="7.3"  width="3.42" height="1.6" rx="0.8"/>
-      <rect x="30.5" y="13.9" width="3.04" height="1.6" rx="0.8"/>
-      <rect x="30.5" y="17.2" width="5.32" height="1.6" rx="0.8"/>
-      <rect x="30.5" y="20.5" width="4.41" height="1.6" rx="0.8"/>
-      <rect x="30.5" y="23.8" width="4.86" height="1.6" rx="0.8"/>
+      <rect x="5.3"  y="9.5"  width="9.6" height="1.5" rx="0.75"/>
+      <rect x="5.3"  y="12.5" width="7.4" height="1.5" rx="0.75"/>
+      <rect x="5.3"  y="15.5" width="5.2" height="1.5" rx="0.75"/>
+      <rect x="23.3" y="6.5"  width="7.8" height="1.5" rx="0.75"/>
+      <rect x="23.3" y="12.5" width="9.2" height="1.5" rx="0.75"/>
+      <rect x="23.3" y="15.5" width="4.6" height="1.5" rx="0.75"/>
+      <rect x="5.3"  y="24.5" width="8.4" height="1.5" rx="0.75"/>
+      <rect x="5.3"  y="27.5" width="5.6" height="1.5" rx="0.75"/>
+      <rect x="5.3"  y="33.5" width="9.0" height="1.5" rx="0.75"/>
+      <rect x="23.3" y="24.5" width="6.8" height="1.5" rx="0.75"/>
+      <rect x="23.3" y="27.5" width="8.8" height="1.5" rx="0.75"/>
+      <rect x="23.3" y="30.5" width="5.8" height="1.5" rx="0.75"/>
     </g>
-    <rect x="3.7"  y="7.3"  width="3.04" height="1.6" rx="0.8" fill="#8be9fd"/>
-    <rect x="3.7"  y="20.5" width="3.95" height="1.6" rx="0.8" fill="#ff5555"/>
-    <rect x="17.1" y="17.2" width="4.41" height="1.6" rx="0.8" fill="#50fa7b"/>
-    <rect x="30.5" y="10.6" width="6.99" height="1.6" rx="0.8" fill="#bd93f9"/>
+    <rect x="5.3"  y="6.5"  width="6.4" height="1.5" rx="0.75" fill="#ff5555"/>
+    <rect x="23.3" y="9.5"  width="6.4" height="1.5" rx="0.75" fill="#bd93f9"/>
+    <rect x="5.3"  y="30.5" width="6.4" height="1.5" rx="0.75" fill="#8be9fd"/>
+    <rect x="23.3" y="33.5" width="6.4" height="1.5" rx="0.75" fill="#50fa7b"/>
   </g>
 </svg>
