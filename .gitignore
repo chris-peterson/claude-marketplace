@@ -5,3 +5,6 @@ docs/artifacts.json
 
 __pycache__/
 *.pyc
+
+# Playwright MCP scratch (browser snapshots from local verification)
+.playwright-mcp/

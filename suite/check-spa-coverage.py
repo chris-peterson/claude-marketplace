@@ -5,7 +5,7 @@ A plugin can silently break the landing page (docs/index.html) three ways, none
 visible until someone clicks:
 
 1. Absent from the generated PLUGINS data — the build never produced a card for
-   it (e.g. not in spa-legacy.json, which drives the rendered set).
+   it (e.g. its plugin.yml is missing or has no suite: block).
 2. Not in a GROUPS slug list — the catalog renders only grouped slugs, so the
    data exists but no card is shown.
 3. Missing a field the renderer reads unguarded — the per-plugin view
@@ -26,7 +26,7 @@ INDEX = ROOT / "docs" / "index.html"
 PLUGINS_JS = ROOT / "docs" / "plugins.js"
 
 # Fields the SPA per-plugin view reads without a presence guard (docs/index.html).
-REQUIRED = ["group", "ac", "what", "cmds"]
+REQUIRED = ["group", "what", "cmds"]
 
 
 def grouped_slugs() -> list[str]:
@@ -66,7 +66,7 @@ def main() -> int:
 
     for name in sorted(marketplace - rendered):
         errors.append(f"{name}: in marketplace.json but not in the generated SPA data "
-                      f"(add an entry to suite/spa-legacy.json)")
+                      f"(ensure its plugin.yml has a suite: block)")
     for name in sorted(marketplace - grouped_set):
         errors.append(f"{name}: in marketplace.json but not in any SPA GROUPS slug list "
                       f"(add it to a group in docs/index.html)")

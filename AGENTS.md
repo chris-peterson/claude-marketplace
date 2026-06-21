@@ -28,9 +28,8 @@ dispatch token. The scripts:
 - `build-spa-data.py` — per-plugin SPA content from each `plugin.yml` → `docs/plugins.js`.
 - `record-artifacts.py` — append a change-point row to `suite/artifacts.csv` (the committed rolling log) when a plugin's artifact set changes; `seed-artifacts-history.py` is the one-time bootstrap from each repo's git history.
 - `build-artifacts-data.py` — project `suite/artifacts.csv` into the growth view's series + changelog → `docs/artifacts.json`.
-- `trace-deps.py` — heuristic cross-plugin dependency edges → `docs/deps.json`, cross-checked against declared `soft_deps`.
+- `build-deps-data.py` — projects each plugin's declared `soft_deps` → `docs/deps.json` (the dependency graph). Edges are declared, never discovered.
 - `check-spa-coverage.py` — fails the build if a `marketplace.json` plugin isn't placed in a SPA `GROUPS` slug list (or vice versa). Runs first in CI and in `just build`.
-- `spa-legacy.json` — verbatim snapshot of the original inline SPA content; supplies ordering + fallback for plugins not yet migrated to `plugin.yml`. Dropped once all plugins have one.
 
 ## Structure
 
@@ -46,8 +45,7 @@ dispatch token. The scripts:
 - **Per-plugin copy has one source**: each plugin's `plugin.yml` (the `suite:`
   block). `suite/build-spa-data.py` generates the `PLUGINS` object into
   `docs/plugins.js`, which `index.html` loads — edit gloss/what/commands in the
-  plugin's `plugin.yml`, never in `index.html` or `plugins.js`. (Plugins not yet
-  migrated still come from `suite/spa-legacy.json`.)
+  plugin's `plugin.yml`, never in `index.html` or `plugins.js`.
 - **Adding a plugin takes two edits**: register it in `marketplace.json`, and
   add its slug to a `GROUPS` group in `docs/index.html` — the catalog renders
   only grouped slugs, so a plugin in `marketplace.json` alone has data but no

@@ -8,8 +8,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=JetBrains+Mono:wght@400;500;700&family=Spline+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<!-- Session player styling — a suite asset, shared with each plugin's docs site. -->
-<link rel="stylesheet" href="session.css">
 <style>
   :root{
     --abyss:#191a21; --deep:#21222c; --sea:#282a36; --hull:#343746; --line-h:#44475a;
@@ -60,10 +58,13 @@
   .nav-gh svg{display:block}
   section[id]{scroll-margin-top:70px}
 
-  header.hero{padding:44px 0 26px;position:relative}
-  .hero-main{display:grid;grid-template-columns:1fr auto;gap:44px;align-items:center;margin-top:0}
-  .heromark{width:168px;height:168px;justify-self:end;filter:drop-shadow(0 0 32px rgba(139,233,253,.12))}
-  @media(max-width:780px){.hero-main{grid-template-columns:1fr;gap:0}.heromark{display:none}}
+  header.hero{padding:44px 0 26px;position:relative;overflow:hidden}
+  /* the mark as atmosphere: large and faint, bleeding off the top-right behind
+     the title. The crisp mark still lives in the nav for identity. */
+  .herowatermark{position:absolute;top:-26px;right:-86px;width:min(440px,48vw);height:min(440px,48vw);
+    opacity:.12;z-index:0;pointer-events:none;filter:drop-shadow(0 0 46px rgba(139,233,253,.1))}
+  .herocontent{position:relative;z-index:1;max-width:62ch}
+  @media(max-width:680px){.herowatermark{display:none}}
   .eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.32em;text-transform:uppercase;color:var(--cyan);margin:0 0 18px}
   h1.title{font-family:var(--disp);font-optical-sizing:auto;font-weight:900;
     font-size:clamp(58px,12vw,138px);line-height:.84;letter-spacing:-.03em;margin:0;color:var(--fg)}
@@ -76,12 +77,11 @@
   .lede strong{color:var(--gold);font-weight:700;font-style:normal}
   .lede strong.claude{color:var(--claude)}
   .tagline .cy{color:var(--cyan);font-style:italic}
-  /* hero route card — the four capabilities as ordered stops on a course, in
-     flow order; each stop deep-links to its catalog group. */
-  .routecard{position:relative;margin:24px 0 0;max-width:60ch;
-    background:linear-gradient(135deg,rgba(40,42,54,.55),rgba(33,34,44,.2));
-    border:1px solid var(--line-2);border-radius:13px;padding:18px 22px}
-  .routecard .lead{color:var(--muted);font-size:14.5px;margin:0 0 13px}
+  /* hero route — the four capabilities as ordered stops on a course, in flow
+     order; each stop deep-links to its catalog group. Blended into the hero
+     (no card chrome); label and sub sit inline so the rows aren't narrow. */
+  .routecard{position:relative;margin:22px 0 0;max-width:62ch}
+  .routecard .lead{color:var(--muted);font-size:14.5px;margin:0 0 12px}
   .routecard .lead b{color:var(--fg);font-weight:600}
   .stops{display:grid}
   .stop{display:grid;grid-template-columns:22px 1fr;gap:14px;align-items:start;padding:6px 0;position:relative;
@@ -90,13 +90,14 @@
     box-shadow:0 0 0 3px var(--abyss);transition:box-shadow .2s}
   .stop:not(:last-child) .node::after{content:"";position:absolute;left:50%;top:11px;transform:translateX(-50%);
     width:2px;height:calc(100% + 12px);background:var(--line-h)}
-  .stop .txt{font-size:15px;color:var(--fg);padding-top:2px}
-  .stop .txt .sub{display:block;color:var(--muted);font-size:13px;margin-top:1px}
+  .stop .txt{font-size:15px;color:var(--fg);padding-top:1px}
+  .stop .txt .sub{color:var(--muted);font-size:13.5px}
+  .stop .txt .sub::before{content:" — ";color:var(--faint)}
   .stop:hover .txt .lab{text-decoration:underline;text-underline-offset:3px}
   .stop:hover .node{box-shadow:0 0 0 3px var(--abyss),0 0 10px -1px var(--ac)}
-  .stop.s-safe{--ac:var(--red)} .stop.s-bear{--ac:var(--purple)}
-  .stop.s-dock{--ac:var(--cyan)} .stop.s-build{--ac:var(--green)}
-  .n-safe{background:var(--red)} .n-bear{background:var(--purple)} .n-dock{background:var(--cyan)} .n-build{background:var(--green)}
+  .stop.s-safety{--ac:var(--red)} .stop.s-bearings{--ac:var(--purple)}
+  .stop.s-waypoints{--ac:var(--cyan)} .stop.s-record{--ac:var(--green)}
+  .n-safety{background:var(--red)} .n-bearings{background:var(--purple)} .n-waypoints{background:var(--cyan)} .n-record{background:var(--green)}
 
   section{padding:22px 0;position:relative}
   #install{padding:16px 0 22px}
@@ -242,8 +243,7 @@
      high-impact moment. each line rises as the eye reaches it; the mark blooms
      in last. gated on no-preference so reduced-motion users see it static. */
   @keyframes riseIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:none}}
-  @keyframes markIn{from{opacity:0;transform:translateY(15px) scale(.96);filter:drop-shadow(0 0 0 rgba(139,233,253,0))}
-    to{opacity:1;transform:none;filter:drop-shadow(0 0 32px rgba(139,233,253,.12))}}
+  @keyframes watermarkIn{from{opacity:0;transform:translateY(12px) scale(1.05)}to{opacity:.12;transform:none}}
   @media(prefers-reduced-motion:no-preference){
     .hero .eyebrow,.hero h1.title,.hero .tagline,.hero .lede,.hero .routecard,.hero .bearings{
       opacity:0;animation:riseIn .68s cubic-bezier(.2,.7,.2,1) both}
@@ -253,7 +253,7 @@
     .hero .lede{animation-delay:.38s}
     .hero .routecard{animation-delay:.5s}
     .hero .bearings{animation-delay:.62s}
-    .heromark{animation:markIn .9s cubic-bezier(.2,.7,.2,1) .22s both}
+    .herowatermark{animation:watermarkIn 1.1s cubic-bezier(.2,.7,.2,1) .15s both}
   }
 
   /* keyboard focus — a refined accent ring instead of the UA default, keyed to
@@ -263,33 +263,9 @@
     outline:2px solid var(--ac,var(--cyan));outline-offset:3px;border-radius:4px}
   .cmdcopy:focus-visible,.ship:focus-visible{outline-offset:2px;border-radius:9px}
 
-  /* ---------- SPA: routing + plugin view ---------- */
+  /* ---------- SPA: catalog routing ---------- */
   [hidden]{display:none!important}
   .ship,.prow{cursor:pointer}
-  .back{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;
-    color:var(--muted);margin:36px 0 24px;text-decoration:none}
-  .back:hover{color:var(--fg)}
-  .back span{color:var(--ac,var(--cyan));font-size:1.15em}
-  .pview{--ac:var(--cyan)}
-  .pv-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap;
-    border-bottom:1px solid color-mix(in srgb,var(--ac) 26%,transparent);padding-bottom:18px}
-  .pv-head img{width:52px;height:52px;border-radius:13px}
-  .pv-head h1{font-family:var(--disp);font-weight:900;font-size:clamp(40px,8vw,66px);letter-spacing:-.02em;margin:0;color:var(--fg)}
-  .pv-head .pv-cli{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ac);
-    border:1px solid color-mix(in srgb,var(--ac) 32%,transparent);border-radius:5px;padding:2px 7px;align-self:center}
-  .pv-head .pv-tag{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--abyss);
-    background:var(--ac);border-radius:5px;padding:3px 9px;margin-left:auto;align-self:center}
-  .pv-gloss{font-family:var(--disp);font-style:italic;font-size:18px;color:var(--muted);margin:18px 0 0}
-  .pv-what{margin:14px 0 0;color:var(--fg);font-size:16px;line-height:1.62;max-width:66ch}
-  .pv-sechead{font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ac);margin:36px 0 12px}
-  .ex-label{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ac);margin:18px 0 7px}
-  .pv-install{margin-top:0}
-  .pv-cmds{display:flex;flex-direction:column}
-  .pv-cmd{display:grid;grid-template-columns:minmax(150px,auto) 1fr;gap:16px;align-items:baseline;padding:10px 0;border-bottom:1px dashed var(--line-2)}
-  .pv-cmd code{font-family:var(--mono);font-size:13px;color:var(--ac)}
-  .pv-cmd .d{color:var(--muted);font-size:14.5px}
-  .pv-links{display:flex;gap:20px;margin-top:34px;font-family:var(--mono);font-size:13px}
-  .pv-links a{color:var(--ac)}
 
   /* ---------- plugin details: artifact donut + interop radar ---------- */
   .details{display:grid;grid-template-columns:300px 1fr;gap:28px;margin-top:20px;align-items:start}
@@ -297,19 +273,55 @@
   .panel{border:1px solid var(--line-2);border-radius:14px;background:var(--deep);padding:20px 22px}
   .panel h3{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:0 0 16px}
   .donutwrap{display:flex;flex-direction:column;align-items:center;gap:16px}
-  .donut{width:188px;height:188px;border-radius:50%;position:relative;background:var(--hull)}
-  .donut::after{content:"";position:absolute;inset:27%;border-radius:50%;background:var(--deep)}
-  .donut .ctr{position:absolute;inset:0;display:grid;place-content:center;text-align:center;z-index:1}
-  .donut .ctr .big{font-family:var(--disp);font-weight:900;font-size:30px;line-height:1;color:var(--fg);font-variant-numeric:tabular-nums}
-  .donut .ctr .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+  /* interactive donut (Chart.js): types view → click a type to drill into its
+     per-plugin breakdown; "all types" returns. Center label overlays the canvas. */
+  .donutchart-wrap{position:relative;width:188px;height:188px}
+  .donut-ctr{position:absolute;inset:0;display:grid;place-content:center;text-align:center;pointer-events:none}
+  .donut-ctr .big{font-family:var(--disp);font-weight:900;font-size:30px;line-height:1;color:var(--fg);font-variant-numeric:tabular-nums}
+  .donut-ctr .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:3px;max-width:96px}
+  .donut-back{display:none;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;
+    color:var(--muted);background:none;border:0;cursor:pointer;padding:0}
+  .donut-back.show{display:inline-flex}
+  .donut-back:hover{color:var(--fg)}.donut-back .ar{color:var(--cyan)}
   .dlegend{display:grid;gap:7px;width:100%}
   .dlegend .row{display:grid;grid-template-columns:13px 1fr auto;gap:9px;align-items:center;font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .dlegend.clickable .row{cursor:pointer;border-radius:6px;padding:2px 6px;margin:0 -6px;transition:background .15s}
+  .dlegend.clickable .row:hover{background:rgba(255,255,255,.05);color:var(--fg)}
   .dlegend .sw{width:11px;height:11px;border-radius:3px}
   .dlegend .ct{color:var(--fg);font-variant-numeric:tabular-nums}
   .interop svg{width:100%;height:auto;display:block}
-  .interop .ihint{font-family:var(--mono);font-size:11.5px;line-height:1.5;color:var(--muted);margin:-6px 0 4px}
-  .interop .ihint b{color:var(--fg);font-weight:500}
-  .interop text{font-family:var(--mono)}
+  .panel .ihint{font-family:var(--mono);font-size:11.5px;line-height:1.5;color:var(--muted);margin:-6px 0 4px}
+  .panel .ihint b{color:var(--fg);font-weight:500}
+  .interop text,.deps text{font-family:var(--mono)}
+  /* dependency graph — its own full-width panel below the donut + radar */
+  .details .panel.deps{grid-column:1/-1}
+  .deps svg{width:100%;height:auto;max-width:480px;margin:2px auto 0;display:block}
+  .deps-standalone{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;
+    font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .deps-standalone .lbl{color:var(--faint);letter-spacing:.14em;text-transform:uppercase}
+  .deps-standalone .chip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;
+    border:1px solid var(--line-2);border-radius:20px}
+  .deps-standalone .chip i{width:7px;height:7px;border-radius:50%;flex:none}
+  /* sonar ping sweeps out from the helm; watcher plugins (ClaudeWatch, beacon)
+     light up as the ping reaches their ring — they observe and react. The
+     reaction is delayed to the moment the ping crosses the node radius (R/maxR
+     of the period) so the two stay locked in sync. */
+  .radar-ping-claude,.radar-ping-user,.radar-react{opacity:0}
+  .radar-ping-claude{stroke:var(--claude)} .radar-ping-user{stroke:var(--fg)}
+  .react-claude{fill:var(--claude)} .react-user{fill:var(--fg)}
+  /* 12s cycle: an orange (Claude/agent) ping sweeps out from the helm, then 6s
+     later a white (user) ping. A plugin flares as a ping reaches its ring — orange
+     if its `activations` list includes `agent` (ClaudeWatch, beacon), white if it
+     includes `user`. Each ping crosses the node ring ~3.34s into its sweep, so
+     flares are delayed to match. */
+  @media(prefers-reduced-motion:no-preference){
+    .radar-ping-claude{animation:radarPing 12s ease-out infinite}
+    .radar-ping-user{animation:radarPing 12s ease-out 6s infinite}
+    .react-claude{animation:radarFlare 12s ease-out 3.34s infinite}
+    .react-user{animation:radarFlare 12s ease-out 9.34s infinite}
+  }
+  @keyframes radarPing{0%{r:5px;opacity:.6}3%{opacity:.55}26%{opacity:.14}30%{r:116px;opacity:0}100%{r:116px;opacity:0}}
+  @keyframes radarFlare{0%{r:6px;opacity:0}3%{r:11px;opacity:.7}13%{r:28px;opacity:0}100%{r:6px;opacity:0}}
 
   /* ---------- growth view ---------- */
   #growth .growthbox{position:relative;height:380px;margin-top:26px;
@@ -336,9 +348,6 @@
   .changelog .clsep{color:var(--faint)}
   @media(max-width:560px){.changelog .clrow{grid-template-columns:78px 1fr;row-gap:3px}
     .changelog .clchange{grid-column:1/-1}}
-
-  /* Session viewer styling lives in the shared /css/session.css (loaded in
-     <head>) so the hub and each plugin's docs site render it identically. */
 </style>
 </head>
 <body>
@@ -397,23 +406,21 @@
   <div id="home">
 
   <header class="hero">
-    <div class="hero-main">
-      <div>
-        <p class="eyebrow">Claude Code plugins</p>
-        <h1 class="title">bridge<span class="ai">.ai</span></h1>
-        <p class="tagline">Tools for navigating the uncharted waters of <span class="cy">AI-assisted software development</span>.</p>
-        <p class="lede"><strong class="claude">Claude</strong> writes code faster than any of us are used to — a force multiplier increasing <b>speed</b> without scrutinizing <b>direction</b>.<span class="caveat">Despite this higher velocity — using AI does <b>NOT</b> shift accountability.</span></p>
-        <div class="routecard">
-          <p class="lead">You're at the helm; the plugins ping in. They help you:</p>
-          <div class="stops">
-            <a class="stop s-safe" href="#g-safe"><span class="node n-safe"></span><span class="txt"><span class="lab">stay safe</span><span class="sub">screen risky moves before they run</span></span></a>
-            <a class="stop s-bear" href="#g-bearings"><span class="node n-bear"></span><span class="txt"><span class="lab">keep your bearings</span><span class="sub">know where the work stands</span></span></a>
-            <a class="stop s-dock" href="#g-dock"><span class="node n-dock"></span><span class="txt"><span class="lab">reach waypoints</span><span class="sub">ship deliberately</span></span></a>
-            <a class="stop s-build" href="#g-build"><span class="node n-build"></span><span class="txt"><span class="lab">write it down</span><span class="sub">capture what you learn</span></span></a>
-          </div>
+    <svg class="herowatermark" viewBox="0 0 40 40" aria-hidden="true"><use href="#mark"/></svg>
+    <div class="herocontent">
+      <p class="eyebrow">Claude Code plugins</p>
+      <h1 class="title">bridge<span class="ai">.ai</span></h1>
+      <p class="tagline">Tools for navigating the uncharted waters of <span class="cy">AI-assisted software development</span>.</p>
+      <p class="lede"><strong class="claude">Claude</strong> writes code faster than any of us are used to — a force multiplier increasing <b>speed</b> without scrutinizing <b>direction</b>.<span class="caveat">Despite this higher velocity — using AI does <b>NOT</b> shift accountability.</span></p>
+      <div class="routecard">
+        <p class="lead"><b>bridge<span style="color:var(--cyan)">.ai</span></b> helps you:</p>
+        <div class="stops">
+          <a class="stop s-safety" href="#g-safety"><span class="node n-safety"></span><span class="txt"><span class="lab">stay safe</span><span class="sub">screen risky commands</span></span></a>
+          <a class="stop s-bearings" href="#g-bearings"><span class="node n-bearings"></span><span class="txt"><span class="lab">keep your bearings</span><span class="sub">see work at a glance</span></span></a>
+          <a class="stop s-waypoints" href="#g-waypoints"><span class="node n-waypoints"></span><span class="txt"><span class="lab">reach waypoints</span><span class="sub">land changes cleanly</span></span></a>
+          <a class="stop s-record" href="#g-record"><span class="node n-record"></span><span class="txt"><span class="lab">write it down</span><span class="sub">capture what you learn</span></span></a>
         </div>
       </div>
-      <svg class="heromark" viewBox="0 0 40 40" aria-hidden="true"><use href="#mark"/></svg>
     </div>
     <div class="bearings" style="margin-top:24px"><span class="tickline"></span></div>
   </header>
@@ -450,14 +457,24 @@
       <div class="panel">
         <h3>By artifact type</h3>
         <div class="donutwrap">
-          <div class="donut" id="donut"><div class="ctr"><span class="big" id="donut-total">—</span><span class="lbl">artifacts</span></div></div>
+          <div class="donutchart-wrap">
+            <canvas id="donutchart"></canvas>
+            <div class="donut-ctr"><span class="big" id="donut-total">—</span><span class="lbl" id="donut-lbl">artifacts</span></div>
+          </div>
+          <button class="donut-back" id="donut-back" type="button"><span class="ar">←</span> <span id="donut-back-label">all types</span></button>
           <div class="dlegend" id="donut-legend"></div>
         </div>
       </div>
       <div class="panel interop">
-        <h3>Interop — radar scope</h3>
-        <p class="ihint">Each blip is a plugin at its category bearing; lines are <b>declared dependencies</b>.</p>
+        <h3>Activity — radar scope</h3>
+        <p class="ihint">Each blip is a plugin at its category bearing. The pulse alternates <b style="color:var(--claude)">Claude</b> and <b>user</b> activity — each plugin flares for the activity it reacts to.</p>
         <svg id="radar" viewBox="0 0 360 300" aria-hidden="true"></svg>
+      </div>
+      <div class="panel deps">
+        <h3>Dependencies</h3>
+        <p class="ihint">An arrow points from a plugin to one it <b>depends on</b> at runtime — all optional. The rest run standalone.</p>
+        <svg id="depgraph" viewBox="0 0 440 170" aria-hidden="true"></svg>
+        <div class="deps-standalone" id="deps-standalone"></div>
       </div>
     </div>
   </section>
@@ -473,14 +490,10 @@
 
   </div><!-- /#home -->
 
-  <section id="pluginview" class="pview" hidden></section>
-
 </div>
 
 <!-- Generated by suite/build-spa-data.py from each plugin's plugin.yml. -->
 <script src="plugins.js"></script>
-<!-- Session renderer — a suite asset, shared with each plugin's docs site (defines window.mountSession). -->
-<script src="session-player.js"></script>
 <!-- Growth chart: data from suite/build-artifacts-data.py (docs/artifacts.json). -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4" defer></script>
 <script>
@@ -490,58 +503,21 @@
   const GH_ICO = `<svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 .2a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.13 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.11.16 1.93.08 2.13.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A8 8 0 0 0 8 .2Z"/></svg>`;
 
 
-  // The session renderer (window.mountSession) is loaded from the shared
-  // session-player.js suite asset (served here, fetched by each plugin's docs
-  // site), so the hub and every spoke animate transcripts identically.
-
-  // ---- plugin view + routing ----
-  function renderPlugin(slug){
-    const p=PLUGINS[slug], pv=document.getElementById("pluginview");
-    pv.style.setProperty("--ac", PLUGIN_AC[slug] || `var(${p.ac})`);
-    const head =
-      `<a class="back" href="#"><span>←</span> all plugins</a>`+
-      `<div class="pv-head"><img src="https://chris-peterson.github.io/${slug}/favicon.svg" alt=""><h1>${slug}</h1>`+
-        (p.cli?`<span class="pv-cli">cli</span>`:``)+`<span class="pv-tag">${p.group}</span></div>`+
-      (p.gloss?`<p class="pv-gloss">${p.gloss}</p>`:``)+
-      `<p class="pv-what">${p.what}</p>`+
-      `<div class="pv-sechead">Install</div>`+
-      `<div class="install pv-install" style="--ac:var(${p.ac})"><div class="ibody"><code><span class="pr">claude plugin install</span> ${slug}@chris-peterson</code>`+
-        `<button class="cmdcopy solo" data-cmd="claude plugin install ${slug}@chris-peterson"><span class="cc-ico">${COPY_ICO}</span></button></div></div>`;
-    const commands =
-      `<div class="pv-sechead">Commands</div>`+
-      `<div class="pv-cmds">`+p.cmds.map(c=>`<div class="pv-cmd"><code>${c[0]}</code><span class="d">${c[1]}</span></div>`).join("")+`</div>`;
-    const examples = p.examples
-      ? `<div class="pv-sechead">Examples</div>`+p.examples.map((e,n)=>`<div class="ex-label" style="--ac:var(${e.ac||p.ac})">${e.label}</div><div class="session" data-ex="${n}" style="--ac:var(${e.ac||p.ac})"></div>`).join("")
-      : `<div class="pv-sechead">In a session</div><div class="session"></div>`;
-    const setup = p.setup
-      ? `<div class="pv-sechead">${p.setup.head}</div><p class="sub">${p.setup.note}</p>`+
-        `<div class="install pv-install" style="--ac:var(${p.ac})"><div class="ibody"><code><span class="pr">just</span> ${p.setup.cmd.replace(/^just\s+/,"")}</code>`+
-        `<button class="cmdcopy solo" data-cmd="${p.setup.cmd}"><span class="cc-ico">${COPY_ICO}</span></button></div></div>`
-      : ``;
-    const links = `<div class="pv-links"><a href="${docsUrl(slug)}" target="_blank" rel="noopener">full docs ↗</a><a href="${srcUrl(slug)}" target="_blank" rel="noopener">source ↗</a></div>`;
-    pv.innerHTML = head + (p.passive ? examples+commands : commands+examples) + setup + links;
-    if(p.examples){ pv.querySelectorAll("[data-ex]").forEach(c=> mountSession(c, p.examples[+c.dataset.ex].frames)); }
-    else { mountSession(pv.querySelector(".session"), p.session); }
-  }
+  // ---- routing: a #/<slug> hash hands off to the plugin's own docs site ----
   function route(){
     const m=location.hash.match(/^#\/(.+)$/);
-    const home=document.getElementById("home"), pv=document.getElementById("pluginview");
-    // Migrated plugins (suite.spoke) hand the drill-in off to their own docs
-    // site; the rest still render the in-hub detail view.
-    if(m && PLUGINS[m[1]] && PLUGINS[m[1]].spoke){ location.replace(docsUrl(m[1])); return; }
-    if(m && PLUGINS[m[1]]){ home.hidden=true; pv.hidden=false; renderPlugin(m[1]); window.scrollTo(0,0); }
-    else { pv.hidden=true; home.hidden=false; }
+    if(m && PLUGINS[m[1]]) location.replace(docsUrl(m[1]));
   }
   addEventListener("hashchange", route);
 
-  const cardNav=(el, slug)=> el.addEventListener("click",(e)=>{ if(e.target.closest("button,a,code,details")) return; if(window.getSelection && String(window.getSelection()).trim()) return; /* a drag-select ends in a click — let text selection win over navigation */ if(PLUGINS[slug] && PLUGINS[slug].spoke){ window.location.href=docsUrl(slug); } else { location.hash="#/"+slug; } });
+  const cardNav=(el, slug)=> el.addEventListener("click",(e)=>{ if(e.target.closest("button,a,code,details")) return; if(window.getSelection && String(window.getSelection()).trim()) return; /* a drag-select ends in a click — let text selection win over navigation */ window.location.href=docsUrl(slug); });
 
   // ---- catalog: render grouped cards from PLUGINS (single source — no HTML dupe) ----
   const GROUPS=[
-    {key:"safe",     ac:"--guard",  tag:"Stay safe",          slugs:["ClaudeWatch","shipshape"]},
-    {key:"bearings", ac:"--orient", tag:"Keep your bearings",            slugs:["tack","beacon"]},
-    {key:"dock",     ac:"--ship",   tag:"Reach your waypoints",          slugs:["anchor","moor"]},
-    {key:"build",    ac:"--build",  tag:"Write it down",                 slugs:["logbook","sextant"]}
+    {key:"safety",    ac:"--guard",  tag:"Stay safe",            slugs:["ClaudeWatch","shipshape"]},
+    {key:"bearings",  ac:"--orient", tag:"Keep your bearings",   slugs:["tack","beacon"]},
+    {key:"waypoints", ac:"--ship",   tag:"Reach your waypoints", slugs:["anchor","moor"]},
+    {key:"record",    ac:"--build",  tag:"Write it down",        slugs:["logbook","sextant"]}
   ];
   // each plugin's accent = its category color, lightened a step per same-category
   // sibling so the two cards in a group are distinct — matching the growth chart's
@@ -560,12 +536,10 @@
   const catCard=(slug)=>{
     const p=PLUGINS[slug];
     const cmd=`claude plugin install ${slug}@chris-peterson`;
-    // Spoke plugins open their own docs site on card click; the rest open the
-    // in-hub detail view. Clicking the card itself navigates (see cardNav).
-    const href = p.spoke ? docsUrl(slug) : `#/${slug}`;
+    // The name link and a card click both open the plugin's own docs site.
     return `<article class="ship" data-slug="${slug}" style="--ac:${PLUGIN_AC[slug]}">`+
       `<div class="head"><img src="https://chris-peterson.github.io/${slug}/favicon.svg" alt="">`+
-      `<a class="pnamelink" href="${href}"><h3>${slug}</h3></a>`+(p.cli?`<span class="cli">cli</span>`:``)+
+      `<a class="pnamelink" href="${docsUrl(slug)}"><h3>${slug}</h3></a>`+(p.cli?`<span class="cli">cli</span>`:``)+
       (p.version?`<span class="ver">v${p.version}</span>`:``)+
       `<a class="srclink" href="${srcUrl(slug)}" target="_blank" rel="noopener" aria-label="${slug} source on GitHub">${GH_ICO}</a></div>`+
       `<p class="what">${p.pitch||p.what}</p>`+
@@ -597,49 +571,131 @@
 
   // ---- plugin details: artifact-type donut (from PLUGINS) + interop radar (deps.json) ----
   (function(){
-    // donut — sum each artifact type across the suite; types in a fixed order
-    // with a palette distinct from the four category colors (those mean
-    // capability, not artifact kind).
-    const ARTI=[["skills","--cyan"],["hooks","--purple"],["commands","--orange"],["rules","--pink"],["agents","--yellow"]];
-    const totals={}; ARTI.forEach(([k])=>totals[k]=0);
-    Object.values(PLUGINS).forEach((p)=>{ const c=p.components||{}; ARTI.forEach(([k])=>{ if(c[k]) totals[k]+=c[k].length; }); });
-    const present=ARTI.filter(([k])=>totals[k]>0);
-    const sum=present.reduce((a,[k])=>a+totals[k],0);
-    const donut=document.getElementById("donut");
-    if(donut && sum){
-      let acc=0;
-      const stops=present.map(([k,tok])=>{ const a=acc/sum*360; acc+=totals[k]; const b=acc/sum*360;
-        return `var(${tok}) ${a.toFixed(2)}deg ${b.toFixed(2)}deg`; }).join(",");
-      donut.style.background=`conic-gradient(${stops})`;
-      document.getElementById("donut-total").textContent=sum;
-      document.getElementById("donut-legend").innerHTML=present.map(([k,tok])=>
-        `<div class="row"><span class="sw" style="background:var(${tok})"></span><span>${k}</span><span class="ct">${totals[k]}</span></div>`).join("");
-    }
-    // radar — plugins around a scope in category order; edges are deps.json links
+    // shared: plugin order (category order) + a CSS-color resolver (var()/color-mix → rgb)
     const order=GROUPS.flatMap((g)=>g.slugs);
     const resolve=(c)=>{ const s=document.createElement("span"); s.style.cssText="color:"+c+";display:none";
       document.body.appendChild(s); const v=getComputedStyle(s).color; s.remove(); return v; };
     const pcolor={}; order.forEach((slug)=>{ pcolor[slug]=resolve(PLUGIN_AC[slug]||"var(--muted)"); });
-    function radar(deps){
-      const cx=180,cy=148,R=104,pos={};
+    // what activates each plugin, declared in its plugin.yml suite block
+    // (activations: [user|agent|session]); [user] is the default. A node flares
+    // on the agent pulse if it lists 'agent', the user pulse if it lists 'user'
+    // ('session' is declared but doesn't pulse).
+    const activationsOf=(n)=> (PLUGINS[n]&&PLUGINS[n].activations)||["user"];
+
+    // ---- donut — interactive (Chart.js, already loaded). Types view uses the
+    // artifact-type palette (distinct from the category colors, which mean
+    // capability not artifact kind); clicking a type — segment or legend row —
+    // drills into that type's per-plugin breakdown, colored by each plugin's
+    // category; "all types" returns. ----
+    const ARTI=[["skills","--cyan"],["hooks","--purple"],["commands","--orange"],["rules","--pink"],["agents","--yellow"]];
+    const typeColor={}; ARTI.forEach(([k,tok])=> typeColor[k]=resolve("var("+tok+")"));
+    const typeTotals={}; ARTI.forEach(([k])=>typeTotals[k]=0);
+    order.forEach((slug)=>{ const c=(PLUGINS[slug]||{}).components||{}; ARTI.forEach(([k])=>{ typeTotals[k]+=(c[k]||[]).length; }); });
+    const presentTypes=ARTI.map(([k])=>k).filter((k)=>typeTotals[k]>0);
+    const grandTotal=presentTypes.reduce((a,k)=>a+typeTotals[k],0);
+    const dTotal=document.getElementById("donut-total"), dLbl=document.getElementById("donut-lbl"),
+          dLegend=document.getElementById("donut-legend"), dBack=document.getElementById("donut-back");
+    // three levels: (1) types → (2) per-plugin counts for a type → (3) the actual
+    // artifact names for one plugin's type (equal slices, separated by a gap,
+    // lightened along the plugin's category color). Back goes up one level.
+    const dBackLbl=document.getElementById("donut-back-label");
+    const deepBg=resolve("var(--deep)");
+    const lighten=(rgb,f)=>{ const m=(rgb.match(/\d+/g)||[136,153,189]).map(Number);
+      const c=m.slice(0,3).map((v)=>Math.round(v+(255-v)*f)); return `rgb(${c[0]},${c[1]},${c[2]})`; };
+    let donutChart=null, donutType=null, donutPlugin=null, curLabels=[];
+    function donutModel(){
+      if(!donutType) return { level:1, labels:presentTypes, data:presentTypes.map((k)=>typeTotals[k]),
+        colors:presentTypes.map((k)=>typeColor[k]), center:[grandTotal,"artifacts"], border:false };
+      if(!donutPlugin){
+        const rows=order.map((slug)=>({slug, n:(((PLUGINS[slug]||{}).components||{})[donutType]||[]).length})).filter((r)=>r.n>0);
+        return { level:2, labels:rows.map((r)=>r.slug), data:rows.map((r)=>r.n), colors:rows.map((r)=>pcolor[r.slug]),
+          center:[typeTotals[donutType], donutType], border:false };
+      }
+      const names=((PLUGINS[donutPlugin]||{}).components||{})[donutType]||[], base=pcolor[donutPlugin];
+      return { level:3, labels:names, data:names.map(()=>1),
+        colors:names.map((_,i)=> lighten(base, names.length<2?0:(i/(names.length-1))*0.5)),
+        center:[names.length, donutPlugin+" "+donutType], border:true };
+    }
+    function donutDrill(label){ if(!donutType) donutType=label; else if(!donutPlugin) donutPlugin=label; else return; showDonut(); }
+    function showDonut(){
+      const m=donutModel(); curLabels=m.labels;
+      dTotal.textContent=m.center[0]; dLbl.textContent=m.center[1];
+      dBack.classList.toggle("show", m.level>1);
+      dBackLbl.textContent = m.level===3 ? donutType : "all types";
+      dLegend.classList.toggle("clickable", m.level<3);
+      dLegend.innerHTML=m.labels.map((lab,i)=>
+        `<div class="row" data-key="${lab}"><span class="sw" style="background:${m.colors[i]}"></span><span>${lab}</span><span class="ct">${m.data[i]}</span></div>`).join("");
+      const data={labels:m.labels, datasets:[{data:m.data, backgroundColor:m.colors, borderWidth:m.border?2:0, borderColor:deepBg, hoverOffset:5}]};
+      if(donutChart){ donutChart.data=data; donutChart.update(); return; }
+      donutChart=new Chart(document.getElementById("donutchart"),{
+        type:"doughnut", data,
+        options:{responsive:true, maintainAspectRatio:true, cutout:"60%", animation:{duration:300},
+          plugins:{legend:{display:false}},
+          onHover:(e,els)=>{ const drillable=!(donutType&&donutPlugin); e.native.target.style.cursor=(drillable&&els.length)?"pointer":"default"; },
+          onClick:(e,els)=>{ if(els.length) donutDrill(curLabels[els[0].index]); }}
+      });
+    }
+    if(dBack) dBack.addEventListener("click", ()=>{ if(donutPlugin) donutPlugin=null; else donutType=null; showDonut(); });
+    if(dLegend) dLegend.addEventListener("click",(e)=>{ const r=e.target.closest(".row"); if(r) donutDrill(r.dataset.key); });
+    const whenChart=(cb)=> window.Chart ? cb() : setTimeout(()=>whenChart(cb),50);
+    function radar(){
+      // nodes sit on the outermost ring; two inner rings + crosshairs are scope decoration
+      const cx=180,cy=148,R=108,pos={};
       order.forEach((n,i)=>{ const a=(-90+i*360/order.length)*Math.PI/180; pos[n]={x:cx+R*Math.cos(a),y:cy+R*Math.sin(a),a}; });
       let s="";
-      [R+14,R-30,R-66].forEach((r)=> s+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--line-h)" stroke-width="0.8" opacity="${r>R?.9:.5}"/>`);
-      s+=`<line x1="${cx-R-14}" y1="${cy}" x2="${cx+R+14}" y2="${cy}" stroke="var(--line-h)" stroke-width="0.6" opacity=".5"/>`;
-      s+=`<line x1="${cx}" y1="${cy-R-14}" x2="${cx}" y2="${cy+R+14}" stroke="var(--line-h)" stroke-width="0.6" opacity=".5"/>`;
-      (deps.edges||[]).forEach((e)=>{ const a=pos[e.from],b=pos[e.to]; if(!a||!b) return;
-        s+=`<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" stroke="${pcolor[e.from]}" stroke-width="1.4" opacity=".45"/>`; });
-      order.forEach((n)=>{ const p=pos[n], col=pcolor[n];
-        s+=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="6" fill="${col}" style="filter:drop-shadow(0 0 4px ${col})"/>`;
+      [R,70,36].forEach((r)=> s+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--line-h)" stroke-width="0.8" opacity="${r>=R?.9:.5}"/>`);
+      s+=`<line x1="${cx-R-10}" y1="${cy}" x2="${cx+R+10}" y2="${cy}" stroke="var(--line-h)" stroke-width="0.6" opacity=".5"/>`;
+      s+=`<line x1="${cx}" y1="${cy-R-10}" x2="${cx}" y2="${cy+R+10}" stroke="var(--line-h)" stroke-width="0.6" opacity=".5"/>`;
+      // two sonar pings expanding from the helm on a loop (under the nodes):
+      // Claude-orange, then user-white 6s later. Stroke colors come from CSS.
+      s+=`<circle class="radar-ping-claude" cx="${cx}" cy="${cy}" r="5" fill="none" stroke-width="1.3" style="filter:drop-shadow(0 0 3px var(--claude))"/>`;
+      s+=`<circle class="radar-ping-user" cx="${cx}" cy="${cy}" r="5" fill="none" stroke-width="1.3" style="filter:drop-shadow(0 0 3px var(--fg))"/>`;
+      order.forEach((n)=>{ const p=pos[n], col=pcolor[n], cx2=p.x.toFixed(1), cy2=p.y.toFixed(1), acts=activationsOf(n);
+        // flare halo(s): a node pulses orange when it reacts to the agent, white
+        // when it reacts to the user (session activations don't pulse).
+        if(acts.includes("agent")) s+=`<circle class="radar-react react-claude" cx="${cx2}" cy="${cy2}" r="6"/>`;
+        if(acts.includes("user"))  s+=`<circle class="radar-react react-user" cx="${cx2}" cy="${cy2}" r="6"/>`;
+        s+=`<circle cx="${cx2}" cy="${cy2}" r="6" fill="${col}" style="filter:drop-shadow(0 0 4px ${col})"/>`;
         const anchor=Math.abs(Math.cos(p.a))<0.34?"middle":(Math.cos(p.a)>0?"start":"end");
         const lx=p.x+Math.cos(p.a)*16, ly=p.y+Math.sin(p.a)*16+3.5;
         s+=`<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" font-size="11" fill="var(--muted)">${n}</text>`; });
       s+=`<circle cx="${cx}" cy="${cy}" r="2" fill="var(--muted)"/>`;
       document.getElementById("radar").innerHTML=s;
     }
+    // standalone dependency graph: sources (left) → the plugins they depend on
+    // (right), arrowheads colored by source. Plugins with no edges are listed as
+    // standalone chips below.
+    function depGraph(deps){
+      const edges=deps.edges||[];
+      const srcs=[...new Set(edges.map((e)=>e.from))];
+      const tgts=[...new Set(edges.map((e)=>e.to))].filter((t)=>!srcs.includes(t));
+      const H=170, lx=118, rx=322, pos={};
+      const lay=(arr,x)=>{ const g=H/(arr.length+1); arr.forEach((id,i)=>pos[id]={x,y:g*(i+1)}); };
+      lay(srcs,lx); lay(tgts,rx);
+      let s="";
+      edges.forEach((e)=>{ const a=pos[e.from],b=pos[e.to]; if(!a||!b) return;
+        const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,ux=dx/d,uy=dy/d,px=-uy,py=ux,c=pcolor[e.from];
+        const sx=a.x+ux*9,sy=a.y+uy*9,tx=a.x+ux*(d-9),ty=a.y+uy*(d-9),ah=8,hw=4,bx=tx-ux*ah,by=ty-uy*ah;
+        const tip=`${e.from} → ${e.to}${e.reason?": "+e.reason:""}`;
+        s+=`<g><title>${tip}</title>`+
+           `<line x1="${sx.toFixed(1)}" y1="${sy.toFixed(1)}" x2="${bx.toFixed(1)}" y2="${by.toFixed(1)}" stroke="${c}" stroke-width="1.6" opacity=".7"/>`+
+           `<path d="M ${tx.toFixed(1)} ${ty.toFixed(1)} L ${(bx+px*hw).toFixed(1)} ${(by+py*hw).toFixed(1)} L ${(bx-px*hw).toFixed(1)} ${(by-py*hw).toFixed(1)} Z" fill="${c}"/></g>`; });
+      const draw=(id,side)=>{ const p=pos[id],c=pcolor[id],tx=side==="L"?p.x-13:p.x+13;
+        s+=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="8" fill="${c}" style="filter:drop-shadow(0 0 5px ${c})"/>`;
+        s+=`<text x="${tx.toFixed(1)}" y="${(p.y+4).toFixed(1)}" text-anchor="${side==="L"?"end":"start"}" font-size="12" fill="var(--fg)">${id}</text>`; };
+      srcs.forEach((id)=>draw(id,"L")); tgts.forEach((id)=>draw(id,"R"));
+      document.getElementById("depgraph").innerHTML=s;
+      const inEdge=new Set(edges.flatMap((e)=>[e.from,e.to]));
+      const alone=order.filter((n)=>!inEdge.has(n));
+      document.getElementById("deps-standalone").innerHTML = alone.length
+        ? `<span class="lbl">standalone</span>`+alone.map((n)=>`<span class="chip"><i style="background:${pcolor[n]}"></i>${n}</span>`).join("")
+        : "";
+    }
     const sec=document.getElementById("details"); if(!sec) return;
     const io=new IntersectionObserver((ents)=>{ ents.forEach((e)=>{ if(e.isIntersecting){ io.disconnect();
-      fetch("deps.json").then((r)=>r.json()).then(radar)
+      whenChart(showDonut);
+      radar();
+      fetch("deps.json").then((r)=>r.json()).then(depGraph)
         .catch((err)=> console.error("details: failed to load deps.json", err)); } }); },{threshold:.05});
     io.observe(sec);
   })();

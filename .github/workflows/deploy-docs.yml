@@ -36,7 +36,7 @@ jobs:
       - name: Generate SPA data and dependency graph (ephemeral)
         run: |
           python3 suite/build-spa-data.py
-          python3 suite/trace-deps.py
+          python3 suite/build-deps-data.py
 
       - name: Check every plugin is grouped and renderable on the SPA
         run: python3 suite/check-spa-coverage.py

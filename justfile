@@ -10,9 +10,9 @@ sync:
 spa-data:
     python3 suite/build-spa-data.py
 
-# trace cross-plugin soft dependencies into docs/deps.json
+# project declared soft_deps into docs/deps.json (the dependency graph)
 deps:
-    python3 suite/trace-deps.py
+    python3 suite/build-deps-data.py
 
 # fail if any plugin is missing from the SPA catalog or its data (run after spa-data)
 check-coverage:

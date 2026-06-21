@@ -32,13 +32,12 @@ Authoring rule: edit `plugin.yml`, never the generated `plugin.json`.
 Keys mirror the SPA's `PLUGINS` entry so the projection is a direct YAML→JSON
 dump (`suite/build-spa-data.py`):
 
-- `ac` — Dracula CSS accent token (e.g. `"--guard"`), not a hardcoded color.
-- `group` — capability grouping shown in the catalog (e.g. `stay safe`).
+- `group` — the capability group this plugin belongs to, as a **slug**: `safety` / `bearings` / `waypoints` / `record`. The display label lives in the SPA's `GROUPS` (so relabeling never touches a spoke); the same slug keys the page anchors (`#g-<slug>`) and the accent CSS.
 - `cli` (bool) — has a CLI entrypoint.
-- `passive` (bool) — runs without explicit invocation.
 - `gloss`, `pitch`, `what` — the nautical gloss, the hook, and the full description.
 - `cmds` — list of `[command, description]` pairs.
-- `soft_deps` — plugins this one references at runtime; cross-checked by `suite/trace-deps.py`.
+- `dependencies` — plugins this one depends on at runtime, as a list of `{name, required, reason}` (`required: false` = optional/soft; `reason` is a short why, surfaced on hover in the interop graph). Projected to `docs/deps.json` by `suite/build-deps-data.py`. Declared, never discovered — adding one is intentional.
+- `activations` — what triggers this plugin, as a list from `user` (slash commands / keyword skills), `agent` (reacts to the agent's tool calls), and `session` (acts at session start — ambient rules, autoupdate). Drives the interop radar's pulse flares: a node flares on the agent pulse if it lists `agent`, the user pulse if it lists `user` (`session` is declared but doesn't pulse). Omit for the `[user]` default.
 - `examples` / `session` — structured session-playback frames (see an existing migrated plugin for the frame shapes).
 
 ## Not in `plugin.yml`
@@ -46,4 +45,4 @@ dump (`suite/build-spa-data.py`):
 Derived data is computed, never declared, so it can't drift:
 
 - **artifact counts** — tracked from each repo's git state by `suite/record-artifacts.py` (the rolling `suite/artifacts.csv` log).
-- **discovered dependency edges** — found in code by `suite/trace-deps.py` (then cross-checked against `soft_deps`).
+- **accent color** — derived from the plugin's `group`: the SPA's `GROUPS` defines the per-group Dracula token (lightened a step per same-group sibling), so the accent is never declared per plugin.
