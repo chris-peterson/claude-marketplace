@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """Generate docs/artifacts.json — the growth view's data — from the rolling
 suite/artifacts.csv. Per plugin, a forward-filled total artifact count at each
-change-point date (the stacked-bar series), plus the named changelog.
+weekly bucket (the stacked-bar series), plus the named changelog.
+
+The chart's X axis is regular weekly buckets (Monday-start) spanning the first
+change point through today, so the time axis is linear — equal spacing means
+equal elapsed time. The changelog stays per-change-point (one row per dated
+event), independent of the buckets.
 
 Plugins are colored by their SPA catalog category (the four functional-area
 tokens), parsed from the GROUPS array in docs/index.html so the chart and the
@@ -17,6 +22,7 @@ import os
 import re
 import sys
 import urllib.request
+from datetime import date, timedelta
 
 from _common import CATS, ROOT, plugin_names
 
@@ -35,6 +41,18 @@ def catalog_groups() -> list[tuple[str, list[str]]]:
     for m in re.finditer(r'ac:\s*"([^"]+)".*?slugs:\s*\[([^\]]*)\]', block.group(1), re.S):
         groups.append((m.group(1), re.findall(r'"([^"]+)"', m.group(2))))
     return groups
+
+
+def week_buckets(first: str) -> list[date]:
+    """Monday-start week boundaries from the week of `first` through this week."""
+    start = date.fromisoformat(first)
+    start -= timedelta(days=start.weekday())  # back up to that week's Monday
+    today = date.today()
+    buckets, cur = [], start
+    while cur <= today:
+        buckets.append(cur)
+        cur += timedelta(days=7)
+    return buckets
 
 
 def fetch_releases(plugin: str) -> list[dict]:
@@ -70,12 +88,16 @@ def main() -> int:
             plugins.append(slug)
             colors[slug] = {"token": token, "shade": shade}
 
+    buckets = week_buckets(dates[0])
+    labels = [b.isoformat() for b in buckets]
+
     series = {}
     for p in plugins:
         pts = sorted((r for r in rows if r["plugin"] == p), key=lambda r: r["date"])
         totals, cur, i = [], None, 0
-        for d in dates:
-            while i < len(pts) and pts[i]["date"] <= d:
+        for b in buckets:
+            week_end = (b + timedelta(days=6)).isoformat()
+            while i < len(pts) and pts[i]["date"] <= week_end:
                 cur = sum(int(pts[i][c]) for c in CATS)
                 i += 1
             totals.append(cur)  # None before the plugin's first change point
@@ -102,14 +124,15 @@ def main() -> int:
     n_releases = sum(len(e["releases"]) for e in entries.values())
 
     TARGET.write_text(json.dumps({
-        "dates": dates,
+        "dates": labels,
         "plugins": plugins,
         "colors": colors,
         "series": series,
         "changelog": changelog,
     }, indent=2))
     print(f"wrote {TARGET.relative_to(ROOT)} — {len(plugins)} plugins, "
-          f"{len(dates)} change points, {n_releases} releases")
+          f"{len(labels)} weekly buckets, {len(dates)} change points, "
+          f"{n_releases} releases")
     return 0
 
 
