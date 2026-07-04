@@ -8,9 +8,12 @@ visible until someone clicks:
    it (e.g. its plugin.yml is missing or has no suite: block).
 2. Not in a GROUPS slug list — the catalog renders only grouped slugs, so the
    data exists but no card is shown.
-3. Missing a field the renderer reads unguarded — the per-plugin view
-   (#/<slug>) dereferences `what`, `cmds`, and a `session`/`examples`
-   walkthrough; a plugin without them throws and the detail page goes blank.
+3. Missing a field the catalog card needs — it declares its `group` slug and
+   dereferences a `pitch`/`what` blurb (`p.pitch || p.what`) unguarded; a
+   plugin without them can't render a card. (The in-hub per-plugin detail view
+   was removed in the descriptor migration — #/<slug> now redirects to each
+   plugin's own docs site — so `cmds` and the `session`/`examples` walkthrough
+   it used to read are no longer required.)
 
 This runs after `build-spa-data.py` (it reads the generated docs/plugins.js) and
 cross-references marketplace.json and the SPA GROUPS, failing loudly so the
@@ -25,8 +28,12 @@ from _common import ROOT, plugin_names
 INDEX = ROOT / "docs" / "index.html"
 PLUGINS_JS = ROOT / "docs" / "plugins.js"
 
-# Fields the SPA per-plugin view reads without a presence guard (docs/index.html).
-REQUIRED = ["group", "what", "cmds"]
+# Fields a plugin must declare to render a catalog card (docs/index.html): its
+# `group` slug, and a blurb the card shows as `pitch || what`. The per-plugin
+# detail view was removed in the descriptor migration (#/<slug> redirects to the
+# plugin's own docs site), so `cmds` and the `session`/`examples` walkthrough it
+# read are no longer required.
+REQUIRED = ["group"]
 
 
 def grouped_slugs() -> list[str]:
@@ -50,8 +57,8 @@ def generated_plugins() -> dict:
 
 def field_problems(entry: dict) -> list[str]:
     probs = [f"missing '{k}'" for k in REQUIRED if not entry.get(k)]
-    if not entry.get("session") and not entry.get("examples"):
-        probs.append("missing 'session' or 'examples' (the per-plugin view needs a walkthrough)")
+    if not entry.get("pitch") and not entry.get("what"):
+        probs.append("missing 'pitch' or 'what' (the catalog card shows one as its blurb)")
     return probs
 
 
