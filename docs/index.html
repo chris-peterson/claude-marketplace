@@ -158,8 +158,6 @@
     border:1px solid var(--line-2);border-radius:5px;padding:2px 7px}
   .ship .gloss{font-family:var(--disp);font-style:italic;font-size:14.5px;color:var(--muted);margin:10px 0 0}
   .ship .what{margin:11px 0 0;color:var(--fg);font-size:15px;line-height:1.55}
-  .ship .cwith{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin:9px 0 0}
-  .ship .cwith b{color:var(--ac);font-weight:600}
   .ship .cmds{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 0}
   .ship .cmd{font-family:var(--mono);font-size:11.5px;color:var(--ac);
     background:color-mix(in srgb,var(--ac) 9%,transparent);
@@ -294,8 +292,23 @@
   .panel .ihint b{color:var(--fg);font-weight:500}
   .interop text,.deps text{font-family:var(--mono)}
   /* dependency graph — its own full-width panel below the donut + radar */
-  .details .panel.deps{grid-column:1/-1}
+  .details .panel.deps{grid-column:1/-1;position:relative}
   .deps svg{width:100%;height:auto;max-width:480px;margin:2px auto 0;display:block}
+  /* edges dim when one is hovered, so the focused integration stands out */
+  .deps .edge{cursor:pointer}
+  .deps .edge>line,.deps .edge>path{transition:opacity .15s}
+  .deps.hovering .edge>line,.deps.hovering .edge>path{opacity:.18}
+  .deps.hovering .edge.on>line{opacity:.85}
+  .deps.hovering .edge.on>path{opacity:1}
+  /* hover card: what the integration does (from each edge's declared reason) */
+  .dep-tip{position:absolute;z-index:6;pointer-events:none;opacity:0;transform:translateY(3px);
+    transition:opacity .12s,transform .12s;max-width:260px;padding:8px 11px;
+    background:var(--deep);border:1px solid var(--line-2);border-radius:8px;
+    box-shadow:0 6px 22px rgba(0,0,0,.45);font-family:var(--mono);font-size:11.5px;line-height:1.5}
+  .dep-tip.show{opacity:1;transform:translateY(0)}
+  .dep-tip .rel{display:flex;align-items:center;gap:6px;color:var(--fg);font-weight:600}
+  .dep-tip .rel i{width:7px;height:7px;border-radius:50%;flex:none}
+  .dep-tip .why{color:var(--muted);margin-top:3px}
   .deps-standalone{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;
     font-family:var(--mono);font-size:11px;color:var(--muted)}
   .deps-standalone .lbl{color:var(--faint);letter-spacing:.14em;text-transform:uppercase}
@@ -472,7 +485,7 @@
       </div>
       <div class="panel deps">
         <h3>Dependencies</h3>
-        <p class="ihint">An arrow points from a plugin to one it <b>depends on</b> at runtime — all optional. The rest run standalone.</p>
+        <p class="ihint">An arrow points from a plugin to one it <b>depends on</b> at runtime — all optional. <b>Hover an arrow</b> to see what the integration does. The rest run standalone.</p>
         <svg id="depgraph" viewBox="0 0 440 170" aria-hidden="true"></svg>
         <div class="deps-standalone" id="deps-standalone"></div>
       </div>
@@ -515,7 +528,7 @@
   // ---- catalog: render grouped cards from PLUGINS (single source — no HTML dupe) ----
   const GROUPS=[
     {key:"safety",    ac:"--guard",  tag:"Stay safe",            slugs:["ClaudeWatch","shipshape"]},
-    {key:"bearings",  ac:"--orient", tag:"Keep your bearings",   slugs:["tack","beacon"]},
+    {key:"bearings",  ac:"--orient", tag:"Keep your bearings",   slugs:["beacon","tack"]},
     {key:"waypoints", ac:"--ship",   tag:"Reach your waypoints", slugs:["anchor","moor"]},
     {key:"record",    ac:"--build",  tag:"Write it down",        slugs:["logbook","sextant"]}
   ];
@@ -543,7 +556,6 @@
       (p.version?`<span class="ver">v${p.version}</span>`:``)+
       `<a class="srclink" href="${srcUrl(slug)}" target="_blank" rel="noopener" aria-label="${slug} source on GitHub">${GH_ICO}</a></div>`+
       `<p class="what">${p.pitch||p.what}</p>`+
-      (p.with?`<p class="cwith">works with <b>${p.with}</b></p>`:``)+
       (p.components?`<details class="pcomp"><summary>${compSummary(p.components)}</summary><div class="compbody">${compDetails(p.components)}</div></details>`:``)+
       `<div class="pacts"><button class="cmdcopy" data-cmd="${cmd}"><span class="cc-cmd"><span class="cc-nb">claude plugin install</span> <span class="cc-nb">${slug}@chris-peterson</span></span><span class="cc-ico">${COPY_ICO}</span></button></div></article>`;
   };
@@ -663,8 +675,10 @@
       document.getElementById("radar").innerHTML=s;
     }
     // standalone dependency graph: sources (left) → the plugins they depend on
-    // (right), arrowheads colored by source. Plugins with no edges are listed as
-    // standalone chips below.
+    // (right), arrowheads colored by source. Hovering an edge reveals what the
+    // integration does (its declared reason). Plugins with no edges are listed
+    // as standalone chips below.
+    const attr=(v)=>String(v||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;");
     function depGraph(deps){
       const edges=deps.edges||[];
       const srcs=[...new Set(edges.map((e)=>e.from))];
@@ -676,15 +690,42 @@
       edges.forEach((e)=>{ const a=pos[e.from],b=pos[e.to]; if(!a||!b) return;
         const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,ux=dx/d,uy=dy/d,px=-uy,py=ux,c=pcolor[e.from];
         const sx=a.x+ux*9,sy=a.y+uy*9,tx=a.x+ux*(d-9),ty=a.y+uy*(d-9),ah=8,hw=4,bx=tx-ux*ah,by=ty-uy*ah;
-        const tip=`${e.from} → ${e.to}${e.reason?": "+e.reason:""}`;
-        s+=`<g><title>${tip}</title>`+
+        // wide transparent hit-line makes the thin edge easy to hover
+        s+=`<g class="edge" data-from="${attr(e.from)}" data-to="${attr(e.to)}" data-reason="${attr(e.reason)}" data-color="${attr(c)}">`+
+           `<line x1="${sx.toFixed(1)}" y1="${sy.toFixed(1)}" x2="${tx.toFixed(1)}" y2="${ty.toFixed(1)}" stroke="transparent" stroke-width="14"/>`+
            `<line x1="${sx.toFixed(1)}" y1="${sy.toFixed(1)}" x2="${bx.toFixed(1)}" y2="${by.toFixed(1)}" stroke="${c}" stroke-width="1.6" opacity=".7"/>`+
            `<path d="M ${tx.toFixed(1)} ${ty.toFixed(1)} L ${(bx+px*hw).toFixed(1)} ${(by+py*hw).toFixed(1)} L ${(bx-px*hw).toFixed(1)} ${(by-py*hw).toFixed(1)} Z" fill="${c}"/></g>`; });
       const draw=(id,side)=>{ const p=pos[id],c=pcolor[id],tx=side==="L"?p.x-13:p.x+13;
         s+=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="8" fill="${c}" style="filter:drop-shadow(0 0 5px ${c})"/>`;
         s+=`<text x="${tx.toFixed(1)}" y="${(p.y+4).toFixed(1)}" text-anchor="${side==="L"?"end":"start"}" font-size="12" fill="var(--fg)">${id}</text>`; };
       srcs.forEach((id)=>draw(id,"L")); tgts.forEach((id)=>draw(id,"R"));
-      document.getElementById("depgraph").innerHTML=s;
+      const svg=document.getElementById("depgraph");
+      svg.innerHTML=s;
+      // hover an edge → reveal what the integration does, in a card that
+      // tracks the cursor; other edges dim so the focused one stands out.
+      const panel=svg.closest(".deps"); let tip=panel.querySelector(".dep-tip");
+      if(!tip){ tip=document.createElement("div"); tip.className="dep-tip"; panel.appendChild(tip); }
+      svg.querySelectorAll(".edge").forEach((g)=>{
+        g.addEventListener("mouseenter",()=>{
+          panel.classList.add("hovering"); g.classList.add("on");
+          const why=g.dataset.reason;
+          tip.innerHTML=`<div class="rel"><i></i><span class="pair"></span></div><div class="why"></div>`;
+          tip.querySelector(".rel i").style.background=g.dataset.color;
+          tip.querySelector(".pair").textContent=`${g.dataset.from} → ${g.dataset.to}`;
+          const w=tip.querySelector(".why"); w.textContent=why||""; w.style.display=why?"":"none";
+          tip.classList.add("show");
+        });
+        g.addEventListener("mousemove",(ev)=>{
+          const r=panel.getBoundingClientRect();
+          let x=ev.clientX-r.left+13, y=ev.clientY-r.top+13;
+          x=Math.max(4, Math.min(x, r.width-tip.offsetWidth-4));
+          y=Math.min(y, r.height-tip.offsetHeight-4);
+          tip.style.left=x.toFixed(0)+"px"; tip.style.top=y.toFixed(0)+"px";
+        });
+        g.addEventListener("mouseleave",()=>{
+          panel.classList.remove("hovering"); g.classList.remove("on"); tip.classList.remove("show");
+        });
+      });
       const inEdge=new Set(edges.flatMap((e)=>[e.from,e.to]));
       const alone=order.filter((n)=>!inEdge.has(n));
       document.getElementById("deps-standalone").innerHTML = alone.length
