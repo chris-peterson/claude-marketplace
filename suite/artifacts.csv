@@ -32,3 +32,4 @@ date,plugin,skills,rules,hooks,commands,agents,change
 2026-06-30,beacon,1,1,3,4,0,+command:done
 2026-06-30,tack,1,0,4,0,0,-command:tack
 2026-07-02,moor,0,1,3,0,0,-command:moor
+2026-07-07,beacon,1,1,3,5,0,+command:release +command:retro -command:wrap
