@@ -6,7 +6,10 @@ one-time bootstrap). Replays the existing file to get each plugin's last-known
 artifact set, compares it to the committed HEAD of the sibling repo, and appends
 one dated change-point row per plugin that moved — recording the named diff in
 the `change` column. Comparing name sets (not just counts) catches renames a
-count would miss. Idempotent: a re-run with nothing newly committed is a no-op.
+count would miss. A same-day row whose net change has since reverted to nil —
+an artifact added and moved/removed within the same day — is dropped, since the
+day's row should express the net move and there is none. Idempotent: a re-run
+with nothing newly committed is a no-op.
 
 Wired into CI (deploy-docs.yml) and `just record-artifacts`.
 """
@@ -33,6 +36,7 @@ def main() -> int:
 
     rows = list(csv.DictReader(CSV.open(newline="")))
     recorded = []
+    dropped = []
     for name in plugin_names():
         cur = members_at(name, "HEAD")
         date = head_date(name)
@@ -57,8 +61,14 @@ def main() -> int:
         if desired:
             rows.append(desired)
             recorded.append((date, name, desired["change"]))
+        else:
+            # no net change vs the prior day, yet a same-day row exists — its
+            # move has since reverted (added then moved/removed within the day).
+            # It's already been filtered out of `rows`; note it so the file gets
+            # written and the drop is reported.
+            dropped += [(date, name, r["change"]) for r in same_day]
 
-    if not recorded:
+    if not recorded and not dropped:
         print(f"{CSV.relative_to(ROOT)}: no artifact changes")
         return 0
 
@@ -69,6 +79,8 @@ def main() -> int:
         w.writerows([[r["date"], r["plugin"], *(r[x] for x in CATS), r["change"]] for r in rows])
     for date, name, change in recorded:
         print(f"recorded {name} ({date}): {change}")
+    for date, name, change in dropped:
+        print(f"dropped {name} ({date}): {change} (net change reverted same-day)")
     return 0
 
 
