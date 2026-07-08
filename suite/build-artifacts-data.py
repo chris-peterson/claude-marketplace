@@ -71,9 +71,53 @@ def fetch_releases(plugin: str) -> list[dict]:
     with urllib.request.urlopen(req, timeout=20) as resp:
         data = json.load(resp)
     return [
-        {"date": r["published_at"][:10], "tag": r["tag_name"], "url": r["html_url"]}
+        {"date": r["published_at"][:10], "tag": r["tag_name"], "url": r["html_url"],
+         "published_at": r["published_at"]}
         for r in data if not r.get("draft")
     ]
+
+
+def build_series(rows: list[dict], plugins: list[str], buckets: list[date]) -> dict:
+    """Per plugin, a forward-filled total artifact count at each weekly bucket.
+    Each total is the sum of that plugin's category counts at the latest change
+    point on or before the bucket's week end; None before its first change point."""
+    series = {}
+    for p in plugins:
+        pts = sorted((r for r in rows if r["plugin"] == p), key=lambda r: r["date"])
+        totals, cur, i = [], None, 0
+        for b in buckets:
+            week_end = (b + timedelta(days=6)).isoformat()
+            while i < len(pts) and pts[i]["date"] <= week_end:
+                cur = sum(int(pts[i][c]) for c in CATS)
+                i += 1
+            totals.append(cur)  # None before the plugin's first change point
+        series[p] = totals
+    return series
+
+
+def build_changelog(rows: list[dict], plugins: list[str],
+                    releases_by_plugin: dict[str, list[dict]]) -> list[dict]:
+    """One changelog entry per (date, plugin): the day's artifact change tokens
+    plus the latest release published that day (a plugin is often released
+    several times a day; only the latest is shown so the log stays legible). The
+    SPA shows the release first, then what changed. Newest entry first."""
+    entries: dict[tuple[str, str], dict] = {}
+
+    def entry(date: str, plugin: str) -> dict:
+        return entries.setdefault((date, plugin),
+            {"date": date, "plugin": plugin, "change": "", "releases": []})
+
+    for r in rows:
+        entry(r["date"], r["plugin"])["change"] = r["change"]
+    for p in plugins:
+        for rel in releases_by_plugin.get(p, []):
+            entry(rel["date"], p)["releases"].append(rel)
+    for e in entries.values():
+        latest = max(e["releases"], key=lambda r: r["published_at"], default=None)
+        e["releases"] = [{"tag": latest["tag"], "url": latest["url"]}] if latest else []
+
+    return sorted(entries.values(),
+                  key=lambda r: (r["date"], r["plugin"]), reverse=True)
 
 
 def main() -> int:
@@ -91,37 +135,11 @@ def main() -> int:
     buckets = week_buckets(dates[0])
     labels = [b.isoformat() for b in buckets]
 
-    series = {}
-    for p in plugins:
-        pts = sorted((r for r in rows if r["plugin"] == p), key=lambda r: r["date"])
-        totals, cur, i = [], None, 0
-        for b in buckets:
-            week_end = (b + timedelta(days=6)).isoformat()
-            while i < len(pts) and pts[i]["date"] <= week_end:
-                cur = sum(int(pts[i][c]) for c in CATS)
-                i += 1
-            totals.append(cur)  # None before the plugin's first change point
-        series[p] = totals
+    series = build_series(rows, plugins, buckets)
 
-    # One changelog entry per (date, plugin): the day's artifact change tokens
-    # plus any releases published that day (fetched live from GitHub). The SPA
-    # shows releases first, then what changed. Only a few plugins publish
-    # releases so far; the rest stay artifact-only.
-    entries: dict[tuple[str, str], dict] = {}
-
-    def entry(date: str, plugin: str) -> dict:
-        return entries.setdefault((date, plugin),
-            {"date": date, "plugin": plugin, "change": "", "releases": []})
-
-    for r in rows:
-        entry(r["date"], r["plugin"])["change"] = r["change"]
-    for p in plugins:
-        for rel in fetch_releases(p):
-            entry(rel["date"], p)["releases"].append({"tag": rel["tag"], "url": rel["url"]})
-
-    changelog = sorted(entries.values(),
-                       key=lambda r: (r["date"], r["plugin"]), reverse=True)
-    n_releases = sum(len(e["releases"]) for e in entries.values())
+    releases_by_plugin = {p: fetch_releases(p) for p in plugins}
+    changelog = build_changelog(rows, plugins, releases_by_plugin)
+    n_releases = sum(len(e["releases"]) for e in changelog)
 
     TARGET.write_text(json.dumps({
         "dates": labels,
