@@ -145,12 +145,18 @@
   .fgroup .gwhy{color:var(--muted);font-size:14px}
   .fleet{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
   .fleet.solo{grid-template-columns:1fr}
+  /* collapsed rows stretch to equal height (default); once a card is open, drop
+     the stretch so its peer keeps its own height instead of growing empty. */
+  .fleet:has(.ship.open){align-items:start}
   @media(max-width:780px){.fleet{grid-template-columns:1fr}}
 
-  .ship{position:relative;display:flex;flex-direction:column;border:1px solid var(--line-2);border-radius:14px;padding:22px;
+  .ship{position:relative;display:flex;flex-direction:column;border:1px solid var(--line-2);border-radius:14px;padding:22px;scroll-margin-top:82px;
     background:var(--deep);overflow:hidden;transition:transform .4s cubic-bezier(.2,.7,.2,1),border-color .4s}
   .ship::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--ac);opacity:.7}
   .ship:hover{transform:translateY(-5px);border-color:color-mix(in srgb,var(--ac) 45%,transparent)}
+  /* deep-link landing pulse: a #/<slug> hash flashes the card's accent ring */
+  .ship.flash{animation:cardflash 1.5s ease}
+  @keyframes cardflash{0%,100%{box-shadow:0 0 0 0 transparent}18%{box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 55%,transparent)}}
   .ship .head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   .ship .head img{width:32px;height:32px;border-radius:9px;flex:none}
   .ship h3{font-family:var(--disp);font-weight:600;font-size:24px;margin:0;color:var(--fg)}
@@ -183,6 +189,10 @@
   .ship .compcat{display:grid;grid-template-columns:68px 1fr;gap:11px;align-items:baseline;font-family:var(--mono);font-size:11.5px}
   .ship .compk{color:var(--ac)}
   .ship .compv{color:var(--muted);word-break:break-word;line-height:1.55}
+  /* an artifact chip with a declared description gets a dotted underline + help cursor */
+  .ship .compitem[data-tip]{cursor:help;text-decoration:underline dotted;text-underline-offset:2px;
+    text-decoration-color:color-mix(in srgb,var(--ac) 50%,transparent)}
+  .ship .compitem[data-tip]:hover{color:var(--fg)}
 
   /* ---- voyage ---- */
   .voyage{margin-top:26px;position:relative}
@@ -228,7 +238,7 @@
   .cmdcopy.done{border-color:color-mix(in srgb,var(--green) 55%,transparent)}
   .cmdcopy.done .cc-ico{color:var(--green)}
   /* title = the plugin's anchor: favicon + name are one link that navigates to
-     the `#/<slug>` deep link (which routes to the plugin's docs). */
+     the `#/<slug>` deep link (which scrolls to and highlights this card). */
   .pnamelink{display:inline-flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
   .pnamelink:hover h3{text-decoration:underline;text-underline-offset:3px}
   /* header quick-links: documentation + source, a matched icon pair pushed to
@@ -267,11 +277,11 @@
     outline:2px solid var(--ac,var(--cyan));outline-offset:3px;border-radius:4px}
   .cmdcopy:focus-visible,.ship:focus-visible{outline-offset:2px;border-radius:9px}
 
-  /* ---------- SPA: catalog routing ---------- */
+  /* ---------- doc site: catalog routing ---------- */
   [hidden]{display:none!important}
   .prow{cursor:pointer}
 
-  /* ---------- plugin details: artifact donut + interop radar ---------- */
+  /* ---------- composition: artifact donut + interop radar ---------- */
   .details{display:grid;grid-template-columns:300px 1fr;gap:28px;margin-top:20px;align-items:start}
   @media(max-width:760px){.details{grid-template-columns:1fr}}
   .panel{border:1px solid var(--line-2);border-radius:14px;background:var(--deep);padding:20px 22px}
@@ -364,6 +374,22 @@
   .changelog .clrow.release{background:color-mix(in srgb,var(--gold) 7%,transparent)}
   .changelog .clrelease{color:var(--gold);font-weight:600;text-decoration:none;white-space:nowrap}
   .changelog .clrelease:hover{text-decoration:underline;text-underline-offset:2px}
+  /* a release with notes gets a dotted underline as a "hover for notes" cue */
+  .changelog .clrelease.has-notes{text-decoration:underline dotted;text-underline-offset:3px;text-decoration-color:color-mix(in srgb,var(--gold) 55%,transparent)}
+  .clnotes-tip{position:fixed;z-index:60;max-width:min(440px,86vw);max-height:300px;overflow-y:auto;
+    background:var(--sea);border:1px solid var(--line-h);border-radius:11px;padding:12px 15px;
+    box-shadow:0 14px 40px rgba(0,0,0,.5);opacity:0;visibility:hidden;transition:opacity .12s;
+    scrollbar-width:thin;scrollbar-color:var(--line-h) transparent}
+  .clnotes-tip.show{opacity:1;visibility:visible}
+  .clnotes-tip .cn-tag{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+  .clnotes-tip .cn-body{white-space:pre-wrap;font-size:12.5px;line-height:1.6;color:var(--fg);word-break:break-word}
+  /* shared cursor-tracking tooltip (card artifacts, radar nodes) */
+  .hovertip{position:fixed;z-index:70;max-width:min(320px,80vw);background:var(--sea);
+    border:1px solid var(--line-h);border-radius:9px;padding:9px 12px;font-size:12px;line-height:1.5;
+    color:var(--fg);white-space:pre-wrap;box-shadow:0 10px 30px rgba(0,0,0,.45);
+    opacity:0;visibility:hidden;transition:opacity .1s;pointer-events:none}
+  .hovertip.show{opacity:1;visibility:visible}
   .changelog .clsep{color:var(--faint)}
   @media(max-width:560px){.changelog .clrow{grid-template-columns:78px 1fr;row-gap:3px}
     .changelog .clchange{grid-column:1/-1}}
@@ -470,7 +496,7 @@
 
   <!-- ============ PLUGIN DETAILS (artifact breakdown + interop) ============ -->
   <section id="details">
-    <h2><a class="secanchor" href="#details">Plugin details</a></h2>
+    <h2><a class="secanchor" href="#details">Composition</a></h2>
     <p class="sub">What the suite is made of, and how the plugins lean on each other.</p>
     <div class="details reveal">
       <div class="panel">
@@ -522,11 +548,32 @@
   const GH_ICO = `<svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 .2a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.13 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.11.16 1.93.08 2.13.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A8 8 0 0 0 8 .2Z"/></svg>`;
   const DOC_ICO = `<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`;
 
+  // escape a string for use inside a double-quoted HTML/SVG attribute (data-tip, etc.)
+  const attrEsc=(v)=>String(v==null?"":v).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
 
-  // ---- routing: a #/<slug> hash hands off to the plugin's own docs site ----
+  // ---- shared hover tooltip: any element carrying [data-tip] shows its text in a
+  // floating panel that tracks the cursor (multi-line via \n). One set of delegated
+  // listeners covers everything rendered later — card artifacts, radar nodes. ----
+  const tipEl=(()=>{ const t=document.createElement("div"); t.className="hovertip"; document.body.appendChild(t); return t; })();
+  const placeTip=(x,y)=>{ const w=tipEl.offsetWidth,h=tipEl.offsetHeight;
+    let nx=x+14,ny=y+16; if(nx+w>innerWidth-8) nx=x-w-14; if(ny+h>innerHeight-8) ny=y-h-16;
+    tipEl.style.left=Math.max(8,nx).toFixed(0)+"px"; tipEl.style.top=Math.max(8,ny).toFixed(0)+"px"; };
+  document.addEventListener("mouseover",(e)=>{ const el=e.target.closest&&e.target.closest("[data-tip]"); if(!el) return;
+    tipEl.textContent=el.getAttribute("data-tip"); tipEl.classList.add("show"); placeTip(e.clientX,e.clientY); });
+  document.addEventListener("mousemove",(e)=>{ if(!tipEl.classList.contains("show")) return;
+    const el=e.target.closest&&e.target.closest("[data-tip]"); if(!el){ tipEl.classList.remove("show"); return; } placeTip(e.clientX,e.clientY); });
+
+  // ---- routing: a #/<slug> hash scrolls to and highlights that plugin's card.
+  // The docs/source icon buttons on the card are the way out to the external
+  // sites — the deep link keeps you on the page. ----
   function route(){
     const m=location.hash.match(/^#\/(.+)$/);
-    if(m && PLUGINS[m[1]]) location.replace(docsUrl(m[1]));
+    if(!m || !PLUGINS[m[1]]) return;
+    const card=document.querySelector(`#catalog .ship[data-slug="${m[1]}"]`);
+    if(!card) return;
+    const rm=matchMedia("(prefers-reduced-motion:reduce)").matches;
+    card.scrollIntoView({behavior:rm?"auto":"smooth",block:"center"});
+    card.classList.remove("flash"); void card.offsetWidth; card.classList.add("flash");
   }
   addEventListener("hashchange", route);
 
@@ -549,15 +596,22 @@
   const COMP_ORDER=["skills","rules","hooks","commands","agents"];
   const compSummary=(c)=> COMP_ORDER.filter(k=>c[k]&&c[k].length)
     .map(k=>`${c[k].length} ${c[k].length===1?k.slice(0,-1):k}`).join(" · ");
-  const compDetails=(c)=> COMP_ORDER.filter(k=>c[k]&&c[k].length).map(k=>
-    `<div class="compcat"><span class="compk">${k}</span><span class="compv">${c[k].join(", ")}</span></div>`).join("");
+  // each artifact name is a hoverable chip; if the plugin's plugin.yml declares a
+  // `describe:` entry for it (suite: describe: <category>: <name>: "..."), the name
+  // carries a data-tip explaining what it's for.
+  const compDetails=(p)=>{ const c=p.components, d=p.describe||{};
+    return COMP_ORDER.filter(k=>c[k]&&c[k].length).map(k=>{
+      const items=c[k].map((name)=>{ const desc=(d[k]||{})[name];
+        return desc ? `<span class="compitem" data-tip="${attrEsc(desc)}">${name}</span>`
+                    : `<span class="compitem">${name}</span>`; }).join(", ");
+      return `<div class="compcat"><span class="compk">${k}</span><span class="compv">${items}</span></div>`; }).join(""); };
   const catCard=(slug)=>{
     const p=PLUGINS[slug];
     const cmd=`claude plugin install ${slug}@chris-peterson`;
     const comps=p.components && compSummary(p.components);
     // The title — favicon + name as one link — is the plugin's anchor: it
-    // navigates to the `#/<slug>` deep link (which routes to the plugin's docs).
-    // The docs and source icons are quick-links; the far-right chevron (or a
+    // navigates to the `#/<slug>` deep link (which scrolls to + highlights the
+    // card). The docs and source icons are quick-links; the far-right chevron (or a
     // click on the card body) expands the card to reveal its artifact breakdown.
     return `<article class="ship" data-slug="${slug}" style="--ac:${PLUGIN_AC[slug]}">`+
       `<div class="head">`+
@@ -569,7 +623,7 @@
       (comps?`<button class="cardtoggle" type="button" aria-expanded="false" aria-label="Show ${slug} artifacts: ${comps}"></button>`:``)+
       `</div>`+
       `<p class="what">${p.pitch||p.what}</p>`+
-      (comps?`<div class="compbody">${compDetails(p.components)}</div>`:``)+
+      (comps?`<div class="compbody">${compDetails(p)}</div>`:``)+
       `<div class="pacts"><button class="cmdcopy" data-cmd="${cmd}"><span class="cc-cmd"><span class="cc-nb">claude plugin install</span> <span class="cc-nb">${slug}@chris-peterson</span></span><span class="cc-ico">${COPY_ICO}</span></button></div></article>`;
   };
   document.getElementById("catalog").innerHTML = GROUPS.map(g=>
@@ -606,7 +660,7 @@
     navigator.clipboard.writeText(url).then(()=>{ a.classList.add("copied"); setTimeout(()=>a.classList.remove("copied"),1400); });
   });
 
-  // ---- plugin details: artifact-type donut (from PLUGINS) + interop radar (deps.json) ----
+  // ---- composition: artifact-type donut (from PLUGINS) + interop radar (deps.json) ----
   (function(){
     // shared: plugin order (category order) + a CSS-color resolver (var()/color-mix → rgb)
     const order=GROUPS.flatMap((g)=>g.slugs);
@@ -654,6 +708,11 @@
         center:[names.length, donutPlugin+" "+donutType], border:true };
     }
     function donutDrill(label){ if(!donutType) donutType=label; else if(!donutPlugin) donutPlugin=label; else return; showDonut(); }
+    // up one level: the back button and a click in the donut's center hole both use this
+    function donutUp(){ if(donutPlugin) donutPlugin=null; else if(donutType) donutType=null; else return; showDonut(); }
+    // is the pointer inside the doughnut's inner hole? (used to route center clicks/cursor to donutUp)
+    const inDonutHole=(e)=>{ const arc=donutChart&&donutChart.getDatasetMeta(0).data[0];
+      return arc && Math.hypot(e.x-arc.x, e.y-arc.y) <= arc.innerRadius; };
     function showDonut(){
       const m=donutModel(); curLabels=m.labels;
       dTotal.textContent=m.center[0]; dLbl.textContent=m.center[1];
@@ -668,13 +727,26 @@
         type:"doughnut", data,
         options:{responsive:true, maintainAspectRatio:true, cutout:"60%", animation:{duration:300},
           plugins:{legend:{display:false}},
-          onHover:(e,els)=>{ const drillable=!(donutType&&donutPlugin); e.native.target.style.cursor=(drillable&&els.length)?"pointer":"default"; },
-          onClick:(e,els)=>{ if(els.length) donutDrill(curLabels[els[0].index]); }}
+          onHover:(e,els)=>{ const drillable=!(donutType&&donutPlugin);
+            const canUp=(donutType||donutPlugin)&&inDonutHole(e);
+            e.native.target.style.cursor=((drillable&&els.length)||canUp)?"pointer":"default"; },
+          onClick:(e,els)=>{ if(els.length){ donutDrill(curLabels[els[0].index]); return; }
+            if(inDonutHole(e)) donutUp(); }}
       });
     }
-    if(dBack) dBack.addEventListener("click", ()=>{ if(donutPlugin) donutPlugin=null; else donutType=null; showDonut(); });
+    if(dBack) dBack.addEventListener("click", donutUp);
     if(dLegend) dLegend.addEventListener("click",(e)=>{ const r=e.target.closest(".row"); if(r) donutDrill(r.dataset.key); });
     const whenChart=(cb)=> window.Chart ? cb() : setTimeout(()=>whenChart(cb),50);
+    // radar node tooltip (#4): what the plugin responds to, then the hooks it does
+    // it with and why — each hook's declared purpose from its plugin.yml
+    // `describe: hooks:` block. Plugins with no hooks say so.
+    const ACT_LABEL={agent:"Claude's tool calls", user:"your commands", session:"session start"};
+    function hookTip(n){ const p=PLUGINS[n]||{}, dh=(p.describe||{}).hooks||{}, hooks=((p.components||{}).hooks)||[];
+      const acts=activationsOf(n).map((a)=>ACT_LABEL[a]||a);
+      let t=n+"\nresponds to: "+acts.join(", ");
+      t+= hooks.length ? "\n\nhooks:\n"+hooks.map((h)=>"• "+h+(dh[h]?" — "+dh[h]:"")).join("\n")
+                       : "\n\n(no hooks)";
+      return t; }
     function radar(){
       // nodes sit on the outermost ring; two inner rings + crosshairs are scope decoration
       const cx=180,cy=148,R=108,pos={};
@@ -695,19 +767,24 @@
         s+=`<circle cx="${cx2}" cy="${cy2}" r="6" fill="${col}" style="filter:drop-shadow(0 0 4px ${col})"/>`;
         const anchor=Math.abs(Math.cos(p.a))<0.34?"middle":(Math.cos(p.a)>0?"start":"end");
         const lx=p.x+Math.cos(p.a)*16, ly=p.y+Math.sin(p.a)*16+3.5;
-        s+=`<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" font-size="11" fill="var(--muted)">${n}</text>`; });
+        s+=`<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" font-size="11" fill="var(--muted)">${n}</text>`;
+        // transparent hit target (larger than the blip) carrying the hook tooltip
+        s+=`<circle cx="${cx2}" cy="${cy2}" r="15" fill="transparent" style="cursor:help" data-tip="${attrEsc(hookTip(n))}"/>`; });
       s+=`<circle cx="${cx}" cy="${cy}" r="2" fill="var(--muted)"/>`;
       document.getElementById("radar").innerHTML=s;
     }
     // standalone dependency graph: sources (left) → the plugins they depend on
     // (right), arrowheads colored by source. Hovering an edge reveals what the
     // integration does (its declared reason). Plugins with no edges are listed
-    // as standalone chips below.
+    // as standalone chips below. Each column is stacked in the canonical category
+    // order (same as the radar, catalog, and growth chart) so the colors band
+    // consistently top-to-bottom rather than by edge-declaration order.
     const attr=(v)=>String(v||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;");
+    const byOrder=(a,b)=>order.indexOf(a)-order.indexOf(b);
     function depGraph(deps){
       const edges=deps.edges||[];
-      const srcs=[...new Set(edges.map((e)=>e.from))];
-      const tgts=[...new Set(edges.map((e)=>e.to))].filter((t)=>!srcs.includes(t));
+      const srcs=[...new Set(edges.map((e)=>e.from))].sort(byOrder);
+      const tgts=[...new Set(edges.map((e)=>e.to))].filter((t)=>!srcs.includes(t)).sort(byOrder);
       const H=170, lx=118, rx=322, pos={};
       const lay=(arr,x)=>{ const g=H/(arr.length+1); arr.forEach((id,i)=>pos[id]={x,y:g*(i+1)}); };
       lay(srcs,lx); lay(tgts,rx);
@@ -774,19 +851,50 @@
     const lighten=(h,a)=>{ const n=parseInt(h.slice(1),16), r=n>>16, g=(n>>8)&255, b=n&255,
       m=(c)=>Math.round(c+(255-c)*a); return `rgb(${m(r)},${m(g)},${m(b)})`; };
     const whenReady=(cb)=> window.Chart ? cb() : setTimeout(()=>whenReady(cb),50);
+    // release-notes hover: a fixed popover (the changelog list itself is a
+    // scroll-clipped box, so the tip lives on <body>) reveals the GitHub release
+    // body. It stays open while the pointer is over the link OR the popover, so
+    // long notes can be scrolled. Placed below the link, or above if it'd spill.
+    function wireReleaseNotes(){
+      let tip=document.querySelector(".clnotes-tip");
+      if(!tip){ tip=document.createElement("div"); tip.className="clnotes-tip"; document.body.appendChild(tip); }
+      let hideT=null;
+      const hide=()=>{ hideT=setTimeout(()=>tip.classList.remove("show"),160); };
+      const show=(a)=>{ clearTimeout(hideT);
+        tip.innerHTML=`<span class="cn-tag"></span><div class="cn-body"></div>`;
+        tip.querySelector(".cn-tag").textContent=`${a.dataset.tag} release notes`;
+        tip.querySelector(".cn-body").textContent=a.dataset.notes;
+        tip.classList.add("show"); tip.style.left="0px"; tip.style.top="0px";
+        const r=a.getBoundingClientRect(), w=tip.offsetWidth, h=tip.offsetHeight;
+        let x=Math.max(8, Math.min(r.left, innerWidth-w-8));
+        let y=r.bottom+8; if(y+h>innerHeight-8) y=Math.max(8, r.top-h-8);
+        tip.style.left=x.toFixed(0)+"px"; tip.style.top=y.toFixed(0)+"px";
+      };
+      document.querySelectorAll("#changelog .clrelease.has-notes").forEach((a)=>{
+        a.addEventListener("mouseenter",()=>show(a));
+        a.addEventListener("mouseleave",hide);
+      });
+      tip.addEventListener("mouseenter",()=>clearTimeout(hideT));
+      tip.addEventListener("mouseleave",hide);
+    }
     function build(data){
       // category color, lightened a step per same-category plugin so they stay distinct
       const colorFor=(p)=>{ const c=data.colors[p]; if(!c) return hex("--muted");
         const base=hex(c.token); return c.shade ? lighten(base, .26+.2*c.shade) : base; };
+      const esc=(v)=>String(v||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;");
       document.getElementById("changelog").innerHTML = data.changelog.map((r)=>{
         const col=colorFor(r.plugin);
-        const rels=(r.releases||[]).map((x)=>`<a class="clrelease" href="${x.url}" target="_blank" rel="noopener">released ${x.tag} ↗</a>`);
+        const rels=(r.releases||[]).map((x)=>{
+          const notes=x.notes?` data-notes="${esc(x.notes)}" data-tag="${esc(x.tag)}"`:"";
+          return `<a class="clrelease${x.notes?" has-notes":""}" href="${x.url}" target="_blank" rel="noopener"${notes}>released ${x.tag} ↗</a>`;
+        });
         let chg="";
         if(r.change==="init") chg=`<span class="init">created</span>`;
         else if(r.change) chg=r.change.split(" ").map((t)=> t[0]==="+"?`<span class="add">${t}</span>`:`<span class="rem">${t}</span>`).join(" ");
         const inner=[...rels,chg].filter(Boolean).join(`<span class="clsep"> · </span>`);
         return `<div class="clrow${rels.length?" release":""}"><span class="cldate">${r.date}</span><span class="clplug" style="color:${col}">${r.plugin}</span><span class="clchange">${inner}</span></div>`;
       }).join("");
+      wireReleaseNotes();
       const datasets = data.plugins.map((p)=>({label:p, data:data.series[p],
         backgroundColor:colorFor(p), stack:"suite", borderWidth:0, maxBarThickness:34}));
       new Chart(document.getElementById("growthchart"),{

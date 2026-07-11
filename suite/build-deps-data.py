@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Project each plugin's declared dependencies → docs/deps.json (the dependency
-graph the SPA's interop view reads).
+graph the doc site's interop view reads).
 
 Edges are *declared* in each plugin.yml (`suite.dependencies`, a list of
 `{name, required}`), never discovered. Introducing a dependency is an intentional

@@ -8,11 +8,11 @@ and aggregate from it.
 | Script | Output | Purpose |
 |:---|:---|:---|
 | `sync.sh` | sibling checkouts | clone/fast-forward every plugin in `marketplace.json` |
-| `build-spa-data.py` | `docs/plugins.js` | per-plugin SPA content from each `plugin.yml` |
+| `build-spa-data.py` | `docs/plugins.js` | per-plugin doc site content from each `plugin.yml` |
 | `record-artifacts.py` | `suite/artifacts.csv` | append a change-point row when a plugin's artifact set changes |
 | `build-artifacts-data.py` | `docs/artifacts.json` | project the rolling log into the growth view's series + changelog |
 | `build-deps-data.py` | `docs/deps.json` | project each plugin's declared `soft_deps` into the dependency graph |
-| `check-spa-coverage.py` | (gate) | fail the build if a plugin isn't grouped/renderable on the SPA |
+| `check-spa-coverage.py` | (gate) | fail the build if a plugin isn't grouped/renderable on the doc site |
 
 `just build` runs the whole pipeline. `docs/plugins.js`, `docs/deps.json`, and
 `docs/artifacts.json` are regenerated each deploy and git-ignored; only

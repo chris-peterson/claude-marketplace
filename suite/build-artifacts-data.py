@@ -8,11 +8,11 @@ change point through today, so the time axis is linear — equal spacing means
 equal elapsed time. The changelog stays per-change-point (one row per dated
 event), independent of the buckets.
 
-Plugins are colored by their SPA catalog category (the four functional-area
+Plugins are colored by their doc site catalog category (the four functional-area
 tokens), parsed from the GROUPS array in docs/index.html so the chart and the
 catalog never drift. Plugins are ordered by category so each color band is
 contiguous in the stack, and the Nth plugin within a category carries shade N —
-the SPA lightens shade>0 so same-category plugins stay distinguishable. The SPA
+the doc site lightens shade>0 so same-category plugins stay distinguishable. The doc site
 resolves the tokens against the page's Dracula :root, so no hex lives here.
 docs/artifacts.json is ephemeral — regenerated each deploy, not committed.
 """
@@ -33,7 +33,7 @@ RELEASES_API = "https://api.github.com/repos/chris-peterson/{}/releases"
 
 
 def catalog_groups() -> list[tuple[str, list[str]]]:
-    """[(ac-token, [slug, ...]), ...] in catalog order, from the SPA GROUPS."""
+    """[(ac-token, [slug, ...]), ...] in catalog order, from the doc site GROUPS."""
     block = re.search(r"const GROUPS\s*=\s*\[(.*?)\];", INDEX.read_text(), re.S)
     if not block:
         sys.exit("build-artifacts-data: could not find the GROUPS array in docs/index.html")
@@ -56,7 +56,7 @@ def week_buckets(first: str) -> list[date]:
 
 
 def fetch_releases(plugin: str) -> list[dict]:
-    """Published (non-draft) GitHub releases for a plugin: [{date, tag, url}, ...].
+    """Published (non-draft) GitHub releases for a plugin: [{date, tag, url, notes}, ...].
     Network/HTTP failure raises — release enrichment is not optional, so a bad
     fetch fails the build loudly rather than silently dropping events. A
     GITHUB_TOKEN in the env (CI) is used for the higher API rate limit."""
@@ -72,7 +72,7 @@ def fetch_releases(plugin: str) -> list[dict]:
         data = json.load(resp)
     return [
         {"date": r["published_at"][:10], "tag": r["tag_name"], "url": r["html_url"],
-         "published_at": r["published_at"]}
+         "published_at": r["published_at"], "notes": (r.get("body") or "").strip()}
         for r in data if not r.get("draft")
     ]
 
@@ -100,7 +100,7 @@ def build_changelog(rows: list[dict], plugins: list[str],
     """One changelog entry per (date, plugin): the day's artifact change tokens
     plus the latest release published that day (a plugin is often released
     several times a day; only the latest is shown so the log stays legible). The
-    SPA shows the release first, then what changed. Newest entry first."""
+    doc site shows the release first, then what changed. Newest entry first."""
     entries: dict[tuple[str, str], dict] = {}
 
     def entry(date: str, plugin: str) -> dict:
@@ -114,7 +114,8 @@ def build_changelog(rows: list[dict], plugins: list[str],
             entry(rel["date"], p)["releases"].append(rel)
     for e in entries.values():
         latest = max(e["releases"], key=lambda r: r["published_at"], default=None)
-        e["releases"] = [{"tag": latest["tag"], "url": latest["url"]}] if latest else []
+        e["releases"] = [{"tag": latest["tag"], "url": latest["url"],
+                          "notes": latest["notes"]}] if latest else []
 
     return sorted(entries.values(),
                   key=lambda r: (r["date"], r["plugin"]), reverse=True)
