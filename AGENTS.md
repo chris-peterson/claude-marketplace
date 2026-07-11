@@ -36,9 +36,9 @@ dispatch token. The scripts:
 - `docs/index.html` — the landing page, a **single-file doc site** (inline CSS/JS,
   no framework). Home view + per-plugin views via hash routing (`#/<plugin>`).
 - `docs/favicon.svg` — the bridge.ai mark (also the nav/footer mark, inline).
-- `issue.md`, `issue-spa.md` — roadmap notes for the next passes.
+- `issue.md` — roadmap note for a possible next pass.
 - The former docsify files (`docs/README.md`, `relationships.md`, `_sidebar.md`)
-  are kept but **unlinked** — to fold into the doc site later (see `issue-spa.md`).
+  are kept but **unlinked** — to fold into the doc site later.
 
 ## Conventions
 
