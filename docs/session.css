@@ -27,8 +27,18 @@
 .fr-you,.fr-claude{color:var(--fg)}
 .fr-note{color:var(--faint);font-style:italic}
 .fr-you .lbl,.fr-claude .lbl{font-family:var(--mono);color:var(--muted);margin-right:9px}
-.fr .fr-cmd{font-family:var(--mono);font-size:13.5px;color:var(--ac);display:inline-flex;align-items:center;gap:9px;
-  background:color-mix(in srgb,var(--ac) 9%,transparent);border:1px solid color-mix(in srgb,var(--ac) 24%,transparent);border-radius:8px;padding:8px 12px}
+/* transient "Thinking…" shown before a Claude response, like the CLI:
+   claude-orange label, muted parenthetical, a soft shimmer */
+.fr-thinking{font-family:var(--mono);font-size:13px}
+.fr-thinking .tk{color:var(--claude);animation:tk-pulse 1.15s ease-in-out infinite}
+.fr-thinking .tk-meta{color:var(--muted)}
+@keyframes tk-pulse{0%,100%{opacity:.55}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.fr-thinking .tk{animation:none}}
+/* commands render as neutral code blocks (like a terminal / git diff), not an
+   accent-colored pill */
+.fr .fr-cmd{font-family:var(--mono);font-size:13.5px;color:var(--fg);display:flex;align-items:center;gap:9px;
+  background:var(--sea);border:1px solid var(--line-2);border-radius:6px;padding:8px 12px}
+.fr .fr-cmd .cue{color:var(--muted)}
 .fr .fr-out{color:var(--muted);font-size:14px;margin:7px 0 0 4px;border-left:1px solid var(--line-2);padding-left:12px}
 .fr-status{font-family:var(--mono);font-size:13px;color:var(--ac)}
 .fr-break{text-align:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);font-style:italic;margin:2px 0}
@@ -76,7 +86,7 @@
    inline previews, that grows as frames play instead of reserving full height. */
 .hub-session{position:relative;border:1px solid var(--hull);background:var(--deep);
   box-shadow:0 22px 55px rgba(0,0,0,.5);padding-top:36px}
-.hub-session::before{content:"one real session";position:absolute;top:0;left:0;right:0;height:36px;
+.hub-session::before{content:"";position:absolute;top:0;left:0;right:0;height:36px;
   display:flex;align-items:center;justify-content:flex-end;padding:0 16px;
   font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);
   background:var(--sea);border-bottom:1px solid var(--line-2)}

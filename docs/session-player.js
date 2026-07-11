@@ -61,12 +61,14 @@
     container.innerHTML = '<div class="tape"></div>';
     var tape = container.querySelector(".tape");
     var els = frames.map(function (f) { var e = frameEl(f); tape.appendChild(e); return e; });
-    if (matchMedia("(prefers-reduced-motion:reduce)").matches) {
+    var reduce = matchMedia("(prefers-reduced-motion:reduce)").matches;
+    if (reduce) {
       els.forEach(function (e) { e.classList.add("show"); });
       if (opts.controls) buildControls(container).count.textContent = frames.length + " / " + frames.length;
       return;
     }
-    var i = 0, playing = false, timer = null, typing = null, typingEl = null, speed = 1, userTouched = false;
+    var i = 0, playing = false, timer = null, typing = null, typingEl = null,
+        thinkTimer = null, thinkBubble = null, thinkEl = null, speed = 1, userTouched = false;
     var ctl = opts.controls ? buildControls(container) : null;
     function count() { if (ctl) ctl.count.textContent = i + " / " + frames.length; }
 
@@ -82,8 +84,24 @@
       })();
     }
     function reveal(idx, done) {
-      els[idx].classList.add("show");
-      if (opts.typewriter && frames[idx].t === "cmd") typeCmd(els[idx], done); else done();
+      var f = frames[idx], el = els[idx];
+      // emulate the CLI's "Thinking…" beat before a Claude response
+      if (opts.thinking && f.t === "claude") {
+        thinkBubble = document.createElement("div");
+        thinkBubble.className = "fr fr-thinking show";
+        thinkBubble.innerHTML = '<span class="tk">· Thinking…</span><span class="tk-meta"> (thinking)</span>';
+        tape.insertBefore(thinkBubble, el);
+        thinkEl = el;
+        thinkTimer = setTimeout(function () {
+          if (thinkBubble) thinkBubble.remove();
+          el.classList.add("show");
+          thinkBubble = thinkEl = thinkTimer = null;
+          done();
+        }, 780 / speed);
+        return;
+      }
+      el.classList.add("show");
+      if (opts.typewriter && f.t === "cmd") typeCmd(el, done); else done();
     }
     function advance() {
       if (i >= frames.length) { playing = false; if (ctl) ctl.setPlaying(false); return; }
@@ -95,16 +113,27 @@
       playing = false; if (ctl) ctl.setPlaying(false); clearTimeout(timer); clearTimeout(typing); typing = null;
       if (typingEl) { var s = typingEl.querySelector(".cmdtext"); if (s && s._full != null) s.textContent = s._full;
         typingEl.classList.remove("typing"); typingEl = null; }
+      // finalize an in-progress Thinking… beat: drop the bubble, reveal the response
+      if (thinkTimer) { clearTimeout(thinkTimer); thinkTimer = null; }
+      if (thinkBubble) { thinkBubble.remove(); thinkBubble = null; }
+      if (thinkEl) { thinkEl.classList.add("show"); thinkEl = null; }
     }
     function step() { pause(); if (i >= frames.length) return; var idx = i; i++; count(); reveal(idx, function () {}); }
+    function scrollToSection() {
+      var sec = (container.closest && container.closest("section")) || container;
+      sec.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    }
     function restart() {
-      pause(); i = 0;
+      scrollToSection(); pause(); i = 0;
+      var tb = tape.querySelectorAll(".fr-thinking");
+      for (var k = 0; k < tb.length; k++) tb[k].remove();
       els.forEach(function (e) { e.classList.remove("show", "typing");
         var s = e.querySelector(".cmdtext"); if (s && s._full != null) s.textContent = s._full; });
       count(); play();
     }
     if (ctl) {
-      ctl.play.addEventListener("click", function () { userTouched = true; playing ? pause() : play(); });
+      // play from a stopped state restarts (and scrolls up); while playing it pauses
+      ctl.play.addEventListener("click", function () { userTouched = true; playing ? pause() : restart(); });
       ctl.step.addEventListener("click", function () { userTouched = true; step(); });
       ctl.restart.addEventListener("click", function () { userTouched = true; restart(); });
       ctl.speed.addEventListener("click", function () { speed = speed === 1 ? 2 : 1; ctl.speed.textContent = speed + "×"; });

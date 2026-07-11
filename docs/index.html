@@ -515,7 +515,7 @@
 
   <!-- ============ SESSION REPLAY (one real session, animated) ============ -->
   <section id="session">
-    <h2><a class="secanchor" href="#session">See it in action</a></h2>
+    <h2><a class="secanchor" href="#session">Example Session</a></h2>
     <p class="sub">A real Claude Code session, start to finish &mdash; a bug caught mid-session, reviewed, and the fix landed.</p>
     <div class="session hub-session" id="hub-session"></div>
   </section>
@@ -1009,14 +1009,14 @@
     { t: "status", text: "batch order line items into one query — the per-item loop was an N+1 that scaled with order size" },
     { t: "cmd", cmd: "/anchor:prepare-review", out: "rebasing on main, pushing, opening a draft CR" },
     { t: "ask", cmd: "git push -u origin batch-order-items", reason: "watch-git — pushes commits to a shared remote", link: "https://git-scm.com/docs/git-push" },
-    { t: "you", text: "1 — it's my draft branch" },
+    { t: "you", text: "1" },
     { t: "claude", text: "Draft change request opened; source branch set to delete on merge." },
     { t: "sep" },
     { t: "cmd", cmd: "/logbook:retro", out: "writing up the N+1 lesson for the team" },
     { t: "status", text: "retro logged · lesson: default to batched fetches — a per-item query in a loop is the N+1 trap" }
   ];
   var mount = document.getElementById("hub-session");
-  if (mount && window.mountSession) window.mountSession(mount, FRAMES, { controls: true, typewriter: true });
+  if (mount && window.mountSession) window.mountSession(mount, FRAMES, { controls: true, typewriter: true, thinking: true });
 })();
 </script>
 </body>
