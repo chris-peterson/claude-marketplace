@@ -5,7 +5,7 @@
      • the hub calls window.mountSession(el, frames) directly;
      • a plugin's docsify site loads this file with a plain <script> tag; any
        <div class="cw-session" data-cw-session="..."> on the page is hydrated
-       from that site's suite.json after each render.
+       from that site's plugin-docs.json after each render.
    Frame data is the suite.{examples,session} shape from each plugin.yml. */
 (function () {
   "use strict";
@@ -51,7 +51,7 @@
 
   window.mountSession = mountSession;
 
-  // --- Docsify spoke: hydrate .cw-session mount points from suite.json ---
+  // --- Docsify spoke: hydrate .cw-session mount points from plugin-docs.json ---
   // A page carries empty mounts; this fills them after docsify renders.
   //   <div class="cw-session" data-cw-session="session">  → suite.session
   //   <div class="cw-session" data-cw-session="examples"> → suite.examples
@@ -66,8 +66,8 @@
     var _suite = null;
     function loadSuite() {
       if (!_suite) {
-        _suite = fetch("suite.json").then(function (r) {
-          if (!r.ok) throw new Error("suite.json responded with " + r.status);
+        _suite = fetch("plugin-docs.json").then(function (r) {
+          if (!r.ok) throw new Error("plugin-docs.json responded with " + r.status);
           return r.json();
         });
       }
@@ -103,7 +103,7 @@
         if (!mounts.length) return;
         loadSuite()
           .then(function (suite) { mounts.forEach(function (m) { hydrate(m, suite); }); })
-          .catch(function (err) { console.error("session-player: failed to load suite.json", err); });
+          .catch(function (err) { console.error("session-player: failed to load plugin-docs.json", err); });
       });
     });
   }
