@@ -516,7 +516,7 @@
   <!-- ============ SESSION REPLAY (one real session, animated) ============ -->
   <section id="session">
     <h2><a class="secanchor" href="#session">See it in action</a></h2>
-    <p class="sub">One real session, start to finish &mdash; the slash commands in context, not a list. The suite catches a jitter bug, reviews it, and lands the fix.</p>
+    <p class="sub">A real Claude Code session, start to finish &mdash; a bug caught mid-session, reviewed, and the fix landed.</p>
     <div class="session hub-session" id="hub-session"></div>
   </section>
 
@@ -993,30 +993,27 @@
 // logbook lead; moor is the diff-review card; ClaudeWatch appears reactively.
 (function () {
   var FRAMES = [
-    { t: "you", text: "Add retry with exponential backoff to the payments API client." },
-    { t: "claude", text: "Added a 5-attempt exponential backoff around the client, with a test for the retry schedule." },
-    { t: "cmd", cmd: "npm test", out: "Tests: 61 passed, 61 total" },
-    { t: "thought", text: "wait — that backoff has no jitter" },
-    { t: "you", text: "Every caller retries on the same schedule — that's a thundering herd when the API recovers." },
-    { t: "cmd", cmd: "/logbook:note backoff is jitter-free — all clients retry in lockstep, herd risk", out: "noted · deferred to retro" },
+    { t: "you", text: "Add an endpoint that returns an order with its line items." },
+    { t: "claude", text: "Added GET /orders/:id — it loads the order, then fetches each line item. The test covers a 3-item order." },
+    { t: "cmd", cmd: "npm test", out: "Tests: 48 passed, 48 total" },
+    { t: "you", text: "Green — but let me read it before I keep it." },
+    { t: "cmd", cmd: "/anchor:commit --preview", out: "opening the working tree in moor" },
+    { t: "moor", del: "res.json({ order })", add: "res.json({ order, items: ids.map(id => db.lineItem(id)) })", rej: "reject — N+1: one db call per line item. 3 in the test, 400 on a real order. batch with db.lineItems(ids)." },
+    { t: "cmd", cmd: "/logbook:note Claude reaches for per-item queries by default — watch for N+1 in review", out: "noted · deferred to retro" },
     { t: "note", text: "captured mid-session, before the detail gets lost" },
-    { t: "sep" },
-    { t: "you", text: "Before I keep this, let me actually read it." },
-    { t: "cmd", cmd: "/anchor:preview", out: "opening the working tree in moor" },
-    { t: "moor", del: "await sleep(BASE_MS)", add: "await sleep(BASE_MS * 2 ** attempt)", rej: "reject — backoff has no jitter; every client retries in lockstep. multiply by a random factor." },
-    { t: "claude", text: "You're right — full jitter it is: the delay gets a random factor so retries spread across the window." },
-    { t: "moor", del: "sleep(BASE_MS * 2 ** attempt)", add: "sleep(BASE_MS * 2 ** attempt * (0.5 + Math.random()))", rej: "✓ re-review clean — retries now spread out" },
-    { t: "cmd", cmd: "npm test", out: "Tests: 62 passed, 62 total" },
+    { t: "claude", text: "You're right — swapped the per-item loop for one batched fetch, and the test now asserts a single query." },
+    { t: "moor", del: "items: ids.map(id => db.lineItem(id))", add: "items: db.lineItems(ids)", rej: "✓ re-review clean — one query for all items" },
+    { t: "cmd", cmd: "npm test", out: "Tests: 49 passed, 49 total" },
     { t: "sep" },
     { t: "cmd", cmd: "/anchor:commit", out: "drafting a why-first message" },
-    { t: "status", text: "add full jitter to payments backoff — prevents synchronized retry storms on recovery" },
+    { t: "status", text: "batch order line items into one query — the per-item loop was an N+1 that scaled with order size" },
     { t: "cmd", cmd: "/anchor:prepare-review", out: "rebasing on main, pushing, opening a draft CR" },
-    { t: "ask", cmd: "git push -u origin add-payments-jitter", reason: "watch-git — pushes commits to a shared remote", link: "https://git-scm.com/docs/git-push" },
+    { t: "ask", cmd: "git push -u origin batch-order-items", reason: "watch-git — pushes commits to a shared remote", link: "https://git-scm.com/docs/git-push" },
     { t: "you", text: "1 — it's my draft branch" },
     { t: "claude", text: "Draft change request opened; source branch set to delete on merge." },
     { t: "sep" },
-    { t: "cmd", cmd: "/logbook:retro", out: "writing up the jitter lesson for the team" },
-    { t: "status", text: "retro logged · lesson: default every backoff to jitter — synchronized retries amplify an outage" }
+    { t: "cmd", cmd: "/logbook:retro", out: "writing up the N+1 lesson for the team" },
+    { t: "status", text: "retro logged · lesson: default to batched fetches — a per-item query in a loop is the N+1 trap" }
   ];
   var mount = document.getElementById("hub-session");
   if (mount && window.mountSession) window.mountSession(mount, FRAMES, { controls: true, typewriter: true });

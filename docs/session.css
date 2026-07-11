@@ -71,3 +71,20 @@
   background:var(--ac);animation:sp-caret .9s steps(1) infinite}
 @keyframes sp-caret{50%{opacity:0}}
 @media (prefers-reduced-motion:reduce){.fr.typing .cmdtext::after{animation:none}}
+
+/* landing-page replay: a framed terminal window with more contrast than the
+   inline previews, that grows as frames play instead of reserving full height. */
+.hub-session{position:relative;border:1px solid var(--hull);background:var(--deep);
+  box-shadow:0 22px 55px rgba(0,0,0,.5);padding-top:36px}
+.hub-session::before{content:"one real session";position:absolute;top:0;left:0;right:0;height:36px;
+  display:flex;align-items:center;justify-content:flex-end;padding:0 16px;
+  font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);
+  background:var(--sea);border-bottom:1px solid var(--line-2)}
+.hub-session::after{content:"";position:absolute;top:14px;left:16px;width:8px;height:8px;border-radius:50%;
+  background:var(--red);box-shadow:15px 0 0 var(--yellow),30px 0 0 var(--green)}
+.hub-session .sp-controls{background:var(--sea)}
+/* hidden frames leave the flow so the window grows one frame at a time */
+.hub-session .fr{display:none}
+.hub-session .fr.show{display:block;animation:fr-in .45s ease}
+@keyframes fr-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.hub-session .fr.show{animation:none}}

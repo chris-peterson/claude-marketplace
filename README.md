@@ -18,7 +18,7 @@ claude plugin install <name>@chris-peterson
 
 ### [anchor](https://github.com/chris-peterson/anchor)
 
-Git/forge skills that drive reviewed work into the permanent record. `/anchor:commit` writes why-focused commit messages, `/anchor:prepare-review` opens a change request on the forge, and `/anchor:preview` shows in-flight changes in a visual difftool.
+Git/forge skills that drive reviewed work into the permanent record. `/anchor:commit` writes why-focused commit messages, `/anchor:prepare-review` opens a change request on the forge, and `/anchor:commit --preview` shows in-flight changes in a visual difftool.
 
 ### [beacon](https://github.com/chris-peterson/beacon)
 
