@@ -96,15 +96,17 @@ class BuildChangelog(unittest.TestCase):
     ROWS = [{"plugin": "anchor", "date": "2026-07-08", "change": "+skill:x"}]
     RELEASES = {"anchor": [
         {"date": "2026-07-08", "tag": "v1.0.0", "url": "u1",
-         "published_at": "2026-07-08T09:00:00Z"},
+         "published_at": "2026-07-08T09:00:00Z", "notes": "first"},
         {"date": "2026-07-08", "tag": "v1.1.0", "url": "u2",
-         "published_at": "2026-07-08T15:00:00Z"},
+         "published_at": "2026-07-08T15:00:00Z", "notes": "second"},
     ]}
 
     def test_keeps_only_latest_same_day_release(self):
         cl = artifacts.build_changelog(self.ROWS, ["anchor"], self.RELEASES)
-        # Several releases on one day collapse to the latest by published_at.
+        # Several releases on one day collapse to the latest by published_at,
+        # carrying that release's notes through to the changelog.
         self.assertEqual([r["tag"] for r in cl[0]["releases"]], ["v1.1.0"])
+        self.assertEqual(cl[0]["releases"][0]["notes"], "second")
 
     def test_entry_without_release_stays_empty(self):
         cl = artifacts.build_changelog(self.ROWS, ["anchor"], {})
