@@ -298,7 +298,7 @@
   .donut-back.show{display:inline-flex}
   .donut-back:hover{color:var(--fg)}.donut-back .ar{color:var(--cyan)}
   .dlegend{display:grid;gap:7px;width:100%}
-  .dlegend .row{display:grid;grid-template-columns:13px 1fr auto;gap:9px;align-items:center;font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .dlegend .row{display:grid;grid-template-columns:13px 1fr auto;gap:9px;align-items:center;font-family:var(--mono);font-size:12px;color:var(--muted);cursor:help}
   .dlegend.clickable .row{cursor:pointer;border-radius:6px;padding:2px 6px;margin:0 -6px;transition:background .15s}
   .dlegend.clickable .row:hover{background:rgba(255,255,255,.05);color:var(--fg)}
   .dlegend .sw{width:11px;height:11px;border-radius:3px}
@@ -306,12 +306,15 @@
   .interop svg{width:100%;height:auto;display:block}
   .panel .ihint{font-family:var(--mono);font-size:11.5px;line-height:1.5;color:var(--muted);margin:-6px 0 4px}
   .panel .ihint b{color:var(--fg);font-weight:500}
-  .interop text,.deps text{font-family:var(--mono)}
+  /* tooltip-cursor standard: a hover that reveals the shared tooltip shows
+     cursor:help; cursor:pointer is reserved for a click that drills/navigates.
+     Decorative SVG text is inert, so it never shows the text I-beam. */
+  .interop text,.deps text{font-family:var(--mono);pointer-events:none;user-select:none}
   /* dependency graph — its own full-width panel below the donut + radar */
   .details .panel.deps{grid-column:1/-1;position:relative}
   .deps svg{width:100%;height:auto;max-width:480px;margin:2px auto 0;display:block}
   /* edges dim when one is hovered, so the focused integration stands out */
-  .deps .edge{cursor:pointer}
+  .deps .edge{cursor:help}
   .deps .edge>line,.deps .edge>path{transition:opacity .15s}
   .deps.hovering .edge>line,.deps.hovering .edge>path{opacity:.18}
   .deps.hovering .edge.on>line{opacity:.85}
@@ -765,7 +768,7 @@
           plugins:{legend:{display:false}},
           onHover:(e,els)=>{ const drillable=!(donutType&&donutPlugin);
             const canUp=(donutType||donutPlugin)&&inDonutHole(e);
-            e.native.target.style.cursor=((drillable&&els.length)||canUp)?"pointer":"default";
+            e.native.target.style.cursor=((drillable&&els.length)||canUp)?"pointer":(els.length?"help":"default");
             if(els.length) showTip(donutTip(els[0].index), e.native.clientX, e.native.clientY); else hideTip(); },
           onClick:(e,els)=>{ if(els.length){ donutDrill(curLabels[els[0].index]); return; }
             if(inDonutHole(e)) donutUp(); }}
