@@ -375,7 +375,19 @@
   .clnotes-tip.show{opacity:1;visibility:visible}
   .clnotes-tip .cn-tag{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
     text-transform:uppercase;color:var(--gold);margin-bottom:8px}
-  .clnotes-tip .cn-body{white-space:pre-wrap;font-size:12.5px;line-height:1.6;color:var(--fg);word-break:break-word}
+  .clnotes-tip .cn-body{font-size:12.5px;line-height:1.55;color:var(--fg);word-break:break-word}
+  /* rendered-markdown children of a release-note body */
+  .clnotes-tip .cn-body .md-h{font-weight:600;color:var(--fg);margin:9px 0 3px}
+  .clnotes-tip .cn-body .md-h:first-child{margin-top:0}
+  .clnotes-tip .cn-body .md-p{margin:4px 0}
+  .clnotes-tip .cn-body .md-p:first-child{margin-top:0}
+  .clnotes-tip .cn-body ul{margin:4px 0;padding-left:18px}
+  .clnotes-tip .cn-body li{margin:2px 0}
+  .clnotes-tip .cn-body code{font-family:var(--mono);font-size:11px;
+    background:color-mix(in srgb,var(--line-h) 45%,transparent);padding:1px 5px;border-radius:5px}
+  .clnotes-tip .cn-body a{color:var(--cyan);text-decoration:underline;text-underline-offset:2px}
+  .clnotes-tip .cn-body strong{color:var(--fg);font-weight:600}
+  .clnotes-tip .cn-body em{font-style:italic}
   /* unified hover tooltip — radar nodes, the artifact-type donut, dependency
      edges, and catalog artifact chips all render into this one styled,
      cursor-tracking card (accent dot + title + mono sub + body/rows). */
@@ -679,11 +691,16 @@
     const resolve=(c)=>{ const s=document.createElement("span"); s.style.cssText="color:"+c+";display:none";
       document.body.appendChild(s); const v=getComputedStyle(s).color; s.remove(); return v; };
     const pcolor={}; order.forEach((slug)=>{ pcolor[slug]=resolve(PLUGIN_AC[slug]||"var(--muted)"); });
-    // what activates each plugin, declared in its plugin.yml suite block
-    // (activations: [user|agent|session]); [user] is the default. A node flares
-    // on the agent pulse if it lists 'agent', the user pulse if it lists 'user'
-    // ('session' is declared but doesn't pulse).
-    const activationsOf=(n)=> (PLUGINS[n]&&PLUGINS[n].activations)||["user"];
+    // what a plugin reacts to is derived from its composition, not a declared
+    // field: hooks fire on Claude's activity (its tool calls, session lifecycle),
+    // while skills and commands are how the user drives it. So a node flares on
+    // the agent pulse iff it ships hooks, and on the user pulse iff it ships a
+    // skill or command. A pure-user plugin like sextant (no hooks) never lists to
+    // Claude; a pure-hook plugin like ClaudeWatch flares only for Claude.
+    const activationsOf=(n)=>{ const c=(PLUGINS[n]||{}).components||{}, a=[];
+      if((c.hooks||[]).length) a.push("agent");
+      if((c.skills||[]).length||(c.commands||[]).length) a.push("user");
+      return a.length?a:["user"]; };
 
     // ---- donut — interactive (Chart.js, already loaded). Types view uses the
     // artifact-type palette (distinct from the category colors, which mean
@@ -739,7 +756,7 @@
       dBackLbl.textContent = m.level===3 ? donutType : "all types";
       dLegend.classList.toggle("clickable", m.level<3);
       dLegend.innerHTML=m.labels.map((lab,i)=>
-        `<div class="row" data-key="${lab}"><span class="sw" style="background:${m.colors[i]}"></span><span>${lab}</span><span class="ct">${m.data[i]}</span></div>`).join("");
+        `<div class="row" data-key="${lab}" data-idx="${i}"><span class="sw" style="background:${m.colors[i]}"></span><span>${lab}</span><span class="ct">${m.data[i]}</span></div>`).join("");
       const data={labels:m.labels, datasets:[{data:m.data, backgroundColor:m.colors, borderWidth:m.border?2:0, borderColor:deepBg, hoverOffset:5}]};
       if(donutChart){ donutChart.data=data; donutChart.update(); return; }
       donutChart=new Chart(document.getElementById("donutchart"),{
@@ -755,12 +772,19 @@
       });
     }
     if(dBack) dBack.addEventListener("click", donutUp);
-    if(dLegend) dLegend.addEventListener("click",(e)=>{ const r=e.target.closest(".row"); if(r) donutDrill(r.dataset.key); });
+    if(dLegend){
+      dLegend.addEventListener("click",(e)=>{ const r=e.target.closest(".row"); if(r) donutDrill(r.dataset.key); });
+      // legend rows mirror the donut arcs: hovering one shows the same tip — so at
+      // the artifact level, each individual artifact reveals its describe: text.
+      dLegend.addEventListener("mouseover",(e)=>{ const r=e.target.closest(".row"); if(r) showTip(donutTip(+r.dataset.idx), e.clientX, e.clientY); });
+      dLegend.addEventListener("mousemove",(e)=>{ if(e.target.closest(".row")) placeTip(e.clientX, e.clientY); });
+      dLegend.addEventListener("mouseout",(e)=>{ const r=e.target.closest(".row"); if(r && !(e.relatedTarget && r.contains(e.relatedTarget))) hideTip(); });
+    }
     const whenChart=(cb)=> window.Chart ? cb() : setTimeout(()=>whenChart(cb),50);
     // radar node tooltip (#4): a spec for the shared .uitip — what the plugin
     // responds to (its activations), then the hooks it does it with, each hook's
     // declared purpose from its plugin.yml `describe: hooks:` block.
-    const ACT_LABEL={agent:"Claude's tool calls", user:"your commands", session:"session start"};
+    const ACT_LABEL={agent:"Claude's activity", user:"your commands & skills"};
     function radarTip(n){ const p=PLUGINS[n]||{}, dh=(p.describe||{}).hooks||{}, hooks=((p.components||{}).hooks)||[];
       return { color:pcolor[n], title:n,
         sub:"responds to "+activationsOf(n).map((a)=>ACT_LABEL[a]||a).join(", "),
@@ -858,6 +882,27 @@
     const lighten=(h,a)=>{ const n=parseInt(h.slice(1),16), r=n>>16, g=(n>>8)&255, b=n&255,
       m=(c)=>Math.round(c+(255-c)*a); return `rgb(${m(r)},${m(g)},${m(b)})`; };
     const whenReady=(cb)=> window.Chart ? cb() : setTimeout(()=>whenReady(cb),50);
+    // minimal markdown → HTML for the release-note popover: headings, bullet
+    // lists, bold/italic, inline code, and links. The body is HTML-escaped first,
+    // so a release note can render but can't inject markup.
+    function renderMD(src){
+      const esc=(s)=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      const inline=(s)=> esc(s)
+        .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,(m,t,u)=>`<a href="${u}" target="_blank" rel="noopener">${t}</a>`)
+        .replace(/`([^`]+)`/g,"<code>$1</code>")
+        .replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>")
+        .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g,"$1<em>$2</em>");
+      const out=[]; let list=null;
+      const flush=()=>{ if(list){ out.push("<ul>"+list.join("")+"</ul>"); list=null; } };
+      (src||"").replace(/\r\n/g,"\n").split("\n").forEach((ln)=>{
+        const h=ln.match(/^(#{1,6})\s+(.+)$/), li=ln.match(/^\s*[-*+]\s+(.+)$/);
+        if(h){ flush(); out.push(`<div class="md-h">${inline(h[2])}</div>`); }
+        else if(li){ (list=list||[]).push(`<li>${inline(li[1])}</li>`); }
+        else if(!ln.trim()){ flush(); }
+        else { flush(); out.push(`<div class="md-p">${inline(ln)}</div>`); }
+      });
+      flush(); return out.join("");
+    }
     // release-notes hover: a fixed popover (the changelog list itself is a
     // scroll-clipped box, so the tip lives on <body>) reveals the GitHub release
     // body. It stays open while the pointer is over the link OR the popover, so
@@ -870,7 +915,7 @@
       const show=(a)=>{ clearTimeout(hideT);
         tip.innerHTML=`<span class="cn-tag"></span><div class="cn-body"></div>`;
         tip.querySelector(".cn-tag").textContent=`${a.dataset.tag} release notes`;
-        tip.querySelector(".cn-body").textContent=a.dataset.notes;
+        tip.querySelector(".cn-body").innerHTML=renderMD(a.dataset.notes);
         tip.classList.add("show"); tip.style.left="0px"; tip.style.top="0px";
         const r=a.getBoundingClientRect(), w=tip.offsetWidth, h=tip.offsetHeight;
         let x=Math.max(8, Math.min(r.left, innerWidth-w-8));
