@@ -6,7 +6,7 @@ source of truth** for that plugin's descriptor. It projects into three targets:
 - **`.claude-plugin/plugin.json`** — generated in the plugin repo by its
   `scripts/gen-plugin-json.py`; Claude Code reads the committed file at install.
 - **the marketplace doc site** — the `suite:` block, consumed by
-  `suite/build-spa-data.py` to generate `docs/plugins.js`.
+  `suite/build-plugins-data.py` to generate `docs/plugins.js`.
 - **the `marketplace.json` entry** (planned) — the `marketplace:` block.
 
 Authoring rule: edit `plugin.yml`, never the generated `plugin.json`.
@@ -30,7 +30,7 @@ Authoring rule: edit `plugin.yml`, never the generated `plugin.json`.
 ## The `suite:` block (doc site presentation)
 
 Keys mirror the doc site's `PLUGINS` entry so the projection is a direct YAML→JSON
-dump (`suite/build-spa-data.py`):
+dump (`suite/build-plugins-data.py`):
 
 - `group` — the capability group this plugin belongs to, as a **slug**: `safety` / `bearings` / `waypoints` / `record`. The display label lives in the doc site's `GROUPS` (so relabeling never touches a spoke); the same slug keys the page anchors (`#g-<slug>`) and the accent CSS.
 - `cli` (bool) — has a CLI entrypoint.

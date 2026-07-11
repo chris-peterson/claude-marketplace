@@ -4,14 +4,14 @@ docs:
 sync:
     bash suite/sync.sh
 
-spa-data:
-    python3 suite/build-spa-data.py
+plugins-data:
+    python3 suite/build-plugins-data.py
 
 deps:
     python3 suite/build-deps-data.py
 
 check-coverage:
-    python3 suite/check-spa-coverage.py
+    python3 suite/check-coverage.py
 
 record-artifacts:
     python3 suite/record-artifacts.py
@@ -22,7 +22,7 @@ artifacts-data:
 seed-artifacts:
     python3 suite/seed-artifacts-history.py
 
-build: sync spa-data deps record-artifacts artifacts-data check-coverage
+build: sync plugins-data deps record-artifacts artifacts-data check-coverage
 
 test:
     cd suite && python3 -m unittest

@@ -15,7 +15,7 @@ visible until someone clicks:
    plugin's own docs site — so `cmds` and the `session`/`examples` walkthrough
    it used to read are no longer required.)
 
-This runs after `build-spa-data.py` (it reads the generated docs/plugins.js) and
+This runs after `build-plugins-data.py` (it reads the generated docs/plugins.js) and
 cross-references marketplace.json and the doc site GROUPS, failing loudly so the
 omission never deploys. Wired into CI and `just build`.
 """
@@ -39,7 +39,7 @@ REQUIRED = ["group"]
 def grouped_slugs() -> list[str]:
     block = re.search(r"const GROUPS\s*=\s*\[(.*?)\];", INDEX.read_text(), re.S)
     if not block:
-        sys.exit("check-spa-coverage: could not find the GROUPS array in docs/index.html")
+        sys.exit("check-coverage: could not find the GROUPS array in docs/index.html")
     slugs: list[str] = []
     for arr in re.findall(r"slugs:\s*\[([^\]]*)\]", block.group(1)):
         slugs.extend(re.findall(r'"([^"]+)"', arr))
@@ -48,10 +48,10 @@ def grouped_slugs() -> list[str]:
 
 def generated_plugins() -> dict:
     if not PLUGINS_JS.exists():
-        sys.exit("check-spa-coverage: docs/plugins.js not found — run suite/build-spa-data.py first")
+        sys.exit("check-coverage: docs/plugins.js not found — run suite/build-plugins-data.py first")
     m = re.search(r"const PLUGINS\s*=\s*(\{.*\});", PLUGINS_JS.read_text(), re.S)
     if not m:
-        sys.exit("check-spa-coverage: could not parse PLUGINS from docs/plugins.js")
+        sys.exit("check-coverage: could not parse PLUGINS from docs/plugins.js")
     return json.loads(m.group(1))
 
 
@@ -88,12 +88,12 @@ def main() -> int:
             errors.append(f"{name}: {prob}")
 
     if errors:
-        print("check-spa-coverage: doc site representation problems:", file=sys.stderr)
+        print("check-coverage: doc site representation problems:", file=sys.stderr)
         for e in errors:
             print(f"  - {e}", file=sys.stderr)
         return 1
 
-    print(f"check-spa-coverage: all {len(marketplace)} plugins are grouped and renderable on the doc site")
+    print(f"check-coverage: all {len(marketplace)} plugins are grouped and renderable on the doc site")
     return 0
 
 

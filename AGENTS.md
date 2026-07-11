@@ -10,7 +10,7 @@ page that showcases the suite.
   (`plugin-released`); own-repo pushes and `workflow_dispatch` also rebuild. The
   workflow runs the `suite/` scripts (sync siblings → generate `docs/plugins.js`
   + `docs/deps.json` → record counts) before uploading `docs/`.
-- **Local preview:** run `just build` (or at least `just spa-data`) first to
+- **Local preview:** run `just build` (or at least `just plugins-data`) first to
   generate `docs/plugins.js`, then `python3 -m http.server` from `docs/` and open
   `index.html`. (Hash routing + the relative favicon want HTTP, not `file://`;
   `plugins.js`/`deps.json` are git-ignored, so the doc site is blank without that build.)
@@ -25,11 +25,11 @@ canonical descriptor (see `suite/plugin.schema.md`). [`suite/README.md`](suite/R
 is the toolkit reference, including how to release a plugin and set up its
 dispatch token. The scripts:
 
-- `build-spa-data.py` — per-plugin doc site content from each `plugin.yml` → `docs/plugins.js`.
+- `build-plugins-data.py` — per-plugin doc site content from each `plugin.yml` → `docs/plugins.js`.
 - `record-artifacts.py` — append a change-point row to `suite/artifacts.csv` (the committed rolling log) when a plugin's artifact set changes; `seed-artifacts-history.py` is the one-time bootstrap from each repo's git history.
 - `build-artifacts-data.py` — project `suite/artifacts.csv` into the growth view's series + changelog → `docs/artifacts.json`.
 - `build-deps-data.py` — projects each plugin's declared `soft_deps` → `docs/deps.json` (the dependency graph). Edges are declared, never discovered.
-- `check-spa-coverage.py` — fails the build if a `marketplace.json` plugin isn't placed in a doc site `GROUPS` slug list (or vice versa). Runs first in CI and in `just build`.
+- `check-coverage.py` — fails the build if a `marketplace.json` plugin isn't placed in a doc site `GROUPS` slug list (or vice versa). Runs first in CI and in `just build`.
 
 ## Structure
 
@@ -43,13 +43,13 @@ dispatch token. The scripts:
 ## Conventions
 
 - **Per-plugin copy has one source**: each plugin's `plugin.yml` (the `suite:`
-  block). `suite/build-spa-data.py` generates the `PLUGINS` object into
+  block). `suite/build-plugins-data.py` generates the `PLUGINS` object into
   `docs/plugins.js`, which `index.html` loads — edit gloss/what/commands in the
   plugin's `plugin.yml`, never in `index.html` or `plugins.js`.
 - **Adding a plugin takes two edits**: register it in `marketplace.json`, and
   add its slug to a `GROUPS` group in `docs/index.html` — the catalog renders
   only grouped slugs, so a plugin in `marketplace.json` alone has data but no
-  card. `suite/check-spa-coverage.py` enforces this (CI + `just build`).
+  card. `suite/check-coverage.py` enforces this (CI + `just build`).
 - **Verify plugin behavior against the real skills** before describing it —
   read `../<plugin>/skills/*/SKILL.md`, don't guess.
 - **Namespace every command** as `plugin:skill` (e.g. `/anchor:commit`,

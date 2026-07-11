@@ -3,7 +3,7 @@
 and writes straight to the live site, where a subtle regression ships silently:
 the artifact-token round-trip (_common) and the date/series/changelog projection
 (build-artifacts-data). Network, git, and the GROUPS scrape are left to
-check-spa-coverage and visual inspection. Run: `python3 -m unittest` from suite/,
+check-coverage and visual inspection. Run: `python3 -m unittest` from suite/,
 or `just test`.
 """
 import importlib.util

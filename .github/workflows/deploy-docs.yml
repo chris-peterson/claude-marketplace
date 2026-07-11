@@ -35,11 +35,11 @@ jobs:
 
       - name: Generate doc site data and dependency graph (ephemeral)
         run: |
-          python3 suite/build-spa-data.py
+          python3 suite/build-plugins-data.py
           python3 suite/build-deps-data.py
 
       - name: Check every plugin is grouped and renderable on the doc site
-        run: python3 suite/check-spa-coverage.py
+        run: python3 suite/check-coverage.py
 
       - name: Record artifact changes into the rolling log
         run: python3 suite/record-artifacts.py
