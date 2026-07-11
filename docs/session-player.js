@@ -23,7 +23,7 @@
     else if (f.t === "event") { el.classList.add("fr-break"); el.innerHTML = '<span class="bk">event</span> (' + f.text + ')'; }
     else if (f.t === "sep") { el.classList.add("fr-sep"); }
     else if (f.t === "status") { el.classList.add("fr-status"); el.textContent = f.text; }
-    else if (f.t === "cmd") { el.innerHTML = '<span class="fr-cmd"><span class="cue">›</span>' + f.cmd + '</span>' + (f.out ? '<div class="fr-out">' + f.out + '</div>' : ""); }
+    else if (f.t === "cmd") { el.innerHTML = '<span class="fr-cmd"><span class="cue">›</span><span class="cmdtext">' + f.cmd + '</span></span>' + (f.out ? '<div class="fr-out">' + f.out + '</div>' : ""); }
     else if (f.t === "watch") { el.innerHTML = '<div class="fr-tool"><div class="t-call"><span class="t-dot">●</span> Bash(<span class="t-cmd">' + f.cmd + '</span>)</div><div class="t-err"><span class="t-branch">⎿</span> Error: ' + f.err + (f.link ? ' — <a href="' + f.link + '" target="_blank" rel="noopener">' + f.link + '</a>' : "") + '</div></div>'; }
     else if (f.t === "ask") { el.innerHTML = '<div class="fr-tool fr-ask"><div class="t-call"><span class="t-dot">●</span> Bash(<span class="t-cmd">' + f.cmd + '</span>)</div><div class="t-conf"><span class="t-branch">⎿</span> PreToolUse:Bash requires confirmation</div><div class="t-reason">' + f.reason + ' — <a href="' + f.link + '" target="_blank" rel="noopener">' + f.link + '</a> <span class="t-plug">[plugin:' + (f.plugin || "ClaudeWatch") + ']</span></div><div class="t-choices"><span class="t-cursor">❯</span> 1. Yes &nbsp;&nbsp; 2. No</div></div>'; }
     else if (f.t === "moor") { el.innerHTML = '<div class="fr-moor"><div class="mbar">moor · reviewing</div><div class="ml del">- ' + f.del + '</div><div class="ml add">+ ' + f.add + '</div><div class="ml rej">' + f.rej + '</div></div>'; }
@@ -34,18 +34,86 @@
 
   // Autostarts on scroll-in, pauses off-screen, plays once then pins the final
   // state (no loop). Reduced-motion shows every frame at once.
-  function mountSession(container, frames) {
+  function buildControls(container) {
+    var bar = document.createElement("div");
+    bar.className = "sp-controls";
+    function btn(cls, glyph, aria) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "sp-btn " + cls; b.textContent = glyph;
+      b.setAttribute("aria-label", aria); return b;
+    }
+    var play = btn("sp-play", "▶", "Play"),
+        step = btn("sp-step", "⏭", "Step forward"),
+        restart = btn("sp-restart", "↻", "Restart"),
+        speed = btn("sp-speed", "1×", "Toggle speed");
+    var count = document.createElement("span"); count.className = "sp-count";
+    [play, step, restart, count, speed].forEach(function (n) { bar.appendChild(n); });
+    container.appendChild(bar);
+    return { play: play, step: step, restart: restart, count: count, speed: speed,
+      setPlaying: function (p) { play.textContent = p ? "⏸" : "▶"; play.setAttribute("aria-label", p ? "Pause" : "Play"); } };
+  }
+
+  // opts.controls adds a play/pause/step/restart bar with a step counter and a
+  // 1x/2x speed toggle; opts.typewriter types command frames out char by char.
+  // With no opts this is the inline auto-player the per-plugin previews use.
+  function mountSession(container, frames, opts) {
+    opts = opts || {};
     container.innerHTML = '<div class="tape"></div>';
     var tape = container.querySelector(".tape");
     var els = frames.map(function (f) { var e = frameEl(f); tape.appendChild(e); return e; });
-    if (matchMedia("(prefers-reduced-motion:reduce)").matches) { els.forEach(function (e) { e.classList.add("show"); }); return; }
-    var i = 0, vis = false, timer = null;
-    var tick = function () {
-      if (!vis) return;
-      if (i >= frames.length) return;   // finished — hold the final state, don't loop
-      els[i].classList.add("show"); i++; timer = setTimeout(tick, delayFor(frames[i - 1]));
-    };
-    var sio = new IntersectionObserver(function (ents) { ents.forEach(function (en) { if (en.isIntersecting) { if (!vis) { vis = true; tick(); } } else { vis = false; clearTimeout(timer); } }); }, { threshold: .2 });
+    if (matchMedia("(prefers-reduced-motion:reduce)").matches) {
+      els.forEach(function (e) { e.classList.add("show"); });
+      if (opts.controls) buildControls(container).count.textContent = frames.length + " / " + frames.length;
+      return;
+    }
+    var i = 0, playing = false, timer = null, typing = null, typingEl = null, speed = 1, userTouched = false;
+    var ctl = opts.controls ? buildControls(container) : null;
+    function count() { if (ctl) ctl.count.textContent = i + " / " + frames.length; }
+
+    function typeCmd(el, done) {
+      var span = el.querySelector(".cmdtext");
+      if (!span) { done(); return; }
+      if (span._full == null) span._full = span.textContent;
+      var full = span._full, k = 0;
+      span.textContent = ""; el.classList.add("typing"); typingEl = el;
+      (function t() {
+        if (k <= full.length) { span.textContent = full.slice(0, k); k++; typing = setTimeout(t, 24 / speed); }
+        else { el.classList.remove("typing"); typing = null; typingEl = null; done(); }
+      })();
+    }
+    function reveal(idx, done) {
+      els[idx].classList.add("show");
+      if (opts.typewriter && frames[idx].t === "cmd") typeCmd(els[idx], done); else done();
+    }
+    function advance() {
+      if (i >= frames.length) { playing = false; if (ctl) ctl.setPlaying(false); return; }
+      var idx = i; i++; count();
+      reveal(idx, function () { if (playing) timer = setTimeout(advance, delayFor(frames[idx]) / speed); });
+    }
+    function play() { if (playing || i >= frames.length) return; playing = true; if (ctl) ctl.setPlaying(true); advance(); }
+    function pause() {
+      playing = false; if (ctl) ctl.setPlaying(false); clearTimeout(timer); clearTimeout(typing); typing = null;
+      if (typingEl) { var s = typingEl.querySelector(".cmdtext"); if (s && s._full != null) s.textContent = s._full;
+        typingEl.classList.remove("typing"); typingEl = null; }
+    }
+    function step() { pause(); if (i >= frames.length) return; var idx = i; i++; count(); reveal(idx, function () {}); }
+    function restart() {
+      pause(); i = 0;
+      els.forEach(function (e) { e.classList.remove("show", "typing");
+        var s = e.querySelector(".cmdtext"); if (s && s._full != null) s.textContent = s._full; });
+      count(); play();
+    }
+    if (ctl) {
+      ctl.play.addEventListener("click", function () { userTouched = true; playing ? pause() : play(); });
+      ctl.step.addEventListener("click", function () { userTouched = true; step(); });
+      ctl.restart.addEventListener("click", function () { userTouched = true; restart(); });
+      ctl.speed.addEventListener("click", function () { speed = speed === 1 ? 2 : 1; ctl.speed.textContent = speed + "×"; });
+      count();
+    }
+    // auto-play/pause on scroll — until the viewer takes over via the controls
+    var sio = new IntersectionObserver(function (ents) {
+      ents.forEach(function (en) { if (userTouched) return; if (en.isIntersecting) play(); else pause(); });
+    }, { threshold: .2 });
     sio.observe(container);
   }
 
