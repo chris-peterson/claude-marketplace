@@ -316,15 +316,7 @@
   .deps.hovering .edge>line,.deps.hovering .edge>path{opacity:.18}
   .deps.hovering .edge.on>line{opacity:.85}
   .deps.hovering .edge.on>path{opacity:1}
-  /* hover card: what the integration does (from each edge's declared reason) */
-  .dep-tip{position:absolute;z-index:6;pointer-events:none;opacity:0;transform:translateY(3px);
-    transition:opacity .12s,transform .12s;max-width:260px;padding:8px 11px;
-    background:var(--deep);border:1px solid var(--line-2);border-radius:8px;
-    box-shadow:0 6px 22px rgba(0,0,0,.45);font-family:var(--mono);font-size:11.5px;line-height:1.5}
-  .dep-tip.show{opacity:1;transform:translateY(0)}
-  .dep-tip .rel{display:flex;align-items:center;gap:6px;color:var(--fg);font-weight:600}
-  .dep-tip .rel i{width:7px;height:7px;border-radius:50%;flex:none}
-  .dep-tip .why{color:var(--muted);margin-top:3px}
+  /* dependency edges hover into the shared .uitip (see below) */
   .deps-standalone{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;
     font-family:var(--mono);font-size:11px;color:var(--muted)}
   .deps-standalone .lbl{color:var(--faint);letter-spacing:.14em;text-transform:uppercase}
@@ -384,12 +376,22 @@
   .clnotes-tip .cn-tag{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
     text-transform:uppercase;color:var(--gold);margin-bottom:8px}
   .clnotes-tip .cn-body{white-space:pre-wrap;font-size:12.5px;line-height:1.6;color:var(--fg);word-break:break-word}
-  /* shared cursor-tracking tooltip (card artifacts, radar nodes) */
-  .hovertip{position:fixed;z-index:70;max-width:min(320px,80vw);background:var(--sea);
-    border:1px solid var(--line-h);border-radius:9px;padding:9px 12px;font-size:12px;line-height:1.5;
-    color:var(--fg);white-space:pre-wrap;box-shadow:0 10px 30px rgba(0,0,0,.45);
-    opacity:0;visibility:hidden;transition:opacity .1s;pointer-events:none}
-  .hovertip.show{opacity:1;visibility:visible}
+  /* unified hover tooltip — radar nodes, the artifact-type donut, dependency
+     edges, and catalog artifact chips all render into this one styled,
+     cursor-tracking card (accent dot + title + mono sub + body/rows). */
+  .uitip{position:fixed;z-index:70;max-width:min(300px,84vw);background:var(--sea);
+    border:1px solid var(--line-h);border-radius:10px;padding:9px 12px;font-size:12px;line-height:1.5;
+    color:var(--fg);box-shadow:0 12px 32px rgba(0,0,0,.5);
+    opacity:0;visibility:hidden;transition:opacity .11s;pointer-events:none}
+  .uitip.show{opacity:1;visibility:visible}
+  .uitip .th{display:flex;align-items:center;gap:7px;font-weight:600;color:var(--fg)}
+  .uitip .th i{width:8px;height:8px;border-radius:50%;flex:none}
+  .uitip .ts{color:var(--muted);font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;margin-top:2px}
+  .uitip .tb{color:var(--muted);margin-top:6px}
+  .uitip .tl{margin:7px 0 0;padding:0;list-style:none;display:grid;gap:5px}
+  .uitip .tl li{display:grid;grid-template-columns:auto 1fr;gap:9px;align-items:baseline}
+  .uitip .tl .k{color:var(--fg);font-family:var(--mono);font-size:11px;white-space:nowrap}
+  .uitip .tl .v{color:var(--muted)}
   .changelog .clsep{color:var(--faint)}
   @media(max-width:560px){.changelog .clrow{grid-template-columns:78px 1fr;row-gap:3px}
     .changelog .clchange{grid-column:1/-1}}
@@ -551,17 +553,27 @@
   // escape a string for use inside a double-quoted HTML/SVG attribute (data-tip, etc.)
   const attrEsc=(v)=>String(v==null?"":v).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
 
-  // ---- shared hover tooltip: any element carrying [data-tip] shows its text in a
-  // floating panel that tracks the cursor (multi-line via \n). One set of delegated
-  // listeners covers everything rendered later — card artifacts, radar nodes. ----
-  const tipEl=(()=>{ const t=document.createElement("div"); t.className="hovertip"; document.body.appendChild(t); return t; })();
+  // ---- unified hover tooltip: one styled, cursor-tracking card that the radar
+  // nodes, the artifact-type donut, the dependency edges, and the catalog artifact
+  // chips all render into. Content is a spec — {color, title, sub, body, rows} — or
+  // a plain string. showTip/hideTip/placeTip are shared; the delegated [data-tip]
+  // handlers below serve the card chips (title = chip name, body = its description).
+  const tipEl=(()=>{ const t=document.createElement("div"); t.className="uitip"; document.body.appendChild(t); return t; })();
+  const tipHTML=(o)=> typeof o==="string" ? `<div class="tb">${attrEsc(o)}</div>` :
+    (o.title?`<div class="th">${o.color?`<i style="background:${o.color}"></i>`:""}<span>${attrEsc(o.title)}</span></div>`:"")
+    +(o.sub?`<div class="ts">${attrEsc(o.sub)}</div>`:"")
+    +(o.body?`<div class="tb">${attrEsc(o.body)}</div>`:"")
+    +(o.rows&&o.rows.length?`<ul class="tl">`+o.rows.map((r)=>`<li><span class="k">${attrEsc(r.k)}</span><span class="v">${attrEsc(r.v||"")}</span></li>`).join("")+`</ul>`:"");
   const placeTip=(x,y)=>{ const w=tipEl.offsetWidth,h=tipEl.offsetHeight;
     let nx=x+14,ny=y+16; if(nx+w>innerWidth-8) nx=x-w-14; if(ny+h>innerHeight-8) ny=y-h-16;
     tipEl.style.left=Math.max(8,nx).toFixed(0)+"px"; tipEl.style.top=Math.max(8,ny).toFixed(0)+"px"; };
+  const showTip=(o,x,y)=>{ tipEl.innerHTML=tipHTML(o); tipEl.classList.add("show"); placeTip(x,y); };
+  const hideTip=()=> tipEl.classList.remove("show");
   document.addEventListener("mouseover",(e)=>{ const el=e.target.closest&&e.target.closest("[data-tip]"); if(!el) return;
-    tipEl.textContent=el.getAttribute("data-tip"); tipEl.classList.add("show"); placeTip(e.clientX,e.clientY); });
+    showTip({title:el.textContent.trim(), body:el.getAttribute("data-tip")}, e.clientX, e.clientY); });
   document.addEventListener("mousemove",(e)=>{ if(!tipEl.classList.contains("show")) return;
-    const el=e.target.closest&&e.target.closest("[data-tip]"); if(!el){ tipEl.classList.remove("show"); return; } placeTip(e.clientX,e.clientY); });
+    if(e.target.closest&&e.target.closest("[data-tip]")) placeTip(e.clientX,e.clientY); });
+  document.addEventListener("mouseout",(e)=>{ if(e.target.closest&&e.target.closest("[data-tip]")) hideTip(); });
 
   // ---- routing: a #/<slug> hash scrolls to and highlights that plugin's card.
   // The docs/source icon buttons on the card are the way out to the external
@@ -693,7 +705,14 @@
     const deepBg=resolve("var(--deep)");
     const lighten=(rgb,f)=>{ const m=(rgb.match(/\d+/g)||[136,153,189]).map(Number);
       const c=m.slice(0,3).map((v)=>Math.round(v+(255-v)*f)); return `rgb(${c[0]},${c[1]},${c[2]})`; };
-    let donutChart=null, donutType=null, donutPlugin=null, curLabels=[];
+    let donutChart=null, donutType=null, donutPlugin=null, curLabels=[], curModel=null;
+    // donut hover → shared .uitip: at the artifact level it surfaces the per-artifact
+    // description (from the plugin's plugin.yml describe:); higher levels show counts.
+    function donutTip(i){ const label=curLabels[i], m=curModel;
+      if(m.level===1) return { color:typeColor[label], title:label, sub:`${m.data[i]} artifact${m.data[i]===1?"":"s"}` };
+      if(m.level===2) return { color:pcolor[label], title:label, sub:`${m.data[i]} ${donutType}` };
+      const desc=((PLUGINS[donutPlugin]||{}).describe||{})[donutType]||{};
+      return { color:pcolor[donutPlugin], title:label, sub:`${donutPlugin} · ${donutType}`, body:desc[label]||"" }; }
     function donutModel(){
       if(!donutType) return { level:1, labels:presentTypes, data:presentTypes.map((k)=>typeTotals[k]),
         colors:presentTypes.map((k)=>typeColor[k]), center:[grandTotal,"artifacts"], border:false };
@@ -714,7 +733,7 @@
     const inDonutHole=(e)=>{ const arc=donutChart&&donutChart.getDatasetMeta(0).data[0];
       return arc && Math.hypot(e.x-arc.x, e.y-arc.y) <= arc.innerRadius; };
     function showDonut(){
-      const m=donutModel(); curLabels=m.labels;
+      const m=donutModel(); curLabels=m.labels; curModel=m;
       dTotal.textContent=m.center[0]; dLbl.textContent=m.center[1];
       dBack.classList.toggle("show", m.level>1);
       dBackLbl.textContent = m.level===3 ? donutType : "all types";
@@ -729,7 +748,8 @@
           plugins:{legend:{display:false}},
           onHover:(e,els)=>{ const drillable=!(donutType&&donutPlugin);
             const canUp=(donutType||donutPlugin)&&inDonutHole(e);
-            e.native.target.style.cursor=((drillable&&els.length)||canUp)?"pointer":"default"; },
+            e.native.target.style.cursor=((drillable&&els.length)||canUp)?"pointer":"default";
+            if(els.length) showTip(donutTip(els[0].index), e.native.clientX, e.native.clientY); else hideTip(); },
           onClick:(e,els)=>{ if(els.length){ donutDrill(curLabels[els[0].index]); return; }
             if(inDonutHole(e)) donutUp(); }}
       });
@@ -737,16 +757,15 @@
     if(dBack) dBack.addEventListener("click", donutUp);
     if(dLegend) dLegend.addEventListener("click",(e)=>{ const r=e.target.closest(".row"); if(r) donutDrill(r.dataset.key); });
     const whenChart=(cb)=> window.Chart ? cb() : setTimeout(()=>whenChart(cb),50);
-    // radar node tooltip (#4): what the plugin responds to, then the hooks it does
-    // it with and why — each hook's declared purpose from its plugin.yml
-    // `describe: hooks:` block. Plugins with no hooks say so.
+    // radar node tooltip (#4): a spec for the shared .uitip — what the plugin
+    // responds to (its activations), then the hooks it does it with, each hook's
+    // declared purpose from its plugin.yml `describe: hooks:` block.
     const ACT_LABEL={agent:"Claude's tool calls", user:"your commands", session:"session start"};
-    function hookTip(n){ const p=PLUGINS[n]||{}, dh=(p.describe||{}).hooks||{}, hooks=((p.components||{}).hooks)||[];
-      const acts=activationsOf(n).map((a)=>ACT_LABEL[a]||a);
-      let t=n+"\nresponds to: "+acts.join(", ");
-      t+= hooks.length ? "\n\nhooks:\n"+hooks.map((h)=>"• "+h+(dh[h]?" — "+dh[h]:"")).join("\n")
-                       : "\n\n(no hooks)";
-      return t; }
+    function radarTip(n){ const p=PLUGINS[n]||{}, dh=(p.describe||{}).hooks||{}, hooks=((p.components||{}).hooks)||[];
+      return { color:pcolor[n], title:n,
+        sub:"responds to "+activationsOf(n).map((a)=>ACT_LABEL[a]||a).join(", "),
+        rows: hooks.length ? hooks.map((h)=>({k:h, v:dh[h]||""})) : null,
+        body: hooks.length ? null : "No hooks." }; }
     function radar(){
       // nodes sit on the outermost ring; two inner rings + crosshairs are scope decoration
       const cx=180,cy=148,R=108,pos={};
@@ -768,10 +787,14 @@
         const anchor=Math.abs(Math.cos(p.a))<0.34?"middle":(Math.cos(p.a)>0?"start":"end");
         const lx=p.x+Math.cos(p.a)*16, ly=p.y+Math.sin(p.a)*16+3.5;
         s+=`<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" font-size="11" fill="var(--muted)">${n}</text>`;
-        // transparent hit target (larger than the blip) carrying the hook tooltip
-        s+=`<circle cx="${cx2}" cy="${cy2}" r="15" fill="transparent" style="cursor:help" data-tip="${attrEsc(hookTip(n))}"/>`; });
+        // transparent hit target (larger than the blip) — hover shows the node tip
+        s+=`<circle class="rnode" data-plugin="${n}" cx="${cx2}" cy="${cy2}" r="15" fill="transparent" style="cursor:help"/>`; });
       s+=`<circle cx="${cx}" cy="${cy}" r="2" fill="var(--muted)"/>`;
-      document.getElementById("radar").innerHTML=s;
+      const radarSvg=document.getElementById("radar"); radarSvg.innerHTML=s;
+      radarSvg.querySelectorAll(".rnode").forEach((c)=>{ const n=c.dataset.plugin;
+        c.addEventListener("mouseenter",(ev)=>showTip(radarTip(n), ev.clientX, ev.clientY));
+        c.addEventListener("mousemove",(ev)=>placeTip(ev.clientX, ev.clientY));
+        c.addEventListener("mouseleave",hideTip); });
     }
     // standalone dependency graph: sources (left) → the plugins they depend on
     // (right), arrowheads colored by source. Hovering an edge reveals what the
@@ -803,30 +826,14 @@
       srcs.forEach((id)=>draw(id,"L")); tgts.forEach((id)=>draw(id,"R"));
       const svg=document.getElementById("depgraph");
       svg.innerHTML=s;
-      // hover an edge → reveal what the integration does, in a card that
-      // tracks the cursor; other edges dim so the focused one stands out.
-      const panel=svg.closest(".deps"); let tip=panel.querySelector(".dep-tip");
-      if(!tip){ tip=document.createElement("div"); tip.className="dep-tip"; panel.appendChild(tip); }
+      // hover an edge → the shared tooltip shows the integration's declared reason
+      // (from → to, colored by source); the other edges dim so it stands out.
+      const panel=svg.closest(".deps");
       svg.querySelectorAll(".edge").forEach((g)=>{
-        g.addEventListener("mouseenter",()=>{
-          panel.classList.add("hovering"); g.classList.add("on");
-          const why=g.dataset.reason;
-          tip.innerHTML=`<div class="rel"><i></i><span class="pair"></span></div><div class="why"></div>`;
-          tip.querySelector(".rel i").style.background=g.dataset.color;
-          tip.querySelector(".pair").textContent=`${g.dataset.from} → ${g.dataset.to}`;
-          const w=tip.querySelector(".why"); w.textContent=why||""; w.style.display=why?"":"none";
-          tip.classList.add("show");
-        });
-        g.addEventListener("mousemove",(ev)=>{
-          const r=panel.getBoundingClientRect();
-          let x=ev.clientX-r.left+13, y=ev.clientY-r.top+13;
-          x=Math.max(4, Math.min(x, r.width-tip.offsetWidth-4));
-          y=Math.min(y, r.height-tip.offsetHeight-4);
-          tip.style.left=x.toFixed(0)+"px"; tip.style.top=y.toFixed(0)+"px";
-        });
-        g.addEventListener("mouseleave",()=>{
-          panel.classList.remove("hovering"); g.classList.remove("on"); tip.classList.remove("show");
-        });
+        g.addEventListener("mouseenter",(ev)=>{ panel.classList.add("hovering"); g.classList.add("on");
+          showTip({ color:g.dataset.color, title:`${g.dataset.from} → ${g.dataset.to}`, body:g.dataset.reason||"" }, ev.clientX, ev.clientY); });
+        g.addEventListener("mousemove",(ev)=>placeTip(ev.clientX, ev.clientY));
+        g.addEventListener("mouseleave",()=>{ panel.classList.remove("hovering"); g.classList.remove("on"); hideTip(); });
       });
       const inEdge=new Set(edges.flatMap((e)=>[e.from,e.to]));
       const alone=order.filter((n)=>!inEdge.has(n));
