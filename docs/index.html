@@ -158,6 +158,10 @@
   /* deep-link landing pulse: a #/<slug> hash flashes the card's accent ring */
   .ship.flash{animation:cardflash 1.5s ease}
   @keyframes cardflash{0%,100%{box-shadow:0 0 0 0 transparent}18%{box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 55%,transparent)}}
+  /* a shared #/<slug> deep link expands its card and rings it in the accent */
+  .ship.linked{border-color:color-mix(in srgb,var(--ac) 60%,transparent)}
+  .ship.linked::after{content:"";position:absolute;inset:-1px;border-radius:15px;pointer-events:none;
+    box-shadow:0 0 0 2px color-mix(in srgb,var(--ac) 55%,transparent),0 16px 46px -12px color-mix(in srgb,var(--ac) 42%,transparent)}
   .ship .head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   .ship .head img{width:32px;height:32px;border-radius:9px;flex:none}
   .ship h3{font-family:var(--disp);font-weight:600;font-size:24px;margin:0;color:var(--fg)}
@@ -480,9 +484,9 @@
         <p class="lead"><b>bridge<span style="color:var(--cyan)">.ai</span></b> helps you:</p>
         <div class="stops">
           <a class="stop s-safety" href="#g-safety"><span class="node n-safety"></span><span class="txt"><span class="lab">stay safe</span><span class="sub">screen risky commands</span></span></a>
-          <a class="stop s-bearings" href="#g-bearings"><span class="node n-bearings"></span><span class="txt"><span class="lab">keep your bearings</span><span class="sub">see work at a glance</span></span></a>
+          <a class="stop s-bearings" href="#g-bearings"><span class="node n-bearings"></span><span class="txt"><span class="lab">keep oriented</span><span class="sub">see work at a glance</span></span></a>
           <a class="stop s-waypoints" href="#g-waypoints"><span class="node n-waypoints"></span><span class="txt"><span class="lab">reach waypoints</span><span class="sub">land changes cleanly</span></span></a>
-          <a class="stop s-record" href="#g-record"><span class="node n-record"></span><span class="txt"><span class="lab">write it down</span><span class="sub">capture what you learn</span></span></a>
+          <a class="stop s-record" href="#g-record"><span class="node n-record"></span><span class="txt"><span class="lab">log lessons</span><span class="sub">capture what you learn</span></span></a>
         </div>
       </div>
     </div>
@@ -602,7 +606,8 @@
     if(e.target.closest&&e.target.closest("[data-tip]")) placeTip(e.clientX,e.clientY); });
   document.addEventListener("mouseout",(e)=>{ if(e.target.closest&&e.target.closest("[data-tip]")) hideTip(); });
 
-  // ---- routing: a #/<slug> hash scrolls to and highlights that plugin's card.
+  // ---- routing: a #/<slug> hash scrolls to, expands, and highlights that
+  // plugin's card, so a shared link lands on its full detail with clear emphasis.
   // The docs/source icon buttons on the card are the way out to the external
   // sites — the deep link keeps you on the page. ----
   function route(){
@@ -611,6 +616,12 @@
     const card=document.querySelector(`#catalog .ship[data-slug="${m[1]}"]`);
     if(!card) return;
     const rm=matchMedia("(prefers-reduced-motion:reduce)").matches;
+    document.querySelectorAll("#catalog .ship.linked").forEach((c)=>{ if(c!==card) c.classList.remove("linked"); });
+    if(card.querySelector(".compbody") && !card.classList.contains("open")){
+      card.classList.add("open");
+      const t=card.querySelector(".cardtoggle"); if(t) t.setAttribute("aria-expanded","true");
+    }
+    card.classList.add("linked");
     card.scrollIntoView({behavior:rm?"auto":"smooth",block:"center"});
     card.classList.remove("flash"); void card.offsetWidth; card.classList.add("flash");
   }
@@ -619,9 +630,9 @@
   // ---- catalog: render grouped cards from PLUGINS (single source — no HTML dupe) ----
   const GROUPS=[
     {key:"safety",    ac:"--guard",  tag:"Stay safe",            slugs:["ClaudeWatch","shipshape"]},
-    {key:"bearings",  ac:"--orient", tag:"Keep your bearings",   slugs:["beacon","tack"]},
+    {key:"bearings",  ac:"--orient", tag:"Keep oriented",        slugs:["beacon","tack"]},
     {key:"waypoints", ac:"--ship",   tag:"Reach your waypoints", slugs:["anchor","moor"]},
-    {key:"record",    ac:"--build",  tag:"Write it down",        slugs:["logbook","sextant"]}
+    {key:"record",    ac:"--build",  tag:"Log lessons",          slugs:["logbook","sextant"]}
   ];
   // each plugin's accent = its category color, lightened a step per same-category
   // sibling so the two cards in a group are distinct — matching the growth chart's
