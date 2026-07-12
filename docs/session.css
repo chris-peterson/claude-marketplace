@@ -43,6 +43,13 @@
 .fr .fr-cmd .cue{color:var(--muted)}
 /* a slash-command skill renders in purple, like the CLI input */
 .fr .fr-cmd.skill{color:var(--purple)}
+/* tab-completion: a ⇥ hint after the typed stub, then a quick flash as the full
+   namespaced command fills in */
+.fr .fr-cmd.tabbing .cmdtext::after{content:" \21E5";color:var(--muted);background:none;width:auto;height:auto;
+  animation:none;vertical-align:baseline;margin-left:0}
+.fr .fr-cmd.tabbed .cmdtext{animation:tabfill .42s ease}
+@keyframes tabfill{0%{filter:brightness(1.9)}100%{filter:none}}
+@media(prefers-reduced-motion:reduce){.fr .fr-cmd.tabbed .cmdtext{animation:none}}
 .fr .fr-out{color:var(--muted);font-size:14px;margin:7px 0 0 4px;border-left:1px solid var(--line-2);padding-left:12px}
 .fr-status{font-family:var(--mono);font-size:13px;color:var(--ac)}
 .fr-break{text-align:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);font-style:italic;margin:2px 0}

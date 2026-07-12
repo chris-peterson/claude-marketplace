@@ -1006,17 +1006,17 @@
   var FRAMES = [
     { t: "you", text: "Add an endpoint that returns an order with its line items." },
     { t: "claude", text: "Added GET /orders/:id — it loads the order, then fetches each line item. The test covers a 3-item order." },
-    { t: "cmd", cmd: "/commit", out: "48 tests pass · opening the change in moor" },
+    { t: "cmd", cmd: "/anchor:commit", stub: "/com", out: "48 tests pass · opening the change in moor" },
     { t: "moor", del: "res.json({ order })", add: "res.json({ order, items: ids.map(id => db.lineItem(id)) })", rej: "reject — N+1: one db call per line item. 3 in the test, 400 on a real order. batch with db.lineItems(ids)." },
     { t: "claude", text: "You're right — swapped the per-item loop for one batched fetch, and updated the test to assert a single query." },
     { t: "moor", del: "items: ids.map(id => db.lineItem(id))", add: "items: db.lineItems(ids)", rej: "✓ re-review clean — one query for all items" },
     { t: "sep" },
-    { t: "cmd", cmd: "/prepare-review", out: "rebasing on main, pushing" },
+    { t: "cmd", cmd: "/anchor:prepare-review", stub: "/pre", out: "rebasing on main, pushing" },
     { t: "ask", cmd: "git push -u origin batch-order-items", reason: "watch-git — pushes commits to a shared remote", link: "https://git-scm.com/docs/git-push" },
     { t: "you", text: "1" },
     { t: "link", text: "https://github.com/acme/orders/pull/128", href: "https://github.com/acme/orders/pull/128" },
     { t: "sep" },
-    { t: "cmd", cmd: "/logbook:retro", out: "wrote up the session · one lesson for the team" },
+    { t: "cmd", cmd: "/logbook:retro", stub: "/ret", out: "wrote up the session · one lesson for the team" },
     { t: "note", text: "lesson — reach for a batched fetch by default; a per-item query in a loop is the N+1 that stays hidden until load" }
   ];
   var mount = document.getElementById("hub-session");

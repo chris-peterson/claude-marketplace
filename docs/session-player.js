@@ -23,7 +23,7 @@
     else if (f.t === "event") { el.classList.add("fr-break"); el.innerHTML = '<span class="bk">event</span> (' + f.text + ')'; }
     else if (f.t === "sep") { el.classList.add("fr-sep"); }
     else if (f.t === "status") { el.classList.add("fr-status"); el.textContent = f.text; }
-    else if (f.t === "cmd") { var skill = /^\//.test(f.cmd) ? " skill" : ""; el.innerHTML = '<span class="fr-cmd' + skill + '"><span class="cue">›</span><span class="cmdtext">' + f.cmd + '</span></span>' + (f.out ? '<div class="fr-out">' + f.out + '</div>' : ""); }
+    else if (f.t === "cmd") { var skill = /^\//.test(f.cmd) ? " skill" : ""; var stub = f.stub ? ' data-stub="' + f.stub + '"' : ""; el.innerHTML = '<span class="fr-cmd' + skill + '"><span class="cue">›</span><span class="cmdtext"' + stub + '>' + f.cmd + '</span></span>' + (f.out ? '<div class="fr-out">' + f.out + '</div>' : ""); }
     else if (f.t === "watch") { el.innerHTML = '<div class="fr-tool"><div class="t-call"><span class="t-dot">●</span> Bash(<span class="t-cmd">' + f.cmd + '</span>)</div><div class="t-err"><span class="t-branch">⎿</span> Error: ' + f.err + (f.link ? ' — <a href="' + f.link + '" target="_blank" rel="noopener">' + f.link + '</a>' : "") + '</div></div>'; }
     else if (f.t === "ask") { el.innerHTML = '<div class="fr-tool fr-ask"><div class="t-call"><span class="t-dot">●</span> Bash(<span class="t-cmd">' + f.cmd + '</span>)</div><div class="t-conf"><span class="t-branch">⎿</span> PreToolUse:Bash requires confirmation</div><div class="t-reason">' + f.reason + ' — <a href="' + f.link + '" target="_blank" rel="noopener">' + f.link + '</a> <span class="t-plug">[plugin:' + (f.plugin || "ClaudeWatch") + ']</span></div><div class="t-choices"><span class="t-cursor">❯</span> 1. Yes &nbsp;&nbsp; 2. No</div></div>'; }
     else if (f.t === "moor") { el.innerHTML = '<div class="fr-moor"><div class="mbar">moor · reviewing</div><div class="ml del">- ' + f.del + '</div><div class="ml add">+ ' + f.add + '</div><div class="ml rej">' + f.rej + '</div></div>'; }
@@ -77,11 +77,26 @@
       var span = el.querySelector(".cmdtext");
       if (!span) { done(); return; }
       if (span._full == null) span._full = span.textContent;
-      var full = span._full, k = 0;
+      var full = span._full, stub = span.getAttribute("data-stub") || "", box = el.querySelector(".fr-cmd");
+      var src = stub || full, k = 0, tabbed = false;
       span.textContent = ""; el.classList.add("typing"); typingEl = el;
       (function t() {
-        if (k <= full.length) { span.textContent = full.slice(0, k); k++; typing = setTimeout(t, 24 / speed); }
-        else { el.classList.remove("typing"); typing = null; typingEl = null; done(); }
+        if (k <= src.length) { span.textContent = src.slice(0, k); k++; typing = setTimeout(t, (stub ? 62 : 24) / speed); return; }
+        // the user hit tab: show the hint, then the completion fills in the namespaced command
+        if (stub && !tabbed) {
+          tabbed = true;
+          if (box) box.classList.add("tabbing");
+          typing = setTimeout(function () {
+            if (box) { box.classList.remove("tabbing"); box.classList.add("tabbed"); }
+            span.textContent = full;
+            typing = setTimeout(function () {
+              if (box) box.classList.remove("tabbed");
+              el.classList.remove("typing"); typing = null; typingEl = null; done();
+            }, 320 / speed);
+          }, 380 / speed);
+          return;
+        }
+        el.classList.remove("typing"); typing = null; typingEl = null; done();
       })();
     }
     function reveal(idx, done) {
@@ -113,6 +128,7 @@
     function pause() {
       playing = false; if (ctl) ctl.setPlaying(false); clearTimeout(timer); clearTimeout(typing); typing = null;
       if (typingEl) { var s = typingEl.querySelector(".cmdtext"); if (s && s._full != null) s.textContent = s._full;
+        var cb = typingEl.querySelector(".fr-cmd"); if (cb) cb.classList.remove("tabbing", "tabbed");
         typingEl.classList.remove("typing"); typingEl = null; }
       // finalize an in-progress Thinking… beat: drop the bubble, reveal the response
       if (thinkTimer) { clearTimeout(thinkTimer); thinkTimer = null; }
@@ -129,7 +145,8 @@
       var tb = tape.querySelectorAll(".fr-thinking");
       for (var k = 0; k < tb.length; k++) tb[k].remove();
       els.forEach(function (e) { e.classList.remove("show", "typing");
-        var s = e.querySelector(".cmdtext"); if (s && s._full != null) s.textContent = s._full; });
+        var s = e.querySelector(".cmdtext"); if (s && s._full != null) s.textContent = s._full;
+        var cb = e.querySelector(".fr-cmd"); if (cb) cb.classList.remove("tabbing", "tabbed"); });
       count(); play();
     }
     if (ctl) {
