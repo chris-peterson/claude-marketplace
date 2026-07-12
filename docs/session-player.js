@@ -27,6 +27,7 @@
     else if (f.t === "watch") { el.innerHTML = '<div class="fr-tool"><div class="t-call"><span class="t-dot">●</span> Bash(<span class="t-cmd">' + f.cmd + '</span>)</div><div class="t-err"><span class="t-branch">⎿</span> Error: ' + f.err + (f.link ? ' — <a href="' + f.link + '" target="_blank" rel="noopener">' + f.link + '</a>' : "") + '</div></div>'; }
     else if (f.t === "ask") { el.innerHTML = '<div class="fr-tool fr-ask"><div class="t-call"><span class="t-dot">●</span> Bash(<span class="t-cmd">' + f.cmd + '</span>)</div><div class="t-conf"><span class="t-branch">⎿</span> PreToolUse:Bash requires confirmation</div><div class="t-reason">' + f.reason + ' — <a href="' + f.link + '" target="_blank" rel="noopener">' + f.link + '</a> <span class="t-plug">[plugin:' + (f.plugin || "ClaudeWatch") + ']</span></div><div class="t-choices"><span class="t-cursor">❯</span> 1. Yes &nbsp;&nbsp; 2. No</div></div>'; }
     else if (f.t === "moor") { el.innerHTML = '<div class="fr-moor"><div class="mbar">moor · reviewing</div><div class="ml del">- ' + f.del + '</div><div class="ml add">+ ' + f.add + '</div><div class="ml rej">' + f.rej + '</div></div>'; }
+    else if (f.t === "link") { el.innerHTML = '<span class="lbl">⏺</span><a class="fr-link" href="' + f.href + '" target="_blank" rel="noopener">' + f.text + '</a>'; }
     return el;
   }
 
@@ -97,7 +98,7 @@
           el.classList.add("show");
           thinkBubble = thinkEl = thinkTimer = null;
           done();
-        }, 780 / speed);
+        }, 1500 / speed);
         return;
       }
       el.classList.add("show");

@@ -995,25 +995,15 @@
   var FRAMES = [
     { t: "you", text: "Add an endpoint that returns an order with its line items." },
     { t: "claude", text: "Added GET /orders/:id — it loads the order, then fetches each line item. The test covers a 3-item order." },
-    { t: "cmd", cmd: "npm test", out: "Tests: 48 passed, 48 total" },
-    { t: "you", text: "Green — but let me read it before I keep it." },
-    { t: "cmd", cmd: "/anchor:commit --preview", out: "opening the working tree in moor" },
+    { t: "cmd", cmd: "/commit", out: "48 tests pass · opening the change in moor" },
     { t: "moor", del: "res.json({ order })", add: "res.json({ order, items: ids.map(id => db.lineItem(id)) })", rej: "reject — N+1: one db call per line item. 3 in the test, 400 on a real order. batch with db.lineItems(ids)." },
-    { t: "cmd", cmd: "/logbook:note Claude reaches for per-item queries by default — watch for N+1 in review", out: "noted · deferred to retro" },
-    { t: "note", text: "captured mid-session, before the detail gets lost" },
-    { t: "claude", text: "You're right — swapped the per-item loop for one batched fetch, and the test now asserts a single query." },
+    { t: "claude", text: "You're right — swapped the per-item loop for one batched fetch, and updated the test to assert a single query." },
     { t: "moor", del: "items: ids.map(id => db.lineItem(id))", add: "items: db.lineItems(ids)", rej: "✓ re-review clean — one query for all items" },
-    { t: "cmd", cmd: "npm test", out: "Tests: 49 passed, 49 total" },
     { t: "sep" },
-    { t: "cmd", cmd: "/anchor:commit", out: "drafting a why-first message" },
-    { t: "status", text: "batch order line items into one query — the per-item loop was an N+1 that scaled with order size" },
-    { t: "cmd", cmd: "/anchor:prepare-review", out: "rebasing on main, pushing, opening a draft CR" },
+    { t: "cmd", cmd: "/prepare-review", out: "rebasing on main, pushing" },
     { t: "ask", cmd: "git push -u origin batch-order-items", reason: "watch-git — pushes commits to a shared remote", link: "https://git-scm.com/docs/git-push" },
     { t: "you", text: "1" },
-    { t: "claude", text: "Draft change request opened; source branch set to delete on merge." },
-    { t: "sep" },
-    { t: "cmd", cmd: "/logbook:retro", out: "writing up the N+1 lesson for the team" },
-    { t: "status", text: "retro logged · lesson: default to batched fetches — a per-item query in a loop is the N+1 trap" }
+    { t: "link", text: "https://github.com/acme/orders/pull/128", href: "https://github.com/acme/orders/pull/128" }
   ];
   var mount = document.getElementById("hub-session");
   if (mount && window.mountSession) window.mountSession(mount, FRAMES, { controls: true, typewriter: true, thinking: true });
