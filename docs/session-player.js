@@ -81,7 +81,7 @@
       var src = stub || full, k = 0, tabbed = false;
       span.textContent = ""; el.classList.add("typing"); typingEl = el;
       (function t() {
-        if (k <= src.length) { span.textContent = src.slice(0, k); k++; typing = setTimeout(t, (stub ? 62 : 24) / speed); return; }
+        if (k <= src.length) { span.textContent = src.slice(0, k); k++; typing = setTimeout(t, (stub ? 115 : 60) / speed); return; }
         // the user hit tab: show the hint, then the completion fills in the namespaced command
         if (stub && !tabbed) {
           tabbed = true;
