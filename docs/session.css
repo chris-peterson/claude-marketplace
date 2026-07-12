@@ -36,10 +36,67 @@
 .fr-thinking .tk-meta{color:var(--muted)}
 @keyframes tk-pulse{0%,100%{opacity:.55}50%{opacity:1}}
 @media (prefers-reduced-motion:reduce){.fr-thinking .tk{animation:none}}
-/* commands render as neutral code blocks (like a terminal / git diff), not an
-   accent-colored pill */
-.fr .fr-cmd{font-family:var(--mono);font-size:13.5px;color:var(--fg);display:flex;align-items:center;gap:9px;
-  background:var(--sea);border:1px solid var(--line-2);border-radius:6px;padding:8px 12px}
+/* a fresh shell prompt (robbyrussell-style) — the user launches `claude` here */
+.fr-shell{font-family:var(--mono);font-size:13.5px;color:var(--fg)}
+.fr-shell .sh-arrow{color:var(--green);font-weight:700}
+.fr-shell .sh-path{color:var(--cyan)}
+.fr-shell .sh-git{color:var(--muted)}
+.fr-shell .sh-branch{color:var(--red)}
+.fr-shell.typing-sh .sh-cmd::after,.fr-you.typing-you .you-text::after,
+.fr-you.typing-you .you-cmd .cmdtext::after{content:"";display:inline-block;width:7px;height:1.02em;
+  vertical-align:-2px;margin-left:1px;background:var(--fg);animation:sp-caret .9s steps(1) infinite}
+/* when a message carries an inline command, the caret rides the command, not the prose */
+.fr-you.typing-you:has(.you-cmd) .you-text::after{display:none}
+@media (prefers-reduced-motion:reduce){.fr-shell.typing-sh .sh-cmd::after,.fr-you.typing-you .you-text::after,.fr-you.typing-you .you-cmd .cmdtext::after{animation:none}}
+/* an inline slash command inside a user message — purple, tab-completes like the CLI */
+.you-cmd,.you-cmd .cmdtext{color:var(--purple)}
+.you-cmd.tabbing .cmdtext::after{content:" \21E5";color:var(--muted);background:none;width:auto;height:auto;animation:none;vertical-align:baseline;margin-left:0}
+.you-cmd.tabbed .cmdtext{animation:tabfill .42s ease}
+@media(prefers-reduced-motion:reduce){.you-cmd.tabbed .cmdtext{animation:none}}
+/* Claude's Update tool call, as the CLI renders it: ● Update(file) / ⎿ Added N
+   lines / a line-numbered +/- diff with red-green row backgrounds */
+.fr-edit{font-family:var(--mono);font-size:12.5px;margin:2px 0 11px;line-height:1.5}
+.fr-edit .ed-head{color:var(--fg)}
+.fr-edit .ed-dot{color:var(--green);margin-right:7px}
+.fr-edit .ed-file{text-decoration:underline;text-underline-offset:2px;text-decoration-color:var(--faint)}
+.fr-edit .ed-sum{color:var(--muted);margin:2px 0 5px 3px}
+.fr-edit .ed-sum .ed-branch{color:var(--faint);margin-right:7px}
+.fr-edit .edl{display:flex;gap:14px;padding:0 8px 0 4px}
+.fr-edit .ed-ln{color:var(--faint);min-width:2ch;text-align:right;flex:none;user-select:none}
+.fr-edit .ed-code{white-space:pre-wrap}
+.fr-edit .edl.add{background:color-mix(in srgb,var(--green) 13%,transparent);color:var(--green)}
+.fr-edit .edl.del{background:color-mix(in srgb,var(--red) 13%,transparent);color:var(--red)}
+/* inline code in a response / output line */
+.fr-claude code,.fr-out code,.fr-donerow code{font-family:var(--mono);font-size:.92em;color:var(--cyan)}
+/* confirming the permission prompt: the "enter" frame renders no line — it presses
+   and selects "Yes" on the ask above (see session-player) */
+.hub-session .fr.fr-confirm.show{display:none}
+.fr-ask .t-yes,.fr-ask .t-no{display:inline-block;border-radius:4px;padding:0 5px}
+/* confirming: "Yes" gets a quick orange keypress flash, then the answered
+   choices are dismissed */
+.fr-ask .t-yes.flash{animation:yesflash .34s ease}
+@keyframes yesflash{40%{background:color-mix(in srgb,var(--orange) 42%,transparent);color:var(--orange)}}
+/* on confirm the whole gate (requires-confirmation + reason + choices) collapses,
+   leaving just the Bash call and its result — as the CLI does */
+.fr-ask .t-result{display:none;color:var(--muted)}
+.fr-ask .t-result .t-branch{color:var(--faint);margin-right:6px}
+.fr-ask.confirmed .t-gate{display:none}
+.fr-ask.confirmed .t-result{display:block}
+@media (prefers-reduced-motion:reduce){.fr-ask .t-yes.flash{animation:none}}
+/* the PR link row's trailing prose */
+.fr-linkafter{color:var(--fg)}
+/* the closing "session complete" line, shown under the done treatment */
+.fr-donerow{font-family:var(--mono);font-size:12.5px;color:var(--muted);font-style:italic}
+.fr-donerow .dn-mark{color:var(--faint);font-style:normal;margin-right:7px}
+/* the Claude Code welcome banner printed when the session boots */
+.fr-banner .bnr{font-family:var(--mono);font-size:12.5px;line-height:1.5;margin:0;white-space:pre;color:var(--muted);overflow-x:auto}
+.fr-banner .bnr-logo{color:var(--claude)}
+.fr-banner .bnr-app{color:var(--fg);font-weight:700}
+.fr-banner .bnr-txt{color:var(--fg)}
+.fr-banner .bnr-dim{color:var(--muted)}
+/* a slash command renders as plain emphasized text, like Claude Code's input —
+   no box or background (which would also occlude the pane watermark) */
+.fr .fr-cmd{font-family:var(--mono);font-size:13.5px;color:var(--fg);display:flex;align-items:center;gap:9px}
 .fr .fr-cmd .cue{color:var(--muted)}
 /* a slash-command skill renders in purple, like the CLI input */
 .fr .fr-cmd.skill{color:var(--purple)}
@@ -70,12 +127,31 @@
 .fr .fr-ask .t-reason .t-plug{color:var(--faint)}
 .fr .fr-ask .t-choices{margin:6px 0 0 18px;color:var(--muted)}
 .fr .fr-ask .t-choices .t-cursor{color:var(--purple);margin-right:6px}
-.fr .fr-moor{border:1px solid color-mix(in srgb,var(--green) 34%,transparent);border-radius:8px;overflow:hidden;font-family:var(--mono);font-size:12.5px}
-.fr .fr-moor .mbar{padding:6px 12px;background:color-mix(in srgb,var(--green) 10%,transparent);color:var(--muted);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase}
-.fr .fr-moor .ml{padding:3px 12px;white-space:pre-wrap}
-.fr .fr-moor .del{color:var(--red);background:color-mix(in srgb,var(--red) 8%,transparent)}
-.fr .fr-moor .add{color:var(--green);background:color-mix(in srgb,var(--green) 8%,transparent)}
-.fr .fr-moor .rej{color:var(--orange);padding:7px 12px;border-top:1px solid var(--line-2);font-style:italic}
+/* moor's review window — its own deep-navy palette, teal (new) / amber (old)
+   diff, and an accent comment card anchored under the commented line */
+.fr .fr-moor{--m-deep:#0a0e17;--m-panel:#131926;--m-border:#1e2d44;--m-text:#d4dae5;--m-sec:#6b7a94;--m-mut:#3d4f6a;
+  --m-add:#4ec9b0;--m-del:#e8a849;--m-accent:#7b93db;--m-red:#f14c4c;
+  border:1px solid var(--m-border);border-radius:8px;overflow:hidden;background:var(--m-deep);font-family:var(--mono);font-size:12.5px;line-height:1.5}
+.fr .fr-moor .mbar{background:var(--m-panel);border-bottom:1px solid var(--m-border);color:var(--m-sec);padding:6px 12px;font-size:11px}
+.fr .fr-moor .mbar-dot{color:var(--m-accent);margin-right:6px}
+.fr .fr-moor .mbar-sep{color:var(--m-mut)}
+.fr .fr-moor .mbar-file{color:var(--m-text)}
+.fr .fr-moor .mbody{padding:6px 0}
+.fr .fr-moor .mrow{display:flex;padding:1px 12px;color:var(--m-text)}
+.fr .fr-moor .mln{color:var(--m-mut);min-width:2.5ch;text-align:right;margin-right:14px;flex:none;user-select:none}
+.fr .fr-moor .msign{width:1.5ch;flex:none;color:var(--m-sec)}
+.fr .fr-moor .mcode{white-space:pre-wrap}
+.fr .fr-moor .mrow.add{background:color-mix(in srgb,var(--m-add) 15%,transparent)}
+.fr .fr-moor .mrow.add .mcode,.fr .fr-moor .mrow.add .msign{color:var(--m-add)}
+.fr .fr-moor .mrow.del{background:color-mix(in srgb,var(--m-del) 15%,transparent)}
+.fr .fr-moor .mrow.del .mcode,.fr .fr-moor .mrow.del .msign{color:var(--m-del)}
+.fr .fr-moor .mcmt{margin:6px 12px 7px 44px;border-left:2px solid var(--m-accent);background:color-mix(in srgb,var(--m-accent) 12%,transparent);border-radius:0 6px 6px 0;padding:7px 11px;color:var(--m-text)}
+.fr .fr-moor .mcmt-chip{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;border-radius:4px;padding:1px 7px;margin-right:9px}
+.fr .fr-moor .mcmt.mcmt-fix-now{border-left-color:var(--m-red)}
+.fr .fr-moor .mcmt.mcmt-fix-now .mcmt-chip{background:color-mix(in srgb,var(--m-red) 18%,transparent);color:var(--m-red)}
+.fr .fr-moor .mcmt.mcmt-fix-later .mcmt-chip{background:color-mix(in srgb,var(--m-del) 18%,transparent);color:var(--m-del)}
+.fr .fr-moor .mcmt.mcmt-consider .mcmt-chip{background:color-mix(in srgb,var(--m-accent) 18%,transparent);color:var(--m-accent)}
+.fr .fr-moor .mverdict{color:var(--m-add);padding:6px 12px;font-style:italic}
 
 /* opt-in control bar (mountSession {controls:true}) — hub session replay */
 .sp-controls{display:flex;align-items:center;gap:9px;padding:10px 18px;border-top:1px solid var(--line-2);background:var(--deep)}
@@ -98,8 +174,11 @@
    The badge color and pane background track the session's state as it plays. */
 .bcn-win{--bcn-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --bcn-abyss:#21222c;--bcn-body:#282a36;--bcn-bar:#30323e;--bcn-identity:#9aa3c0;
-  --bcn-sep:#7e8290;--bcn-pink:#ff79c6;--bcn-green:#50fa7b;
-  --bcn-busy:#ffb86c;--bcn-blocked:#ff5555;--bcn-badgecol:var(--bcn-busy);--bcn-paint:var(--bcn-body);
+  --bcn-sep:#7e8290;--bcn-pink:#ff79c6;--bcn-green:#50fa7b;--bcn-purple:#bd93f9;
+  /* one state color drives the badge + tab + status word (beacon BADGE_COLOR_PALETTE):
+     ready calm gray, busy orange, blocked red, retro white */
+  --bcn-ready:#8b8fa0;--bcn-busy:#ffb86c;--bcn-blocked:#ff5555;
+  --bcn-state:var(--bcn-busy);--bcn-paint:var(--bcn-body);
   position:relative;border:1px solid rgba(139,233,253,.14);border-radius:13px;overflow:hidden;
   background:var(--bcn-body);box-shadow:0 22px 55px rgba(0,0,0,.5)}
 .bcn-title{display:flex;align-items:center;gap:9px;background:var(--bcn-abyss);
@@ -108,20 +187,43 @@
 .bcn-dots i{width:11px;height:11px;border-radius:50%;display:block}
 .bcn-dots i:nth-child(1){background:#ff5f57}.bcn-dots i:nth-child(2){background:#febc2e}.bcn-dots i:nth-child(3){background:#28c840}
 .bcn-ttl{font-family:var(--bcn-mono);font-size:12px;color:var(--bcn-identity);letter-spacing:.04em}
-.bcn-bar{display:flex;align-items:center;gap:9px;background:var(--bcn-bar);font-family:var(--bcn-mono);
+.bcn-bar{display:flex;align-items:center;background:var(--bcn-bar);font-family:var(--bcn-mono);
   font-size:12.5px;padding:7px 12px;white-space:nowrap}
-.bcn-act{color:var(--bcn-pink);font-weight:700}
-.bcn-sep{color:var(--bcn-sep)}
-.bcn-proj{color:var(--bcn-identity)} .bcn-proj b{color:var(--bcn-green);font-weight:700}
 .bcn-spring{flex:1 1 auto}
+/* beacon's real status bar: no status word — the project chip is left-justified,
+   the branch right-justified, state shows through the badge/pane color. The action
+   badges (web/review/code) are omitted; their pipe separators stay as the chip
+   delimiters. A forge repo colors the project chip blue/purple (gh:owner/repo). */
+.bcn-proj{color:var(--bcn-identity)}
+.bcn-win[data-forge="1"] .bcn-proj{color:var(--bcn-purple);font-weight:700}
+.bcn-win[data-forge="1"] .bcn-proj::after{content:" |";color:var(--bcn-sep);font-weight:400}
 .bcn-branch{color:var(--bcn-green)}
+.bcn-win[data-forge="1"] .bcn-branch::before{content:"| ";color:var(--bcn-sep)}
+.bcn-win[data-forge="0"] .bcn-branch{display:none}
 .bcn-body{position:relative;background:var(--bcn-paint);transition:background .5s}
+/* badge text mirrors the window title (beacon's BADGE_FORMAT = project · task);
+   the color carries the state. Right-aligned + wrapping, like an iTerm2 badge. */
 .bcn-badge{position:absolute;right:16px;top:12px;z-index:2;font-family:var(--bcn-mono);font-weight:700;
-  font-size:18px;color:var(--bcn-badgecol);text-shadow:0 1px 2px rgba(0,0,0,.5);pointer-events:none;transition:color .4s}
-.bcn-win[data-bcn="blocked"]{--bcn-badgecol:var(--bcn-blocked)}
-.bcn-win[data-bcn="retro"]{--bcn-badgecol:#f8f8f2;--bcn-paint:#2c4636}
+  font-size:17px;line-height:1.2;text-align:right;max-width:46%;color:var(--bcn-state);
+  text-shadow:0 1px 2px rgba(0,0,0,.5);pointer-events:none;transition:color .4s}
+/* the pane's background watermark — a mode's faint identity mark (RENDER-05). Of
+   the mode profiles only retro appears here: a checklist clipboard, looking back
+   over the work. Sits behind the transcript (hub-session lifts above it). */
+.bcn-wm{position:absolute;right:30px;bottom:74px;width:104px;height:104px;z-index:0;
+  color:var(--fg);opacity:0;pointer-events:none;transition:opacity .6s}
+.bcn-win[data-bcn="ready"]{--bcn-state:var(--bcn-ready)}
+.bcn-win[data-bcn="blocked"]{--bcn-state:var(--bcn-blocked)}
+.bcn-win[data-bcn="retro"]{--bcn-state:#f8f8f2;--bcn-paint:#2c4636}
+.bcn-win[data-bcn="retro"] .bcn-wm-retro{opacity:.12}
+/* the retro lesson reads on the green pane — lift it clear of the base note faint */
+.bcn-win[data-bcn="retro"] .fr-note{color:rgba(248,248,242,.78)}
+/* done — the terminal "session complete" mode: near-black pane, dim badge, and a
+   faint checkered-flag (finish-line) watermark */
+.bcn-win[data-bcn="done"]{--bcn-state:#5f6072;--bcn-paint:#1a1622}
+.bcn-win[data-bcn="done"] .bcn-wm-done{opacity:.12}
+.bcn-win[data-bcn="done"] .fr-note{color:rgba(248,248,242,.5)}
 /* the tape sits bare inside the painted pane; it grows one frame at a time */
-.hub-session{margin:0;border:0;border-radius:0;background:transparent;box-shadow:none;--ac:var(--cyan)}
+.hub-session{position:relative;z-index:1;margin:0;border:0;border-radius:0;background:transparent;box-shadow:none;--ac:var(--cyan)}
 .hub-session .sp-controls{background:var(--bcn-abyss)}
 .hub-session .fr{display:none}
 .hub-session .fr.show{display:block;animation:fr-in .45s ease}
