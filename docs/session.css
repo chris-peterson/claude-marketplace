@@ -41,6 +41,8 @@
 .fr .fr-cmd{font-family:var(--mono);font-size:13.5px;color:var(--fg);display:flex;align-items:center;gap:9px;
   background:var(--sea);border:1px solid var(--line-2);border-radius:6px;padding:8px 12px}
 .fr .fr-cmd .cue{color:var(--muted)}
+/* a slash-command skill renders in purple, like the CLI input */
+.fr .fr-cmd.skill{color:var(--purple)}
 .fr .fr-out{color:var(--muted);font-size:14px;margin:7px 0 0 4px;border-left:1px solid var(--line-2);padding-left:12px}
 .fr-status{font-family:var(--mono);font-size:13px;color:var(--ac)}
 .fr-break{text-align:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);font-style:italic;margin:2px 0}
