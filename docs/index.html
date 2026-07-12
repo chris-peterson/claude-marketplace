@@ -520,8 +520,12 @@
   <!-- ============ SESSION REPLAY (one real session, animated) ============ -->
   <section id="session">
     <h2><a class="secanchor" href="#session">Example Session</a></h2>
-    <p class="sub">A real Claude Code session, start to finish &mdash; a bug caught mid-session, reviewed, and the fix landed.</p>
-    <div class="session hub-session" id="hub-session"></div>
+    <p class="sub">A real Claude Code session, start to finish &mdash; a bug caught mid-session, reviewed, and the fix landed. The pane is painted by <a href="#/beacon">beacon</a>.</p>
+    <div class="bcn-win" id="bcn-win" data-bcn="busy">
+      <div class="bcn-title"><span class="bcn-dots"><i></i><i></i><i></i></span><span class="bcn-ttl">orders-api &mdash; claude code</span></div>
+      <div class="bcn-bar"><span class="bcn-act" id="bcn-act">working</span><span class="bcn-sep">·</span><span class="bcn-proj"><b>orders-api</b></span><span class="bcn-spring"></span><span class="bcn-branch">batch-order-items</span></div>
+      <div class="bcn-body"><span class="bcn-badge" id="bcn-badge">orders-api</span><div class="session hub-session" id="hub-session"></div></div>
+    </div>
   </section>
 
   <div class="bearings"><span class="tickline"></span></div>
@@ -1020,7 +1024,22 @@
     { t: "note", text: "lesson — reach for a batched fetch by default; a per-item query in a loop is the N+1 that stays hidden until load" }
   ];
   var mount = document.getElementById("hub-session");
-  if (mount && window.mountSession) window.mountSession(mount, FRAMES, { controls: true, typewriter: true, thinking: true });
+  // paint the beacon badge + status bar to match the session's phase as it plays
+  var winEl = document.getElementById("bcn-win"), actEl = document.getElementById("bcn-act");
+  function beaconState(f, idx){
+    if (!winEl) return;
+    var set = function(s, a){ winEl.dataset.bcn = s; actEl.textContent = a; };
+    if (idx === 0) return set("busy", "working");
+    if (f.t === "ask") return set("blocked", "needs you");
+    if (f.t === "moor") return set("busy", "reviewing");
+    if (f.t === "cmd") {
+      if (/logbook:retro/.test(f.cmd)) return set("retro", "retro");
+      if (/anchor:commit/.test(f.cmd)) return set("busy", "committing");
+      if (/prepare-review/.test(f.cmd)) return set("busy", "pushing");
+    }
+    if (f.t === "you" && f.text === "1") return set("busy", "working");
+  }
+  if (mount && window.mountSession) window.mountSession(mount, FRAMES, { controls: true, typewriter: true, thinking: true, onReveal: beaconState });
 })();
 </script>
 </body>

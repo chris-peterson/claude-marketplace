@@ -101,6 +101,7 @@
     }
     function reveal(idx, done) {
       var f = frames[idx], el = els[idx];
+      if (opts.onReveal) opts.onReveal(f, idx);
       // emulate the CLI's "Thinking…" beat before a Claude response
       if (opts.thinking && f.t === "claude") {
         thinkBubble = document.createElement("div");
