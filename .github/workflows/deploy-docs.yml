@@ -37,6 +37,7 @@ jobs:
         run: |
           python3 suite/build-plugins-data.py
           python3 suite/build-deps-data.py
+          python3 suite/build-specs-data.py
 
       - name: Check every plugin is grouped and renderable on the doc site
         run: python3 suite/check-coverage.py

@@ -1,7 +1,5 @@
-# Generated each build, not committed.
-docs/plugins.js
-docs/deps.json
-docs/artifacts.json
+# Per-build generated output; committed docs/ source is already tracked.
+docs/*
 
 __pycache__/
 *.pyc

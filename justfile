@@ -10,6 +10,9 @@ plugins-data:
 deps:
     python3 suite/build-deps-data.py
 
+specs-data:
+    python3 suite/build-specs-data.py
+
 check-coverage:
     python3 suite/check-coverage.py
 
@@ -22,7 +25,7 @@ artifacts-data:
 seed-artifacts:
     python3 suite/seed-artifacts-history.py
 
-build: sync plugins-data deps record-artifacts artifacts-data check-coverage
+build: sync plugins-data deps specs-data record-artifacts artifacts-data check-coverage
 
 test:
     cd suite && python3 -m unittest
