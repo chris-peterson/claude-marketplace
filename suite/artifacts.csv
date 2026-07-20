@@ -35,3 +35,4 @@ date,plugin,skills,rules,hooks,commands,agents,change
 2026-07-07,beacon,1,1,3,5,0,+command:release +command:retro -command:wrap
 2026-07-09,logbook,3,0,3,1,0,+hook:orphan-notes
 2026-07-11,anchor,6,3,2,0,0,+skill:issues
+2026-07-17,anchor,7,3,2,0,0,+skill:merge
