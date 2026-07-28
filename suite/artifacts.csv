@@ -36,3 +36,4 @@ date,plugin,skills,rules,hooks,commands,agents,change
 2026-07-09,logbook,3,0,3,1,0,+hook:orphan-notes
 2026-07-11,anchor,6,3,2,0,0,+skill:issues
 2026-07-17,anchor,7,3,2,0,0,+skill:merge
+2026-07-28,anchor,8,3,2,0,0,+skill:release
