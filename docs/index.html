@@ -746,6 +746,13 @@
     const resolve=(c)=>{ const s=document.createElement("span"); s.style.cssText="color:"+c+";display:none";
       document.body.appendChild(s); const v=getComputedStyle(s).color; s.remove(); return v; };
     const pcolor={}; order.forEach((slug)=>{ pcolor[slug]=resolve(PLUGIN_AC[slug]||"var(--muted)"); });
+    // a plugin can declare a dependency on one this marketplace doesn't ship
+    // (anchor → revdiff), so the dependency graph has nodes outside the catalog.
+    // They have no category, hence no accent: they resolve to --muted and draw
+    // hollow, which is also how the graph says "not one of ours".
+    const MUTED=resolve("var(--muted)");
+    const colorOf=(n)=> pcolor[n]||MUTED;
+    const inCatalog=(n)=> n in pcolor;
     // what a plugin reacts to is derived from its composition, not a declared
     // field: hooks fire on Claude's activity (its tool calls, session lifecycle),
     // while skills and commands are how the user drives it. So a node flares on
@@ -882,7 +889,9 @@
     // order (same as the radar, catalog, and growth chart) so the colors band
     // consistently top-to-bottom rather than by edge-declaration order.
     const attr=(v)=>String(v||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;");
-    const byOrder=(a,b)=>order.indexOf(a)-order.indexOf(b);
+    // catalog order, with off-catalog nodes last rather than first (indexOf → -1)
+    const rank=(n)=>{ const i=order.indexOf(n); return i<0?Infinity:i; };
+    const byOrder=(a,b)=>rank(a)-rank(b);
     function depGraph(deps){
       const edges=deps.edges||[];
       const srcs=[...new Set(edges.map((e)=>e.from))].sort(byOrder);
@@ -892,16 +901,18 @@
       lay(srcs,lx); lay(tgts,rx);
       let s="";
       edges.forEach((e)=>{ const a=pos[e.from],b=pos[e.to]; if(!a||!b) return;
-        const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,ux=dx/d,uy=dy/d,px=-uy,py=ux,c=pcolor[e.from];
+        const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,ux=dx/d,uy=dy/d,px=-uy,py=ux,c=colorOf(e.from);
         const sx=a.x+ux*9,sy=a.y+uy*9,tx=a.x+ux*(d-9),ty=a.y+uy*(d-9),ah=8,hw=4,bx=tx-ux*ah,by=ty-uy*ah;
         // wide transparent hit-line makes the thin edge easy to hover
         s+=`<g class="edge" data-from="${attr(e.from)}" data-to="${attr(e.to)}" data-reason="${attr(e.reason)}" data-color="${attr(c)}">`+
            `<line x1="${sx.toFixed(1)}" y1="${sy.toFixed(1)}" x2="${tx.toFixed(1)}" y2="${ty.toFixed(1)}" stroke="transparent" stroke-width="14"/>`+
            `<line x1="${sx.toFixed(1)}" y1="${sy.toFixed(1)}" x2="${bx.toFixed(1)}" y2="${by.toFixed(1)}" stroke="${c}" stroke-width="1.6" opacity=".7"/>`+
            `<path d="M ${tx.toFixed(1)} ${ty.toFixed(1)} L ${(bx+px*hw).toFixed(1)} ${(by+py*hw).toFixed(1)} L ${(bx-px*hw).toFixed(1)} ${(by-py*hw).toFixed(1)} Z" fill="${c}"/></g>`; });
-      const draw=(id,side)=>{ const p=pos[id],c=pcolor[id],tx=side==="L"?p.x-13:p.x+13;
-        s+=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="8" fill="${c}" style="filter:drop-shadow(0 0 5px ${c})"/>`;
-        s+=`<text x="${tx.toFixed(1)}" y="${(p.y+4).toFixed(1)}" text-anchor="${side==="L"?"end":"start"}" font-size="12" fill="var(--fg)">${id}</text>`; };
+      const draw=(id,side)=>{ const p=pos[id],c=colorOf(id),own=inCatalog(id),tx=side==="L"?p.x-13:p.x+13;
+        s+= own
+          ? `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="8" fill="${c}" style="filter:drop-shadow(0 0 5px ${c})"/>`
+          : `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="7.2" fill="var(--deep)" stroke="${c}" stroke-width="1.6"/>`;
+        s+=`<text x="${tx.toFixed(1)}" y="${(p.y+4).toFixed(1)}" text-anchor="${side==="L"?"end":"start"}" font-size="12" fill="${own?"var(--fg)":"var(--muted)"}">${id}</text>`; };
       srcs.forEach((id)=>draw(id,"L")); tgts.forEach((id)=>draw(id,"R"));
       const svg=document.getElementById("depgraph");
       svg.innerHTML=s;
