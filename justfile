@@ -25,7 +25,9 @@ artifacts-data:
 seed-artifacts:
     python3 suite/seed-artifacts-history.py
 
-build: sync plugins-data deps specs-data record-artifacts artifacts-data check-coverage
+# record-artifacts is deliberately absent: it writes the committed log from
+# whatever branch each sibling checkout is on. CI owns it (deploy-docs.yml).
+build: sync plugins-data deps specs-data artifacts-data check-coverage
 
 test:
     cd suite && python3 -m unittest

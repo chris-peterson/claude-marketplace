@@ -14,9 +14,10 @@ and aggregate from it.
 | `build-deps-data.py` | `docs/deps.json` | project each plugin's declared `soft_deps` into the dependency graph |
 | `check-coverage.py` | (gate) | fail the build if a plugin isn't grouped/renderable on the doc site |
 
-`just build` runs the whole pipeline. `docs/plugins.js`, `docs/deps.json`, and
-`docs/artifacts.json` are regenerated each deploy and git-ignored; only
-`artifacts.csv` is committed.
+`just build` regenerates the doc site's data. `docs/plugins.js`,
+`docs/deps.json`, and `docs/artifacts.json` are rebuilt each deploy and
+git-ignored; only `artifacts.csv` is committed, and it has one writer — see
+[The artifact log](#the-artifact-log).
 
 ### The artifact log
 
@@ -35,6 +36,14 @@ needs no state file and the growth view rebuilds from this file alone — never
 re-walking git. `record-artifacts.py` compares the committed `HEAD` of each
 sibling repo to the replayed set and appends only when it changed; a re-run with
 nothing newly committed is a no-op.
+
+**The log is CI's to write.** `deploy-docs.yml` runs the recorder against
+freshly-synced siblings and commits the result itself, which is why every row
+lands as a `chore: record artifact changes` commit. `HEAD` means the default
+branch there because CI clones fresh — but in a local workspace it means
+whichever branch each sibling happens to be on, so a local run can log unmerged
+work as shipped. `just record-artifacts` still exists for a deliberate run;
+`just build` leaves it out.
 
 `seed-artifacts-history.py` is the one-time bootstrap (`just seed-artifacts`): it
 walks each sibling repo's full git history to lay down the initial change points.
