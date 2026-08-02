@@ -169,29 +169,43 @@
 @keyframes sp-caret{50%{opacity:0}}
 @media (prefers-reduced-motion:reduce){.fr.typing .cmdtext::after{animation:none}}
 
-/* landing-page replay painted as a beacon iTerm2 pane — a title bar, a status
-   bar, a status badge, Claude's status-line footer, and a mode background (see
-   beacon's docs /iterm, /palette).
-   The badge color and pane background track the session's state as it plays. */
+/* landing-page replay painted as a beacon iTerm2 pane — a tab, a status bar,
+   Claude's status-line footer, and a mode background (see beacon's docs /iterm,
+   /palette). The tab color and pane background track the session's state as it
+   plays. There's no badge: it's opt-in and off by default (BADGE-15). */
 .bcn-win{--bcn-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --bcn-abyss:#21222c;--bcn-body:#282a36;--bcn-bar:#30323e;--bcn-identity:#9aa3c0;
   --bcn-sep:#7e8290;--bcn-pink:#ff79c6;--bcn-cyan:#8be9fd;--bcn-slate:#6272a4;
-  /* one state color drives the badge + tab + status word (beacon BADGE_COLOR_PALETTE):
+  /* one state color drives the tab (beacon BADGE_COLOR_PALETTE):
      ready calm gray, busy orange, blocked red, retro white */
   --bcn-ready:#8b8fa0;--bcn-busy:#ffb86c;--bcn-blocked:#ff5555;
   --bcn-state:var(--bcn-busy);--bcn-paint:var(--bcn-body);
   position:relative;border:1px solid rgba(139,233,253,.14);border-radius:13px;overflow:hidden;
   background:var(--bcn-body);box-shadow:0 22px 55px rgba(0,0,0,.5)}
-.bcn-title{display:flex;align-items:center;gap:9px;background:var(--bcn-abyss);
-  border-bottom:1px solid rgba(248,248,242,.07);padding:9px 13px}
+.bcn-title{display:flex;align-items:center;gap:11px;background:var(--bcn-abyss);
+  border-bottom:1px solid rgba(248,248,242,.07);padding:7px 13px}
 .bcn-dots{display:inline-flex;gap:7px}
 .bcn-dots i{width:11px;height:11px;border-radius:50%;display:block}
 .bcn-dots i:nth-child(1){background:#ff5f57}.bcn-dots i:nth-child(2){background:#febc2e}.bcn-dots i:nth-child(3){background:#28c840}
-.bcn-ttl{font-family:var(--bcn-mono);font-size:12px;color:var(--bcn-identity);letter-spacing:.04em}
+/* the tab is the session's identity surface: a two-line label — project over an
+   indented task (TITLE-05) — tinted by the logical state (TAB-01). The window
+   title iTerm2 derives from it shows line 1 alone. */
+.bcn-tab{display:flex;flex-direction:column;font-family:var(--bcn-mono);font-size:12px;
+  line-height:1.4;border-radius:6px;padding:3px 11px;
+  background:color-mix(in srgb,var(--bcn-state) 18%,transparent);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--bcn-state) 32%,transparent);
+  transition:background .4s,box-shadow .4s}
+.bcn-tab-proj{font-weight:700;color:var(--bcn-state);letter-spacing:.04em;transition:color .4s}
+.bcn-tab-task{color:var(--bcn-identity);padding-left:.85em}
+.bcn-tab-task:empty{display:none}
+/* an unengaged pane keeps the user's own profile colors — beacon paints nothing
+   until a hook, slash command, or CLI call engages it (BADGE-14 / TAB-02) */
+.bcn-win[data-engaged="0"] .bcn-tab{background:transparent;box-shadow:none;padding-left:0}
+.bcn-win[data-engaged="0"] .bcn-tab-proj{color:var(--bcn-identity);font-weight:400}
 .bcn-bar{display:flex;align-items:center;gap:9px;background:var(--bcn-bar);font-family:var(--bcn-mono);
   font-size:12.5px;padding:7px 12px;white-space:nowrap}
 .bcn-spring{flex:1 1 auto}
-/* beacon's real status bar: no status word — state shows through the badge/pane
+/* beacon's real status bar: no status word — state shows through the tab/pane
    color. `↖ web` holds the left edge, a spring gathers the project's name, its
    branch, and `↗ code` on the right. The two action buttons are all that lives
    here now; the deliverable moved to the status line below (beacon 2.0). */
@@ -209,11 +223,6 @@
 .bcn-win[data-branch="untracked"] .bcn-branch{color:var(--bcn-busy)}
 .bcn-win[data-branch="clean"] .bcn-branch{color:var(--bcn-cyan)}
 .bcn-body{position:relative;background:var(--bcn-paint);transition:background .5s}
-/* badge text mirrors the window title (beacon's BADGE_FORMAT = project · task);
-   the color carries the state. Right-aligned + wrapping, like an iTerm2 badge. */
-.bcn-badge{position:absolute;right:16px;top:12px;z-index:2;font-family:var(--bcn-mono);font-weight:700;
-  font-size:17px;line-height:1.2;text-align:right;max-width:46%;color:var(--bcn-state);
-  text-shadow:0 1px 2px rgba(0,0,0,.5);pointer-events:none;transition:color .4s}
 /* the pane's background watermark — a mode's faint identity mark (RENDER-05). Of
    the mode profiles only retro appears here: a checklist clipboard, looking back
    over the work. Sits behind the transcript (hub-session lifts above it). */
@@ -225,15 +234,15 @@
 .bcn-win[data-bcn="retro"] .bcn-wm-retro{opacity:.12}
 /* the retro lesson reads on the green pane — lift it clear of the base note faint */
 .bcn-win[data-bcn="retro"] .fr-note{color:rgba(248,248,242,.78)}
-/* done — the terminal "session complete" mode: near-black pane, dim badge, and a
-   faint checkered-flag (finish-line) watermark */
+/* done — the terminal "session complete" mode: near-black pane, dim tab, and a
+   faint checkered-flag (finish-line) watermark. The tab drops its task (STATE-12) */
 .bcn-win[data-bcn="done"]{--bcn-state:#5f6072;--bcn-paint:#1a1622}
 .bcn-win[data-bcn="done"] .bcn-wm-done{opacity:.12}
 .bcn-win[data-bcn="done"] .fr-note{color:rgba(248,248,242,.5)}
 /* the Claude Code status line — the footer row Claude renders from `beacon
    statusline`, under the transcript and above the player's controls. It carries
    the session's deliverables: a change request leads at full weight with the
-   badge's own task as its title, and the branch URL stands in until one opens. */
+   tab's own task as its title, and the branch URL stands in until one opens. */
 .bcn-stl{position:relative;z-index:1;font-family:var(--bcn-mono);font-size:12.5px;
   padding:2px 22px 14px;min-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bcn-stl a{text-decoration:underline;text-underline-offset:2px}
