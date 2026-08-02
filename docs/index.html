@@ -537,10 +537,10 @@
   <section id="session">
     <h2><a class="secanchor" href="#session">Example Session</a></h2>
     <p class="sub">A real Claude Code session, start to finish &mdash; a bug caught mid-session, reviewed, and the fix landed. The pane is painted by <a href="#/beacon">beacon</a>.</p>
-    <div class="bcn-win" id="bcn-win" data-bcn="ready" data-repo="0" data-branch="default">
-      <div class="bcn-title"><span class="bcn-dots"><i></i><i></i><i></i></span><span class="bcn-ttl">zsh</span></div>
+    <div class="bcn-win" id="bcn-win" data-bcn="ready" data-engaged="0" data-repo="0" data-branch="default">
+      <div class="bcn-title"><span class="bcn-dots"><i></i><i></i><i></i></span><span class="bcn-tab"><b class="bcn-tab-proj" id="bcn-tab-proj">src</b><span class="bcn-tab-task" id="bcn-tab-task"></span></span></div>
       <div class="bcn-bar"><span class="bcn-act bcn-web">&#8598; web</span><span class="bcn-spring"></span><span class="bcn-proj" id="bcn-proj">src</span><span class="bcn-sep bcn-sep-branch">&#9474;</span><span class="bcn-branch" id="bcn-branch">main</span><span class="bcn-sep">&#9474;</span><span class="bcn-act bcn-code">&#8599; code</span></div>
-      <div class="bcn-body"><svg class="bcn-wm bcn-wm-retro" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3.5" width="16" height="18.5" rx="2"/><path d="M9 3.2h6a1 1 0 0 1 1 1V6H8V4.2a1 1 0 0 1 1-1z"/><path d="M8.4 11l1.4 1.4 2.7-2.9"/><path d="M8.4 16.2l1.4 1.4 2.7-2.9"/><line x1="14.5" y1="10.8" x2="17" y2="10.8"/><line x1="14.5" y1="16" x2="17" y2="16"/></svg><svg class="bcn-wm bcn-wm-done" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="3.5" x2="5" y2="21"/><rect x="5" y="4.5" width="13" height="9"/><g fill="currentColor" stroke="none"><rect x="5" y="4.5" width="4.33" height="3"/><rect x="13.67" y="4.5" width="4.33" height="3"/><rect x="9.33" y="7.5" width="4.33" height="3"/><rect x="5" y="10.5" width="4.33" height="3"/><rect x="13.67" y="10.5" width="4.33" height="3"/></g></svg><span class="bcn-badge" id="bcn-badge"></span><div class="session hub-session" id="hub-session"></div></div>
+      <div class="bcn-body"><svg class="bcn-wm bcn-wm-retro" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3.5" width="16" height="18.5" rx="2"/><path d="M9 3.2h6a1 1 0 0 1 1 1V6H8V4.2a1 1 0 0 1 1-1z"/><path d="M8.4 11l1.4 1.4 2.7-2.9"/><path d="M8.4 16.2l1.4 1.4 2.7-2.9"/><line x1="14.5" y1="10.8" x2="17" y2="10.8"/><line x1="14.5" y1="16" x2="17" y2="16"/></svg><svg class="bcn-wm bcn-wm-done" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="3.5" x2="5" y2="21"/><rect x="5" y="4.5" width="13" height="9"/><g fill="currentColor" stroke="none"><rect x="5" y="4.5" width="4.33" height="3"/><rect x="13.67" y="4.5" width="4.33" height="3"/><rect x="9.33" y="7.5" width="4.33" height="3"/><rect x="5" y="10.5" width="4.33" height="3"/><rect x="13.67" y="10.5" width="4.33" height="3"/></g></svg><div class="session hub-session" id="hub-session"></div></div>
     </div>
   </section>
 
@@ -1081,16 +1081,18 @@
     { t: "done" }
   ];
   var mount = document.getElementById("hub-session");
-  // paint the beacon badge + status bar to match the session's phase as it plays
+  // paint the beacon tab + status bar to match the session's phase as it plays
   var winEl = document.getElementById("bcn-win");
-  var ttlEl = winEl && winEl.querySelector(".bcn-ttl");
   var branchEl = winEl && winEl.querySelector(".bcn-branch");
   var projEl = winEl && winEl.querySelector(".bcn-proj");
-  var badgeEl = document.getElementById("bcn-badge");
+  var tabProjEl = document.getElementById("bcn-tab-proj");
+  var tabTaskEl = document.getElementById("bcn-tab-task");
   var stlEl = null;   // the Claude Code status line, inserted under the tape below
   // beacon signals across four pane surfaces, all driven off the session state:
-  //   • window title + badge — beacon's BADGE_FORMAT ("<project> · <task>"); the
-  //     task defaults to the branch on cd-in, then Claude names it
+  //   • the tab — a two-line label (TITLE-05): the project, then the task indented
+  //     under it. The task defaults to the branch on cd-in, then Claude names it.
+  //     iTerm2's single-line window title shows line 1 alone. The in-pane badge
+  //     that used to carry the same string is opt-in and off by default (BADGE-15)
   //   • iTerm2 status bar — ↖ web, then the project's name, its branch, and ↗ code
   //     gathered on the right by a spring. The chip names the project (not a forge
   //     identity), so it reads the same outside a repo; the branch is colored by
@@ -1098,9 +1100,9 @@
   //   • Claude Code status line — the footer Claude renders from `beacon statusline`:
   //     the deliverables this session has touched, each a clickable link. It exists
   //     only in a pane running Claude, so it appears when claude launches
-  //   • badge/status color + pane background + background image — the state
+  //   • tab color + pane background + background image — the state
   //     (ready/busy/blocked/retro/done), carried by data-bcn (see session.css)
-  // the user sets the branch (git checkout -b) before launching, so the badge shows
+  // the user sets the branch (git checkout -b) before launching, so the tab shows
   // the branch when Claude starts; Claude then names the task once (Title Case)
   var PROJECT = "orders-api", BRANCH = "feature-123", TASK = "Add Line Item Pricing", CR = "#128";
   // the push sets the branch's upstream, and the CR it opens becomes the session's
@@ -1110,16 +1112,22 @@
       CR_AT = FRAMES.findIndex(function (f) { return f.t === "link"; });
   function beaconState(f, idx, phase){
     if (!winEl) return;
-    // the status bar carries no status word — state shows through the badge color
+    // the status bar carries no status word — state shows through the tab color
     // and pane background (data-bcn); the bar is chips and the two action buttons
     var set = function(s){ winEl.dataset.bcn = s; };
-    // window title + badge are the same string (BADGE_FORMAT) — set both together
-    var label = function(t){ if (ttlEl) ttlEl.textContent = t; if (badgeEl) badgeEl.textContent = t; };
+    // the tab label: project on line 1, task indented on line 2 (TITLE_FORMAT).
+    // An empty task collapses line 2, as `beacon_task_nl` does
+    var label = function(project, task){
+      if (tabProjEl) tabProjEl.textContent = project;
+      if (tabTaskEl) tabTaskEl.textContent = task || "";
+    };
+    // beacon leaves a pane unpainted until a beacon-aware action engages it
+    var engaged = function(on){ winEl.dataset.engaged = on ? "1" : "0"; };
     var branch = function(b, state){ if (branchEl) branchEl.textContent = b; winEl.dataset.branch = state || "default"; };
     var proj = function(p){ if (projEl) projEl.textContent = p; };
     var repo = function(on){ winEl.dataset.repo = on ? "1" : "0"; };
     // no deliverable yet: the row falls back to the resolved branch URL, labelled
-    // with the branch. Once the CR is open it leads, carrying the badge's own task
+    // with the branch. Once the CR is open it leads, carrying the tab's own task
     // as its title — one string, so the two surfaces can't describe the PR differently
     var statusline = function(html){ if (stlEl) stlEl.innerHTML = html; };
     var sessionRow = function(){
@@ -1128,29 +1136,29 @@
         : '<a class="stl-link" href="#/session">' + BRANCH + '</a>');
     };
     if (f.t === "shell") {
-      // the shell is the foreground program — window title is "zsh", no beacon badge,
-      // and no status line (Claude renders that row, and Claude isn't running yet).
-      // The shell integration still publishes the status-bar chips on every prompt
-      if (ttlEl) ttlEl.textContent = "zsh";
-      if (badgeEl) badgeEl.textContent = "";
+      // the shell is the foreground program: the pane is unengaged, so beacon leaves
+      // the tab color to the user's profile, and there's no status line yet (Claude
+      // renders that row). The shell integration still names the tab — the project
+      // when in one, else the abbreviated cwd — and publishes the chips every prompt
+      engaged(false);
       statusline("");
-      if (f.branch) { repo(true); proj(PROJECT); branch(f.branch, f.branch === "main" ? "default" : "untracked"); }
-      else { repo(false); proj(f.path.replace(/^~\//, "")); branch("", "default"); }  // outside a repo the chip names the directory
+      if (f.branch) { repo(true); proj(PROJECT); label(PROJECT, ""); branch(f.branch, f.branch === "main" ? "default" : "untracked"); }
+      else { repo(false); proj(f.path.replace(/^~\//, "")); label(f.path.replace(/^~\//, ""), ""); branch("", "default"); }  // outside a repo both name the directory
       return set("ready");
     }
     // from here on Claude owns the pane: the branch is fixed, its sync state flips
     // on the push, and the status line carries whatever the session has resolved to
     branch(BRANCH, idx > PUSHED_AT && PUSHED_AT >= 0 ? "clean" : "untracked");
-    repo(true); proj(PROJECT); sessionRow();
-    if (f.t === "banner") { label(PROJECT + " · " + BRANCH); return set("ready"); }  // claude launched — beacon owns title + badge
-    if (f.t === "you" && f.opening) { label(PROJECT + " · " + BRANCH); return set("ready"); }
+    repo(true); proj(PROJECT); sessionRow(); engaged(true);
+    if (f.t === "banner") { label(PROJECT, BRANCH); return set("ready"); }  // claude launched — beacon owns the tab
+    if (f.t === "you" && f.opening) { label(PROJECT, BRANCH); return set("ready"); }
     if (f.t === "claude") {
       set("busy");
-      if (f.establishes && phase === "context") label(PROJECT + " · " + TASK);  // task named once, before the think
+      if (f.establishes && phase === "context") label(PROJECT, TASK);  // task named once, before the think
       return;
     }
     if (f.t === "ask") return set("blocked");
-    if (f.t === "done") return set("done");
+    if (f.t === "done") { label(PROJECT, ""); return set("done"); }  // done drops the task slot (STATE-12)
     if (f.t === "moor" || f.t === "enter" || f.t === "link") return set("busy");
     if (f.t === "you") return set(/logbook:retro/.test(f.cmd || "") && phase === "retro" ? "retro" : "busy");
     // note / sep — leave the current state (e.g. the retro green persists)

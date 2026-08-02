@@ -28,7 +28,7 @@ dispatch token. The scripts:
 - `build-plugins-data.py` — per-plugin doc site content from each `plugin.yml` → `docs/plugins.js`.
 - `record-artifacts.py` — append a change-point row to `suite/artifacts.csv` (the committed rolling log) when a plugin's artifact set changes. **CI writes this log, not you**: it reads each sibling's checked-out branch, so a local run records unmerged work as shipped — which is why `just build` omits it. `seed-artifacts-history.py` is the one-time bootstrap from each repo's git history.
 - `build-artifacts-data.py` — project `suite/artifacts.csv` into the growth view's series + changelog → `docs/artifacts.json`.
-- `build-deps-data.py` — projects each plugin's declared `soft_deps` → `docs/deps.json` (the dependency graph). Edges are declared, never discovered.
+- `build-deps-data.py` — projects each plugin's declared `suite.dependencies` (a list of `{name, required, reason}`) → `docs/deps.json` (the dependency graph). Edges are declared, never discovered.
 - `check-coverage.py` — fails the build if a `marketplace.json` plugin isn't placed in a doc site `GROUPS` slug list (or vice versa). Runs first in CI and in `just build`.
 
 ## Structure

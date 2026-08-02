@@ -176,7 +176,7 @@
     }
     // A Claude turn signals through the pane before it answers. onReveal fires
     // 'enter' (Claude picks up the turn — cut the branch), then 'context' (it has
-    // settled what it's doing — name the task/badge), and only THEN does the long
+    // settled what it's doing — name the task), and only THEN does the long
     // "Thinking…" beat run: the fleet view is current before the deep think. The
     // branch→task staging is gated to the opening turn (f.establishes); later
     // turns keep the labels they already carry and think straight away.
@@ -262,7 +262,7 @@
         thinkEl = thinkFrame = null; thinkIdx = -1; }
     }
     function step() { pause(); if (i >= frames.length) return; var idx = i; i++; count(); reveal(idx, function () {}); }
-    // repaint the beacon pane (title/badge/branch/state) as of `n` frames revealed,
+    // repaint the beacon pane (tab/branch/state) as of `n` frames revealed,
     // replaying each frame's settled state — so stepping back stays in sync
     function paintStateAt(n) {
       if (!opts.onReveal) return;
