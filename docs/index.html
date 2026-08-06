@@ -59,7 +59,7 @@
   .nav-gh svg{display:block}
   section[id]{scroll-margin-top:70px}
 
-  header.hero{padding:44px 0 26px;position:relative;overflow:hidden}
+  header.hero{padding:44px 0 4px;position:relative;overflow:hidden}
   /* the mark as atmosphere: large and faint, bleeding off the top-right behind
      the title. The crisp mark still lives in the nav for identity. */
   .herowatermark{position:absolute;top:-26px;right:-86px;width:min(440px,48vw);height:min(440px,48vw);
@@ -100,16 +100,22 @@
   .stop.s-waypoints{--ac:var(--cyan)} .stop.s-record{--ac:var(--green)}
   .n-safety{background:var(--red)} .n-bearings{background:var(--purple)} .n-waypoints{background:var(--cyan)} .n-record{background:var(--green)}
 
-  section{padding:22px 0;position:relative}
-  #install{padding:16px 0 22px}
+  section{padding:14px 0;position:relative}
+  #install{padding:10px 0 14px}
   h2{font-family:var(--disp);font-weight:600;font-size:clamp(30px,4.4vw,44px);
-    letter-spacing:-.02em;line-height:1.04;margin:8px 0 8px;color:var(--fg)}
-  h2 a.secanchor{color:inherit;text-decoration:none}
-  h2 a.secanchor::after{content:"#";margin-left:.26em;color:var(--cyan);opacity:0;font-weight:400;
+    letter-spacing:-.02em;line-height:1.04;margin:2px 0 6px;color:var(--fg)}
+  /* a tier between the section h2 and the mono panel labels: titles a
+     continuation of the section above it rather than opening a new one */
+  h3.subhead{font-family:var(--disp);font-weight:600;font-size:23px;letter-spacing:-.01em;
+    margin:10px 0 18px;color:var(--fg);display:flex;align-items:baseline;gap:14px}
+  h3.subhead::after{content:"";flex:1;height:1px;position:relative;top:-6px;
+    background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 9px)}
+  a.secanchor{color:inherit;text-decoration:none}
+  a.secanchor::after{content:"#";margin-left:.26em;color:var(--cyan);opacity:0;font-weight:400;
     font-size:.62em;vertical-align:.08em;transition:opacity .2s}
-  h2 a.secanchor:hover{text-decoration:none}
-  h2 a.secanchor:hover::after{opacity:.5}
-  h2 a.secanchor.copied::after{content:"\2713";opacity:1;color:var(--green)}
+  a.secanchor:hover{text-decoration:none}
+  a.secanchor:hover::after{opacity:.5}
+  a.secanchor.copied::after{content:"\2713";opacity:1;color:var(--green)}
   .sub{color:var(--muted);max-width:66ch;margin:0 0 8px}
   .sub b{color:var(--fg);font-weight:600}
   .sub a{color:var(--muted);text-decoration:underline;text-decoration-color:var(--faint);text-underline-offset:3px}
@@ -502,11 +508,11 @@
           <a class="stop s-safety" href="#g-safety"><span class="node n-safety"></span><span class="txt"><span class="lab">stay safe</span><span class="sub">screen risky commands</span></span></a>
           <a class="stop s-bearings" href="#g-bearings"><span class="node n-bearings"></span><span class="txt"><span class="lab">keep oriented</span><span class="sub">see work at a glance</span></span></a>
           <a class="stop s-waypoints" href="#g-waypoints"><span class="node n-waypoints"></span><span class="txt"><span class="lab">reach waypoints</span><span class="sub">land changes cleanly</span></span></a>
-          <a class="stop s-record" href="#g-record"><span class="node n-record"></span><span class="txt"><span class="lab">log lessons</span><span class="sub">capture what you learn</span></span></a>
+          <a class="stop s-record" href="#g-record"><span class="node n-record"></span><span class="txt"><span class="lab">write it down</span><span class="sub">capture what you learn</span></span></a>
         </div>
       </div>
     </div>
-    <div class="bearings" style="margin-top:24px"><span class="tickline"></span></div>
+    <div class="bearings" style="margin-top:16px"><span class="tickline"></span></div>
   </header>
 
   <!-- ============ INSTALL ============ -->
@@ -544,12 +550,9 @@
     </div>
   </section>
 
-  <div class="bearings"><span class="tickline"></span></div>
-
   <!-- ============ PLUGIN DETAILS (artifact breakdown + interop) ============ -->
   <section id="details">
-    <h2><a class="secanchor" href="#details">Composition</a></h2>
-    <p class="sub">What the suite is made of, and how the plugins lean on each other.</p>
+    <h3 class="subhead"><a class="secanchor" href="#details">Plugin interactions</a></h3>
     <div class="details reveal">
       <div class="panel">
         <h3>By artifact type</h3>
@@ -661,7 +664,7 @@
     {key:"safety",    ac:"--guard",  tag:"Stay safe",            slugs:["ClaudeWatch","shipshape"]},
     {key:"bearings",  ac:"--orient", tag:"Keep oriented",        slugs:["beacon","tack"]},
     {key:"waypoints", ac:"--ship",   tag:"Reach your waypoints", slugs:["anchor","moor"]},
-    {key:"record",    ac:"--build",  tag:"Log lessons",          slugs:["logbook","sextant"]}
+    {key:"record",    ac:"--build",  tag:"Write it down",        slugs:["logbook","sextant","cleat"]}
   ];
   // each plugin's accent = its category color, lightened a step per same-category
   // sibling so the two cards in a group are distinct — matching the growth chart's
@@ -734,7 +737,7 @@
   // ---- section headings: clicking the heading anchor copies its deep link and
   // jumps to the section — same `#`-on-hover affordance as the category tags. ----
   document.addEventListener("click",(e)=>{
-    const a=e.target.closest("h2 a.secanchor"); if(!a) return;
+    const a=e.target.closest("a.secanchor"); if(!a) return;
     const url=location.origin+location.pathname+a.getAttribute("href");
     navigator.clipboard.writeText(url).then(()=>{ a.classList.add("copied"); setTimeout(()=>a.classList.remove("copied"),1400); });
   });

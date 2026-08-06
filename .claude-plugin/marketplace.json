@@ -46,6 +46,19 @@
       "homepage": "https://chris-peterson.github.io/ClaudeWatch/#/"
     },
     {
+      "name": "cleat",
+      "description": "Keep a repo's agent instructions in one AGENTS.md that every tool reads, with CLAUDE.md reduced to a pointer at it.",
+      "author": {
+        "name": "chris-peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/cleat.git"
+      },
+      "category": "development",
+      "homepage": "https://chris-peterson.github.io/cleat/#/"
+    },
+    {
       "name": "logbook",
       "description": "A log of important learnings, e.g. AI-assisted coding session retros.",
       "author": {
