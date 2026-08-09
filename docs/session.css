@@ -127,31 +127,25 @@
 .fr .fr-ask .t-reason .t-plug{color:var(--faint)}
 .fr .fr-ask .t-choices{margin:6px 0 0 18px;color:var(--muted)}
 .fr .fr-ask .t-choices .t-cursor{color:var(--purple);margin-right:6px}
-/* moor's review window — its own deep-navy palette, teal (new) / amber (old)
-   diff, and an accent comment card anchored under the commented line */
-.fr .fr-moor{--m-deep:#0a0e17;--m-panel:#131926;--m-border:#1e2d44;--m-text:#d4dae5;--m-sec:#6b7a94;--m-mut:#3d4f6a;
-  --m-add:#4ec9b0;--m-del:#e8a849;--m-accent:#7b93db;--m-red:#f14c4c;
-  border:1px solid var(--m-border);border-radius:8px;overflow:hidden;background:var(--m-deep);font-family:var(--mono);font-size:12.5px;line-height:1.5}
-.fr .fr-moor .mbar{background:var(--m-panel);border-bottom:1px solid var(--m-border);color:var(--m-sec);padding:6px 12px;font-size:11px}
-.fr .fr-moor .mbar-dot{color:var(--m-accent);margin-right:6px}
-.fr .fr-moor .mbar-sep{color:var(--m-mut)}
-.fr .fr-moor .mbar-file{color:var(--m-text)}
-.fr .fr-moor .mbody{padding:6px 0}
-.fr .fr-moor .mrow{display:flex;padding:1px 12px;color:var(--m-text)}
-.fr .fr-moor .mln{color:var(--m-mut);min-width:2.5ch;text-align:right;margin-right:14px;flex:none;user-select:none}
-.fr .fr-moor .msign{width:1.5ch;flex:none;color:var(--m-sec)}
-.fr .fr-moor .mcode{white-space:pre-wrap}
-.fr .fr-moor .mrow.add{background:color-mix(in srgb,var(--m-add) 15%,transparent)}
-.fr .fr-moor .mrow.add .mcode,.fr .fr-moor .mrow.add .msign{color:var(--m-add)}
-.fr .fr-moor .mrow.del{background:color-mix(in srgb,var(--m-del) 15%,transparent)}
-.fr .fr-moor .mrow.del .mcode,.fr .fr-moor .mrow.del .msign{color:var(--m-del)}
-.fr .fr-moor .mcmt{margin:6px 12px 7px 44px;border-left:2px solid var(--m-accent);background:color-mix(in srgb,var(--m-accent) 12%,transparent);border-radius:0 6px 6px 0;padding:7px 11px;color:var(--m-text)}
-.fr .fr-moor .mcmt-chip{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;border-radius:4px;padding:1px 7px;margin-right:9px}
-.fr .fr-moor .mcmt.mcmt-fix-now{border-left-color:var(--m-red)}
-.fr .fr-moor .mcmt.mcmt-fix-now .mcmt-chip{background:color-mix(in srgb,var(--m-red) 18%,transparent);color:var(--m-red)}
-.fr .fr-moor .mcmt.mcmt-fix-later .mcmt-chip{background:color-mix(in srgb,var(--m-del) 18%,transparent);color:var(--m-del)}
-.fr .fr-moor .mcmt.mcmt-consider .mcmt-chip{background:color-mix(in srgb,var(--m-accent) 18%,transparent);color:var(--m-accent)}
-.fr .fr-moor .mverdict{color:var(--m-add);padding:6px 12px;font-style:italic}
+/* the diff anchor puts up for review — a git-diff emulator in the session's own
+   Dracula tokens, so it names no review backend, plus a comment card anchored
+   under the commented line */
+.fr .fr-diff{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--sea);
+  font-family:var(--mono);font-size:12.5px;line-height:1.5}
+.fr .fr-diff .dhead{background:var(--deep);border-bottom:1px solid var(--line-2);padding:6px 12px;font-size:11px}
+.fr .fr-diff .dfile{display:block;color:var(--faint);word-break:break-all}
+.fr .fr-diff .dhunk{display:block;color:var(--cyan)}
+.fr .fr-diff .dbody{padding:6px 0}
+.fr .fr-diff .drow{display:flex;padding:1px 12px;color:var(--fg)}
+.fr .fr-diff .dln{color:var(--faint);min-width:2.5ch;text-align:right;margin-right:14px;flex:none;user-select:none}
+.fr .fr-diff .dsign{width:1.5ch;flex:none;color:var(--muted)}
+.fr .fr-diff .dcode{white-space:pre-wrap}
+.fr .fr-diff .drow.add{background:color-mix(in srgb,var(--green) 12%,transparent)}
+.fr .fr-diff .drow.add .dcode,.fr .fr-diff .drow.add .dsign{color:var(--green)}
+.fr .fr-diff .drow.del{background:color-mix(in srgb,var(--red) 12%,transparent)}
+.fr .fr-diff .drow.del .dcode,.fr .fr-diff .drow.del .dsign{color:var(--red)}
+.fr .fr-diff .dcmt{margin:6px 12px 7px 44px;border-left:2px solid var(--purple);background:color-mix(in srgb,var(--purple) 12%,transparent);border-radius:0 6px 6px 0;padding:7px 11px;color:var(--fg)}
+.fr .fr-diff .dverdict{color:var(--green);padding:6px 12px;font-style:italic}
 
 /* opt-in control bar (mountSession {controls:true}) — hub session replay */
 .sp-controls{display:flex;align-items:center;gap:9px;padding:10px 18px;border-top:1px solid var(--line-2);background:var(--deep)}

@@ -12,7 +12,7 @@
 
   // Build one frame's DOM node. Frame types mirror a Claude Code transcript:
   // chat (you/claude/note), structural (thought/event/sep/status), a shell
-  // command, ClaudeWatch's block (watch) / ask prompts, and a moor diff.
+  // command, ClaudeWatch's block (watch) / ask prompts, and a diff under review.
   function frameEl(f) {
     var el = document.createElement("div");
     el.className = "fr";
@@ -58,17 +58,30 @@
       + '</div>'
       + '<div class="t-result"><span class="t-branch">⎿</span> ' + (f.result || "done") + '</div>'
       + '</div>'; }
-    else if (f.t === "moor") {
-      var mrows = (f.lines || []).map(function (l) {
-        var cls = l.add ? " add" : (l.del ? " del" : ""), sign = l.add ? "+" : (l.del ? "−" : " ");
-        var row = '<div class="mrow' + cls + '"><span class="mln">' + l.ln + '</span><span class="msign">' + sign + '</span><span class="mcode">' + l.text + '</span></div>';
+    else if (f.t === "diff") {
+      // anchor drives whichever review backend git is pointed at, so the window
+      // emulates git's own diff output and names none of them. The @@ header is
+      // derived from the frame: an added line doesn't count toward the old side,
+      // a removed one doesn't count toward the new. Its two ranges follow git's
+      // unified format — a count of 1 is left implicit, and a side with no lines
+      // is numbered from the line it would be inserted after.
+      var dls = f.lines || [], start = dls.length ? dls[0].ln : 1;
+      var range = function (n) { return n === 0 ? (start - 1) + ",0" : (n === 1 ? String(start) : start + "," + n); };
+      var oldCount = dls.filter(function (l) { return !l.add; }).length,
+          newCount = dls.filter(function (l) { return !l.del; }).length;
+      var drows = dls.map(function (l) {
+        var cls = l.add ? " add" : (l.del ? " del" : ""), sign = l.add ? "+" : (l.del ? "-" : " ");
+        var row = '<div class="drow' + cls + '"><span class="dln">' + l.ln + '</span><span class="dsign">' + sign + '</span><span class="dcode">' + l.text + '</span></div>';
         if (f.comment && f.comment.ln === l.ln) {
-          row += '<div class="mcmt mcmt-' + f.comment.action + '"><span class="mcmt-chip">' + f.comment.action.replace("-", " ") + '</span><span class="mcmt-body">' + f.comment.body + '</span></div>';
+          row += '<div class="dcmt">' + f.comment.body + '</div>';
         }
         return row;
       }).join("");
-      var mv = f.verdict ? '<div class="mverdict">✓ ' + f.verdict + ' — no fix-now comments</div>' : '';
-      el.innerHTML = '<div class="fr-moor"><div class="mbar"><span class="mbar-dot">◆</span> moor <span class="mbar-sep">·</span> <span class="mbar-file">' + f.file + '</span></div><div class="mbody">' + mrows + mv + '</div></div>';
+      var dv = f.verdict ? '<div class="dverdict">✓ ' + f.verdict + '</div>' : '';
+      el.innerHTML = '<div class="fr-diff"><div class="dhead">'
+        + '<span class="dfile">diff --git a/' + f.file + ' b/' + f.file + '</span>'
+        + '<span class="dhunk">@@ -' + range(oldCount) + ' +' + range(newCount) + ' @@</span>'
+        + '</div><div class="dbody">' + drows + dv + '</div></div>';
     }
     else if (f.t === "link") { el.classList.add("fr-linkrow"); var ext = /^https?:/.test(f.href) ? ' target="_blank" rel="noopener"' : '';
       el.innerHTML = '<span class="lbl">⏺</span><a class="fr-link" href="' + f.href + '"' + ext + '>' + f.text + '</a>' + (f.after ? '<span class="fr-linkafter">' + f.after + '</span>' : ""); }
@@ -77,7 +90,7 @@
     return el;
   }
 
-  var delayFor = function (f) { if (!f) return 1000; if (f.t === "shell") return 700; if (f.t === "banner") return 1500; if (f.t === "sep") return 550; if (f.t === "thought" || f.t === "event") return 1200; if (f.t === "cmd") return 1500; if (f.t === "moor") return 1700; if (f.t === "watch") return 1500; if (f.t === "ask") return 2600; if (f.t === "enter") return 900; if (f.t === "note") return 2200; if (f.t === "status") return 1300; return 1150; };
+  var delayFor = function (f) { if (!f) return 1000; if (f.t === "shell") return 700; if (f.t === "banner") return 1500; if (f.t === "sep") return 550; if (f.t === "thought" || f.t === "event") return 1200; if (f.t === "cmd") return 1500; if (f.t === "diff") return 1700; if (f.t === "watch") return 1500; if (f.t === "ask") return 2600; if (f.t === "enter") return 900; if (f.t === "note") return 2200; if (f.t === "status") return 1300; return 1150; };
 
   // Autostarts on scroll-in, pauses off-screen, plays once then pins the final
   // state (no loop). Reduced-motion shows every frame at once.

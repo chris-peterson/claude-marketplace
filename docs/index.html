@@ -1044,7 +1044,7 @@
 </script>
 <script>
 // Landing-page session replay — one realistic cross-plugin session. anchor and
-// logbook lead; moor is the diff-review card; ClaudeWatch appears reactively.
+// logbook lead; the diff card is anchor's review step; ClaudeWatch appears reactively.
 (function () {
   var FRAMES = [
     { t: "shell", path: "~/src", cmd: "cd orders-api" },
@@ -1059,20 +1059,20 @@
       ],
       text: "Added the <code>includeItems</code> filter." },
     { t: "you", type: true, text: "looks about right; ", cmd: "/anchor:commit", stub: "/com", out: "48 tests pass · proceeding to review" },
-    { t: "moor", file: "orders.controller.ts",
+    { t: "diff", file: "orders.controller.ts",
       lines: [
         { ln: 40, text: "const order = await _repo.get(id);" },
         { ln: 41, add: true, text: "if (includeItems)" },
         { ln: 42, add: true, text: "  order.items = order.itemIds.map(id => _repo.getItem(id));" }
       ],
-      comment: { action: "fix-now", ln: 42, body: "the map calls _repo.getItem once per line item — classic N+1. add a batched getItems to the repository." } },
+      comment: { ln: 42, body: "the map calls _repo.getItem once per line item — classic N+1. add a batched getItems to the repository." } },
     { t: "claude",
       edits: [
         { file: "orders.repository.ts", ln: 18, diff: "+ getItems(ids) {\n+   return this.db.lineItems.whereIn('id', ids);\n+ }" },
         { file: "orders.controller.ts", ln: 42, diff: "- order.items = order.itemIds.map(id => _repo.getItem(id));\n+ order.items = _repo.getItems(order.itemIds);" }
       ],
       text: "Added a batched <code>getItems</code> to the repository and called it instead of the per-item loop." },
-    { t: "moor", file: "orders.controller.ts",
+    { t: "diff", file: "orders.controller.ts",
       lines: [{ ln: 42, add: true, text: "  order.items = _repo.getItems(order.itemIds);" }],
       verdict: "approved" },
     { t: "you", type: true, cmd: "/anchor:prepare-review", stub: "/pre", out: "2 new commits on main touched the same controller · rebased clean · pushing" },
@@ -1162,7 +1162,7 @@
     }
     if (f.t === "ask") return set("blocked");
     if (f.t === "done") { label(PROJECT, ""); return set("done"); }  // done drops the task slot (STATE-12)
-    if (f.t === "moor" || f.t === "enter" || f.t === "link") return set("busy");
+    if (f.t === "diff" || f.t === "enter" || f.t === "link") return set("busy");
     if (f.t === "you") return set(/logbook:retro/.test(f.cmd || "") && phase === "retro" ? "retro" : "busy");
     // note / sep — leave the current state (e.g. the retro green persists)
   }
