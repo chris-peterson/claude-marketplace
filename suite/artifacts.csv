@@ -38,3 +38,4 @@ date,plugin,skills,rules,hooks,commands,agents,change
 2026-07-17,anchor,7,3,2,0,0,+skill:merge
 2026-07-28,anchor,8,3,2,0,0,+skill:release
 2026-07-31,beacon,1,1,3,2,0,+command:session-mode -command:done -command:pause -command:release -command:retro
+2026-08-06,cleat,0,0,2,0,0,+hook:hooks +hook:prefilter
