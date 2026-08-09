@@ -13,7 +13,7 @@ faster — especially for someone early in their AI-coding journey.
 
 ## Behavior
 - A terminal/chat-style pane plays a scripted session frame by frame.
-- Controls: ▶ / ⏸ play-pause, ⏭ step, ↻ restart; a step counter (e.g. "4 / 14");
+- Controls: ▶ / ⏸ play-pause, ⏭ step, ↻ restart; a step counter (current / total);
   a speed toggle (1× / 2×).
 - Autoplays once when scrolled into view; pauses on any interaction.
 - Command frames "type" the invocation; dialogue / outcome frames fade in.
@@ -32,17 +32,16 @@ it.
 3. you → notice the backoff has no jitter (thundering-herd risk)
 4. **`/note`** (logbook) → capture the observation mid-session, before it's lost
 5. you → "before I keep this, let me actually read it"
-6. **`/preview`** (anchor) → opens the diff in moor
-7. **moor** (synthesized mock — a small red/green hunk + a "rejected: <reason>"
+6. **the diff** (synthesized mock — a small red/green hunk + a "rejected: <reason>"
    note) → spot the no-jitter hunk, reject it with a course correction
-8. Claude → fixes it (full-jitter backoff, test updated)
-9. **`/commit`** (anchor) → why-first commit message
-10. **`/prepare-review`** (anchor) → rebase on main, push, open a draft CR…
-11. **ClaudeWatch** (watch-git) → intercepts the push, asks to confirm
-12. you → confirm (it's your draft)
-13. Claude → draft change request opened, branch set to delete on merge
-14. **`/retro`** (logbook) → write up the jitter lesson for the team
+7. Claude → fixes it (full-jitter backoff, test updated)
+8. **`/commit`** (anchor) → why-first commit message
+9. **`/prepare-review`** (anchor) → rebase on main, push, open a draft CR…
+10. **ClaudeWatch** (watch-git) → intercepts the push, asks to confirm
+11. you → confirm (it's your draft)
+12. Claude → draft change request opened, branch set to delete on merge
+13. **`/retro`** (logbook) → write up the jitter lesson for the team
 
 ## Notes
-- Synthesize a small moor diff card rather than a literal screenshot.
+- Synthesize a small diff card rather than a literal screenshot.
 - Keep the human-in-control beat front and center (you reject, you confirm).
