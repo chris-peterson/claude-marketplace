@@ -138,21 +138,22 @@
       el.classList.add("typing"); typingEl = el;
       typeCmdSpan(box, span, function () { el.classList.remove("typing"); typing = null; typingEl = null; done(); });
     }
-    // type a command span out to its stub, then flash-complete to the full
-    // namespaced command (the ⇥ tab-completion beat). Shared by cmd frames and
-    // the inline commands a "you" message can carry.
+    // type a command span out to the prefix the user actually types, then submit
+    // (the ↵ beat) and flash-complete to the full namespaced command — Claude
+    // resolves it on enter, not on tab. Shared by cmd frames and the inline
+    // commands a "you" message can carry.
     function typeCmdSpan(wrap, span, done) {
       if (span._full == null) span._full = span.textContent;
-      var full = span._full, stub = span.getAttribute("data-stub") || "", src = stub || full, k = 0, tabbed = false;
+      var full = span._full, stub = span.getAttribute("data-stub") || "", src = stub || full, k = 0, submitted = false;
       span.textContent = "";
       (function t() {
         if (k <= src.length) { span.textContent = src.slice(0, k); k++; typing = setTimeout(t, (stub ? 115 : 60) / speed); return; }
-        if (stub && !tabbed) {
-          tabbed = true; if (wrap) wrap.classList.add("tabbing");
+        if (stub && !submitted) {
+          submitted = true; if (wrap) wrap.classList.add("submitting");
           typing = setTimeout(function () {
-            if (wrap) { wrap.classList.remove("tabbing"); wrap.classList.add("tabbed"); }
+            if (wrap) { wrap.classList.remove("submitting"); wrap.classList.add("filled"); }
             span.textContent = full;
-            typing = setTimeout(function () { if (wrap) wrap.classList.remove("tabbed"); done(); }, 320 / speed);
+            typing = setTimeout(function () { if (wrap) wrap.classList.remove("filled"); done(); }, 320 / speed);
           }, 380 / speed);
           return;
         }
@@ -160,8 +161,8 @@
       })();
     }
     // f.type / f.cmd on a "you" frame types the message out as the user enters it:
-    // the leading prose first, then any inline slash command (Claude completes a
-    // mid-message stub — /com → /anchor:commit — like the CLI).
+    // the leading prose first, then any inline slash command (Claude fills in a
+    // mid-message stub — /com → /anchor:commit — once it's submitted).
     function typeYou(el, done) {
       var textSpan = el.querySelector(".you-text");
       var cmdWrap = el.querySelector(".you-cmd"), cmdSpan = cmdWrap && cmdWrap.querySelector(".cmdtext");
@@ -262,7 +263,7 @@
       if (typingEl) { var s = typingEl.querySelector(".cmdtext"); if (s && s._full != null) s.textContent = s._full;
         var sh = typingEl.querySelector(".sh-cmd"); if (sh && sh._full != null) sh.textContent = sh._full;
         var yt = typingEl.querySelector(".you-text"); if (yt && yt._full != null) yt.textContent = yt._full;
-        var cb = typingEl.querySelector(".fr-cmd, .you-cmd"); if (cb) cb.classList.remove("tabbing", "tabbed");
+        var cb = typingEl.querySelector(".fr-cmd, .you-cmd"); if (cb) cb.classList.remove("submitting", "filled");
         typingEl.classList.remove("typing", "typing-sh", "typing-you"); typingEl = null; }
       // finalize an in-progress context/Thinking… beat: publish the state it was
       // about to (task label, or the retro treatment), drop the bubble, reveal
@@ -292,7 +293,7 @@
       i--;
       var e = els[i];
       e.classList.remove("show", "typing", "typing-sh", "typing-you");
-      var cb = e.querySelector(".fr-cmd, .you-cmd"); if (cb) cb.classList.remove("tabbing", "tabbed");
+      var cb = e.querySelector(".fr-cmd, .you-cmd"); if (cb) cb.classList.remove("submitting", "filled");
       if (frames[i].t === "enter") { var ak = tape.querySelector(".fr-ask"); if (ak) { ak.classList.remove("confirmed"); var ay = ak.querySelector(".t-yes"); if (ay) ay.classList.remove("flash"); } }
       var tb = tape.querySelectorAll(".fr-thinking"); for (var k = 0; k < tb.length; k++) tb[k].remove();
       count(); paintStateAt(i - 1);
@@ -309,7 +310,7 @@
         var s = e.querySelector(".cmdtext"); if (s && s._full != null) s.textContent = s._full;
         var sh = e.querySelector(".sh-cmd"); if (sh && sh._full != null) sh.textContent = sh._full;
         var yt = e.querySelector(".you-text"); if (yt && yt._full != null) yt.textContent = yt._full;
-        var cb = e.querySelector(".fr-cmd, .you-cmd"); if (cb) cb.classList.remove("tabbing", "tabbed"); });
+        var cb = e.querySelector(".fr-cmd, .you-cmd"); if (cb) cb.classList.remove("submitting", "filled"); });
       var ak = tape.querySelector(".fr-ask"); if (ak) { ak.classList.remove("confirmed"); var ay = ak.querySelector(".t-yes"); if (ay) ay.classList.remove("flash"); }
       count(); play();
     }

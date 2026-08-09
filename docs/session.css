@@ -42,17 +42,19 @@
 .fr-shell .sh-path{color:var(--cyan)}
 .fr-shell .sh-git{color:var(--muted)}
 .fr-shell .sh-branch{color:var(--red)}
+/* the caret yields to the ↵ hint once the command is submitted — it outranks the
+   hint rule on specificity, so it has to exclude that state rather than lose to it */
 .fr-shell.typing-sh .sh-cmd::after,.fr-you.typing-you .you-text::after,
-.fr-you.typing-you .you-cmd .cmdtext::after{content:"";display:inline-block;width:7px;height:1.02em;
+.fr-you.typing-you .you-cmd:not(.submitting) .cmdtext::after{content:"";display:inline-block;width:7px;height:1.02em;
   vertical-align:-2px;margin-left:1px;background:var(--fg);animation:sp-caret .9s steps(1) infinite}
 /* when a message carries an inline command, the caret rides the command, not the prose */
 .fr-you.typing-you:has(.you-cmd) .you-text::after{display:none}
 @media (prefers-reduced-motion:reduce){.fr-shell.typing-sh .sh-cmd::after,.fr-you.typing-you .you-text::after,.fr-you.typing-you .you-cmd .cmdtext::after{animation:none}}
-/* an inline slash command inside a user message — purple, tab-completes like the CLI */
+/* an inline slash command inside a user message — purple, filled in on submit like the CLI */
 .you-cmd,.you-cmd .cmdtext{color:var(--purple)}
-.you-cmd.tabbing .cmdtext::after{content:" \21E5";color:var(--muted);background:none;width:auto;height:auto;animation:none;vertical-align:baseline;margin-left:0}
-.you-cmd.tabbed .cmdtext{animation:tabfill .42s ease}
-@media(prefers-reduced-motion:reduce){.you-cmd.tabbed .cmdtext{animation:none}}
+.you-cmd.submitting .cmdtext::after{content:" \21B5";color:var(--muted);background:none;width:auto;height:auto;animation:none;vertical-align:baseline;margin-left:0}
+.you-cmd.filled .cmdtext{animation:cmdfill .42s ease}
+@media(prefers-reduced-motion:reduce){.you-cmd.filled .cmdtext{animation:none}}
 /* Claude's Update tool call, as the CLI renders it: ● Update(file) / ⎿ Added N
    lines / a line-numbered +/- diff with red-green row backgrounds */
 .fr-edit{font-family:var(--mono);font-size:12.5px;margin:2px 0 11px;line-height:1.5}
@@ -100,13 +102,13 @@
 .fr .fr-cmd .cue{color:var(--muted)}
 /* a slash-command skill renders in purple, like the CLI input */
 .fr .fr-cmd.skill{color:var(--purple)}
-/* tab-completion: a ⇥ hint after the typed stub, then a quick flash as the full
-   namespaced command fills in */
-.fr .fr-cmd.tabbing .cmdtext::after{content:" \21E5";color:var(--muted);background:none;width:auto;height:auto;
+/* the user types a prefix and submits; Claude resolves it to the namespaced
+   command — a ↵ hint after the typed stub, then a quick flash as it fills in */
+.fr .fr-cmd.submitting .cmdtext::after{content:" \21B5";color:var(--muted);background:none;width:auto;height:auto;
   animation:none;vertical-align:baseline;margin-left:0}
-.fr .fr-cmd.tabbed .cmdtext{animation:tabfill .42s ease}
-@keyframes tabfill{0%{filter:brightness(1.9)}100%{filter:none}}
-@media(prefers-reduced-motion:reduce){.fr .fr-cmd.tabbed .cmdtext{animation:none}}
+.fr .fr-cmd.filled .cmdtext{animation:cmdfill .42s ease}
+@keyframes cmdfill{0%{filter:brightness(1.9)}100%{filter:none}}
+@media(prefers-reduced-motion:reduce){.fr .fr-cmd.filled .cmdtext{animation:none}}
 .fr .fr-out{color:var(--muted);font-size:14px;margin:7px 0 0 4px;border-left:1px solid var(--line-2);padding-left:12px}
 .fr-status{font-family:var(--mono);font-size:13px;color:var(--ac)}
 .fr-break{text-align:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);font-style:italic;margin:2px 0}
