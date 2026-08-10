@@ -93,7 +93,7 @@ account, so the secret lives per-repo (only organizations share a secret across
 repos) — but one command covers all of them:
 
 ```bash
-just set-dispatch-secret        # every plugin in marketplace.json
+just set-dispatch-secret
 # or one repo:
 bash suite/set-dispatch-secret.sh anchor
 ```
