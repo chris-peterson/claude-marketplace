@@ -15,7 +15,16 @@
   --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 }
 
-.cw-ex-label{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ac,var(--cyan));margin:18px 0 7px}
+/* The label is the one part of this stylesheet that sits on the host page rather
+   than on the panel's own dark ground, so the Dracula accents above are the wrong
+   palette for it: #8be9fd on the light theme's paper is 1.3:1, invisible. Only
+   here, the four accents resolve per scheme — the same values unchanged on dark,
+   AA-passing darkened ones on light. The panel below keeps the palette as-is. */
+.cw-ex-label{
+  --ship:light-dark(#0e7490,#8be9fd); --guard:light-dark(#b91c1c,#ff5555);
+  --orient:light-dark(#6d28d9,#bd93f9); --build:light-dark(#15803d,#50fa7b);
+  --cyan:light-dark(#0e7490,#8be9fd);
+  font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ac,var(--cyan));margin:18px 0 7px}
 
 .session{margin-top:14px;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--abyss);--ac:var(--cyan)}
 .session .tape{padding:20px 22px;font-size:15px;line-height:1.55;display:flex;flex-direction:column;gap:12px}
