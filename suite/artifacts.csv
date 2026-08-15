@@ -42,3 +42,4 @@ date,plugin,skills,rules,hooks,commands,agents,change
 2026-08-11,sextant,3,0,0,0,0,-skill:impl-new -skill:impl-select
 2026-08-15,anchor,9,3,2,0,0,+skill:review
 2026-08-15,shipshape,1,0,3,0,0,+hook:claude-code-version
+2026-08-15,tack,3,0,5,0,0,+skill:end +skill:start +hook:landing-nudge
