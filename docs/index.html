@@ -248,16 +248,20 @@
   .cmdcopy.solo .cc-ico{border-left:0;padding-left:0}
   .cmdcopy.done{border-color:color-mix(in srgb,var(--green) 55%,transparent)}
   .cmdcopy.done .cc-ico{color:var(--green)}
-  /* title = the plugin's anchor: favicon + name are one link that navigates to
-     the `#/<slug>` deep link (which scrolls to and highlights this card). */
+  /* title = the card's primary CTA: favicon + name are one link out to the
+     plugin's own doc site. The hover arrow marks it as leaving this page. */
   .pnamelink{display:inline-flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
   .pnamelink:hover h3{text-decoration:underline;text-underline-offset:3px}
-  /* header quick-links: documentation + source, a matched icon pair pushed to
-     the right; the docs icon carries the margin that floats the cluster over. */
+  .pnamelink::after{content:"\2197";font-size:13px;line-height:1;align-self:center;margin-left:-5px;
+    color:var(--ac);opacity:0;transition:opacity .2s}
+  .pnamelink:hover::after{opacity:.75}
+  /* header quick-links: shareable anchor + source, a matched icon pair pushed to
+     the right; the anchor icon carries the margin that floats the cluster over. */
   .ship .head .iconbtn{align-self:center;display:inline-flex;align-items:center;color:var(--muted);transition:color .2s}
   .ship .head .iconbtn:hover{color:var(--ac);text-decoration:none}
   .ship .head .iconbtn svg{display:block}
-  .ship .head .docslink{margin-left:auto}
+  .ship .head .anchorlink{margin-left:auto}
+  .ship .head .anchorlink.copied{color:var(--green)}
 
 
   .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
@@ -611,7 +615,7 @@
   const srcUrl  = (s)=>`https://github.com/chris-peterson/${s}`;
   const COPY_ICO = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
   const GH_ICO = `<svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 .2a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.13 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.11.16 1.93.08 2.13.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A8 8 0 0 0 8 .2Z"/></svg>`;
-  const DOC_ICO = `<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`;
+  const LINK_ICO = `<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 0 1 0 10h-2"/><path d="M8 12h8"/></svg>`;
 
   // escape a string for use inside a double-quoted HTML/SVG attribute (data-tip, etc.)
   const attrEsc=(v)=>String(v==null?"":v).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
@@ -640,8 +644,8 @@
 
   // ---- routing: a #/<slug> hash scrolls to, expands, and highlights that
   // plugin's card, so a shared link lands on its full detail with clear emphasis.
-  // The docs/source icon buttons on the card are the way out to the external
-  // sites — the deep link keeps you on the page. ----
+  // The card's anchor icon is how you get that link; the title and source icon
+  // are the ways out to the external sites. ----
   function route(){
     const m=location.hash.match(/^#\/(.+)$/);
     if(!m || !PLUGINS[m[1]]) return;
@@ -691,16 +695,16 @@
     const p=PLUGINS[slug];
     const cmd=`claude plugin install ${slug}@chris-peterson`;
     const comps=p.components && compSummary(p.components);
-    // The title — favicon + name as one link — is the plugin's anchor: it
-    // navigates to the `#/<slug>` deep link (which scrolls to + highlights the
-    // card). The docs and source icons are quick-links; the far-right chevron (or a
-    // click on the card body) expands the card to reveal its artifact breakdown.
+    // The title — favicon + name as one link — is the card's primary CTA, out to
+    // the plugin's own doc site. The anchor icon copies this card's `#/<slug>`
+    // link (which scrolls to + highlights it); the source icon goes to the repo;
+    // the far-right chevron (or a click on the card body) reveals the artifacts.
     return `<article class="ship" data-slug="${slug}" style="--ac:${PLUGIN_AC[slug]}">`+
       `<div class="head">`+
-      `<a class="pnamelink" href="#/${slug}"><img src="https://chris-peterson.github.io/${slug}/favicon.svg" alt=""><h3>${slug}</h3></a>`+
+      `<a class="pnamelink" href="${docsUrl(slug)}"><img src="https://chris-peterson.github.io/${slug}/favicon.svg" alt=""><h3>${slug}</h3></a>`+
       (p.cli?`<span class="cli">cli</span>`:``)+
       (p.version?`<span class="ver">v${p.version}</span>`:``)+
-      `<a class="iconbtn docslink" href="${docsUrl(slug)}" aria-label="${slug} documentation">${DOC_ICO}</a>`+
+      `<a class="iconbtn anchorlink" href="#/${slug}" aria-label="Copy link to the ${slug} card">${LINK_ICO}</a>`+
       `<a class="iconbtn srclink" href="${srcUrl(slug)}" target="_blank" rel="noopener" aria-label="${slug} source on GitHub">${GH_ICO}</a>`+
       (comps?`<button class="cardtoggle" type="button" aria-expanded="false" aria-label="Show ${slug} artifacts: ${comps}"></button>`:``)+
       `</div>`+
@@ -715,7 +719,7 @@
   ).join("");
 
   // ---- card expander: the header chevron (or a click on the card body) toggles
-  // the artifact breakdown open. The title/docs/source links and the install
+  // the artifact breakdown open. The title/anchor/source links and the install
   // button keep their own actions; an in-progress text selection wins over it. ----
   document.querySelectorAll("#catalog .ship").forEach((card)=>{
     if(!card.querySelector(".compbody")) return;
@@ -734,12 +738,15 @@
     navigator.clipboard.writeText(btn.dataset.cmd).then(()=>{ btn.classList.add("done"); setTimeout(()=>btn.classList.remove("done"),1500); });
   });
 
-  // ---- section headings: clicking the heading anchor copies its deep link and
-  // jumps to the section — same `#`-on-hover affordance as the category tags. ----
+  // ---- deep links: clicking a section heading or a card's anchor icon copies
+  // that link and jumps to it — same affordance as the category tags. ----
   document.addEventListener("click",(e)=>{
-    const a=e.target.closest("a.secanchor"); if(!a) return;
+    const a=e.target.closest("a.secanchor,a.anchorlink"); if(!a) return;
     const url=location.origin+location.pathname+a.getAttribute("href");
     navigator.clipboard.writeText(url).then(()=>{ a.classList.add("copied"); setTimeout(()=>a.classList.remove("copied"),1400); });
+    // re-clicking the card already in the hash leaves it unchanged, so no
+    // hashchange fires — highlight it here so the click always lands visibly.
+    if(a.classList.contains("anchorlink") && location.hash===a.getAttribute("href")) route();
   });
 
   // ---- composition: artifact-type donut (from PLUGINS) + interop radar (deps.json) ----
