@@ -23,13 +23,15 @@ The bridge.ai suite is maintained by reading the sibling plugin repos (cloned by
 `suite/sync.sh` from `marketplace.json`). Each plugin's `plugin.yml` is its
 canonical descriptor (see `suite/plugin.schema.md`). [`suite/README.md`](suite/README.md)
 is the toolkit reference, including how to release a plugin and set up its
-dispatch token. The scripts:
+dispatch token. Two files here are declared and committed rather than generated:
+`tiers.yml` (each plugin's adoption tier, and why) and `artifacts.csv` (the
+rolling artifact log). The scripts:
 
-- `build-plugins-data.py` — per-plugin doc site content from each `plugin.yml` → `docs/plugins.js`.
+- `build-plugins-data.py` — per-plugin doc site content from each `plugin.yml`, plus the adoption tiers from `suite/tiers.yml` → `docs/plugins.js`.
 - `record-artifacts.py` — append a change-point row to `suite/artifacts.csv` (the committed rolling log) when a plugin's artifact set changes. **CI writes this log, not you**: it reads each sibling's checked-out branch, so a local run records unmerged work as shipped — which is why `just build` omits it. `seed-artifacts-history.py` is the one-time bootstrap from each repo's git history.
 - `build-artifacts-data.py` — project `suite/artifacts.csv` into the growth view's series + changelog → `docs/artifacts.json`.
 - `build-deps-data.py` — projects each plugin's declared `suite.dependencies` (a list of `{name, required, reason}`) → `docs/deps.json` (the dependency graph). Edges are declared, never discovered.
-- `check-coverage.py` — fails the build if a `marketplace.json` plugin isn't placed in a doc site `GROUPS` slug list (or vice versa). Runs first in CI and in `just build`.
+- `check-coverage.py` — fails the build if a `marketplace.json` plugin isn't placed in a doc site `GROUPS` slug list or in a `suite/tiers.yml` tier (or vice versa). Runs first in CI and in `just build`.
 
 ## Structure
 
@@ -48,9 +50,10 @@ dispatch token. The scripts:
     chart that bakes one at draw time won't follow the toggle. The two chart
     blocks redraw on the `themechange` event the toggle fires.
 - `docs/favicon.svg` — the bridge.ai mark (also the nav/footer mark, inline).
-- `issue.md` — roadmap note for a possible next pass.
-- The former docsify files (`docs/README.md`, `relationships.md`, `_sidebar.md`)
-  are kept but **unlinked** — to fold into the doc site later.
+- `SUITE.md` — the suite-level meta doc: the two axes, what each plugin owns,
+  the dependency graph, and the bridge.ai / shipyard / plugin-repo split.
+- The former docsify files (`docs/README.md`, `_sidebar.md`) are kept but
+  **unlinked** — to fold into the doc site later.
 
 ## Conventions
 
@@ -58,10 +61,16 @@ dispatch token. The scripts:
   block). `suite/build-plugins-data.py` generates the `PLUGINS` object into
   `docs/plugins.js`, which `index.html` loads — edit gloss/what/commands in the
   plugin's `plugin.yml`, never in `index.html` or `plugins.js`.
-- **Adding a plugin takes two edits**: register it in `marketplace.json`, and
-  add its slug to a `GROUPS` group in `docs/index.html` — the catalog renders
-  only grouped slugs, so a plugin in `marketplace.json` alone has data but no
-  card. `suite/check-coverage.py` enforces this (CI + `just build`).
+- **Adding a plugin takes three edits**: register it in `marketplace.json`, add
+  its slug to a `GROUPS` group in `docs/index.html` (the catalog renders only
+  grouped slugs, so a plugin in `marketplace.json` alone has data but no card),
+  and place it in a `suite/tiers.yml` tier with a rationale.
+  `suite/check-coverage.py` enforces all three (CI + `just build`).
+- **Two axes describe a plugin, and they live in different places.** Its
+  capability `group` is declared per-plugin in that repo's `plugin.yml`; its
+  adoption **tier** is declared here in `suite/tiers.yml`, because a tier ranks a
+  plugin against its siblings and shifts as the suite matures. Don't add a
+  status/tier field to a plugin's own descriptor.
 - **Verify plugin behavior against the real skills** before describing it —
   read `../<plugin>/skills/*/SKILL.md`, don't guess.
 - **Namespace every command** as `plugin:skill` (e.g. `/anchor:commit`,

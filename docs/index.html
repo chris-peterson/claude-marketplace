@@ -163,6 +163,18 @@
   .prow.lead .pname{font-size:24px}
 
   /* ---- functional groups ---- */
+  /* tier key: the second axis of the catalog. The groups below say what each
+     plugin does; this says how strongly it's recommended. */
+  .tierkey{display:grid;grid-template-columns:auto 1fr;gap:9px 14px;align-items:baseline;
+    margin:18px 0 0;padding:16px 18px;border:1px solid var(--line-2);border-radius:10px;
+    background:color-mix(in srgb,var(--sea) 60%,transparent)}
+  .tierkey .tk{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    white-space:nowrap;color:var(--tc);border:1px solid color-mix(in srgb,var(--tc) 38%,transparent);
+    border-radius:5px;padding:2px 7px}
+  .tierkey .tk.t-core{background:color-mix(in srgb,var(--tc) 15%,transparent)}
+  .tierkey .tb{color:var(--muted);font-size:14.5px;line-height:1.5}
+  @media(max-width:600px){.tierkey{grid-template-columns:1fr;gap:4px 0}
+    .tierkey .tk{justify-self:start}.tierkey .tb{margin-bottom:8px}}
   .fgroup{margin-top:40px;scroll-margin-top:72px}
   .fgroup .ghead{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;margin:0 0 16px;
     padding-bottom:11px;border-bottom:1px solid color-mix(in srgb,var(--ac) 24%,transparent)}
@@ -205,6 +217,11 @@
   .ship .cmdsep{align-self:center;color:var(--muted);font-family:var(--mono);font-size:12px;margin:0 2px}
   .ship .cli{align-self:center;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
     color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 32%,transparent);border-radius:5px;padding:2px 7px}
+  .ship .tierrow{display:flex;margin:0 0 10px}
+  .ship .tier{font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+    text-transform:uppercase;white-space:nowrap;cursor:help;color:var(--tc);
+    border:1px solid color-mix(in srgb,var(--tc) 38%,transparent);border-radius:5px;padding:2px 7px}
+  .ship .tier.t-core{background:color-mix(in srgb,var(--tc) 15%,transparent)}
   .ship .ver{align-self:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--muted);
     border:1px solid var(--line-2);border-radius:5px;padding:2px 7px;font-variant-numeric:tabular-nums}
   /* whole-card artifact expander: a chevron at the far right of the header
@@ -556,6 +573,7 @@
   <!-- ============ PLUGINS (grouped by capability) ============ -->
   <section id="plugins">
     <h2><a class="secanchor" href="#plugins">Plugins</a></h2>
+    <div id="tierkey" class="tierkey reveal"></div>
 
     <div id="catalog"></div>
   </section>
@@ -697,6 +715,14 @@
     : `var(${token})`;
   const PLUGIN_AC={};
   GROUPS.forEach(g=> g.slugs.forEach((slug,idx)=>{ PLUGIN_AC[slug]=accentVar(g.ac,idx); }));
+  // ---- adoption tiers (from plugins.js `TIERS`, declared in suite/tiers.yml) ----
+  // The catalog's other axis: GROUPS place a card, the tier says how strongly the
+  // plugin is recommended. Each card's chip carries its own `why` as a tooltip.
+  const TIER_LABEL={}; TIERS.forEach(t=>{ TIER_LABEL[t.key]=t.label; });
+  const tierChip=(key,cls,tip)=> `<span class="${cls} t-${key}" style="--tc:var(--t-${key})"`+
+    (tip?` data-tip="${attrEsc(tip)}"`:``)+`>${TIER_LABEL[key]}</span>`;
+  document.getElementById("tierkey").innerHTML = TIERS.map(t=>
+    tierChip(t.key,"tk")+`<span class="tb">${t.blurb}</span>`).join("");
   // ---- artifact inventory (from plugins.js `components`, derived from suite/artifacts.csv) ----
   const COMP_ORDER=["skills","rules","hooks","commands","agents"];
   const compSummary=(c)=> COMP_ORDER.filter(k=>c[k]&&c[k].length)
@@ -719,6 +745,7 @@
     // link (which scrolls to + highlights it); the source icon goes to the repo;
     // the far-right chevron (or a click on the card body) reveals the artifacts.
     return `<article class="ship" data-slug="${slug}" style="--ac:${PLUGIN_AC[slug]}">`+
+      (p.tier?`<div class="tierrow">${tierChip(p.tier,"tier",p.why)}</div>`:``)+
       `<div class="head">`+
       `<a class="pnamelink" href="${docsUrl(slug)}"><img src="https://chris-peterson.github.io/${slug}/favicon.svg" alt=""><h3>${slug}</h3></a>`+
       (p.cli?`<span class="cli">cli</span>`:``)+
@@ -1086,8 +1113,9 @@
   route();
 </script>
 <script>
-// Landing-page session replay — one realistic cross-plugin session. anchor and
+// Landing-page session replay — one realistic cross-plugin session. anchor leads
 // tack lead; the diff card is anchor's review step; ClaudeWatch appears reactively.
+// meet it; tack closes the session out.
 (function () {
   var FRAMES = [
     { t: "shell", path: "~/src", cmd: "cd orders-api" },

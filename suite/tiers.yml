@@ -1,0 +1,48 @@
+# Adoption tiers — how strongly each plugin is recommended, and why.
+#
+# The doc site's GROUPS answer "what does this plugin do"; the tiers answer
+# "should I install it". Both axes render on the catalog card: the group places
+# the card, the tier is a chip on it with the `why` as its tooltip.
+#
+# Declared here rather than in each plugin's plugin.yml because a tier is a
+# judgment about the plugin *relative to its siblings*, held by whoever curates
+# the suite. A plugin can't assess its own standing against the other eight, and
+# re-tiering shouldn't take a commit in someone else's repo.
+#
+# Order is meaningful: most recommended first. suite/check-coverage.py requires
+# every marketplace.json plugin to appear in exactly one tier.
+
+tiers:
+  - key: core
+    label: Start here
+    blurb: No Claude Code workflow conflicts with these. Install both.
+    plugins:
+      ClaudeWatch: Complements Claude Code's permission system with custom watches that auto-approve, ask, or block.
+      shipshape: Keeps the harness itself — the app and its plugins — tuned and in working order.
+
+  - key: recommended
+    label: Recommended
+    blurb: Worth adopting, with a point of view you have to share.
+    plugins:
+      anchor: Covers commits, change requests, issues, and releases. Opinionated about the shape of each, which is both the reason to try it and the reason it may not suit you.
+
+  - key: proving
+    label: Proving out
+    blurb: In daily use by the author, without outside feedback yet. Where the next investment is going.
+    plugins:
+      beacon: Real-time session status and activity across every open window.
+      tack: Holds many concurrent workstreams — where they have been, where they are, and what is next.
+
+  - key: focused
+    label: Focused
+    blurb: Single-purpose. Worth installing if you work this way, not otherwise.
+    plugins:
+      cleat: One AGENTS.md that every AI tool reads, with CLAUDE.md pointing at it. The newest of the suite and still settling.
+      sextant: Spec-driven development against a SPEC.md contract.
+
+  - key: reference
+    label: Reference
+    blurb: Not recommended. On the roster to read, not to install.
+    plugins:
+      logbook: Publishes session retros to a team repo. The approach hasn't held up in practice — the feedback loop that works is a rules pipeline, not a plugin.
+      moor: A diff viewer for AI-assisted review cycles. revdiff covers the same ground and is anchor's preferred backend.

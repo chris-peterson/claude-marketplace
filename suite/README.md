@@ -8,16 +8,35 @@ and aggregate from it.
 | Script | Output | Purpose |
 |:---|:---|:---|
 | `sync.sh` | sibling checkouts | clone/fast-forward every plugin in `marketplace.json` |
-| `build-plugins-data.py` | `docs/plugins.js` | per-plugin doc site content from each `plugin.yml` |
+| `build-plugins-data.py` | `docs/plugins.js` | per-plugin doc site content from each `plugin.yml`, plus the tiers |
 | `record-artifacts.py` | `suite/artifacts.csv` | append a change-point row when a plugin's artifact set changes |
 | `build-artifacts-data.py` | `docs/artifacts.json` | project the rolling log into the growth view's series + changelog |
 | `build-deps-data.py` | `docs/deps.json` | project each plugin's declared `suite.dependencies` into the dependency graph |
-| `check-coverage.py` | (gate) | fail the build if a plugin isn't grouped/renderable on the doc site |
+| `check-coverage.py` | (gate) | fail the build if a plugin isn't grouped, tiered, and renderable on the doc site |
 
 `just build` regenerates the doc site's data. `docs/plugins.js`,
 `docs/deps.json`, and `docs/artifacts.json` are rebuilt each deploy and
-git-ignored; only `artifacts.csv` is committed, and it has one writer — see
-[The artifact log](#the-artifact-log).
+git-ignored. Two inputs here are committed: `tiers.yml`, hand-edited (see
+[The adoption tiers](#the-adoption-tiers)), and `artifacts.csv`, which has one
+writer (see [The artifact log](#the-artifact-log)).
+
+### The adoption tiers
+
+`suite/tiers.yml` answers the question the capability groups don't: **should I
+install this one?** Five tiers, ordered most-recommended first, each carrying a
+one-line rationale per plugin. They render as a chip on every catalog card (the
+rationale is its tooltip) and as the key above the catalog.
+
+This is the one piece of per-plugin copy that *isn't* sourced from the plugin's
+own `plugin.yml`, and deliberately so. A tier ranks a plugin **against its eight
+siblings** — a judgment only the suite has the standing to make — and it moves as
+things mature, which shouldn't take a commit in another repo. The precedent is
+the group *labels*, kept in the doc site's `GROUPS` "so relabeling never touches
+a spoke."
+
+`check-coverage.py` requires every registered plugin to sit in exactly one tier
+with a rationale, so a new plugin can't ship untiered and a re-tier can't
+accidentally leave it in two.
 
 ### The artifact log
 

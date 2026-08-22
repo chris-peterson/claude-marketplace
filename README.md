@@ -14,6 +14,9 @@ Then run `/plugin` inside Claude Code and open the **Discover** tab to browse an
 claude plugin install <name>@chris-peterson
 ```
 
+[**How the suite fits together**](SUITE.md) — which plugins to install, what each
+one owns, and how they connect.
+
 ## Plugins
 
 ### [anchor](https://github.com/chris-peterson/anchor)

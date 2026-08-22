@@ -47,3 +47,7 @@ Derived data is computed, never declared, so it can't drift:
 
 - **artifact counts** — tracked from each repo's git state by `suite/record-artifacts.py` (the rolling `suite/artifacts.csv` log).
 - **accent color** — derived from the plugin's `group`: the doc site's `GROUPS` defines the per-group Dracula token (lightened a step per same-group sibling), so the accent is never declared per plugin.
+
+One field is declared, but suite-side rather than here:
+
+- **adoption tier** — how strongly the plugin is recommended, in the marketplace's `suite/tiers.yml`. It ranks a plugin against its siblings, so the plugin itself isn't the one to state it. Add a plugin to a tier there, not a `status:` to `suite:` here.
