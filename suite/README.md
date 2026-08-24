@@ -11,12 +11,10 @@ and aggregate from it.
 | `build-plugins-data.py` | `docs/plugins.js` | per-plugin doc site content from each `plugin.yml` |
 | `record-artifacts.py` | `suite/artifacts.csv` | append a change-point row when a plugin's artifact set changes |
 | `build-artifacts-data.py` | `docs/artifacts.json` | project the rolling log into the growth view's series + changelog |
-| `build-deps-data.py` | `docs/deps.json` | project each plugin's declared `suite.dependencies` into the dependency graph |
 | `check-coverage.py` | (gate) | fail the build if a plugin isn't grouped/renderable on the doc site |
 
-`just build` regenerates the doc site's data. `docs/plugins.js`,
-`docs/deps.json`, and `docs/artifacts.json` are rebuilt each deploy and
-git-ignored; only `artifacts.csv` is committed, and it has one writer — see
+`just build` regenerates the doc site's data. `docs/plugins.js` and
+`docs/artifacts.json` are rebuilt each deploy and git-ignored; only `artifacts.csv` is committed, and it has one writer — see
 [The artifact log](#the-artifact-log).
 
 ### The artifact log

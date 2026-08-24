@@ -171,9 +171,9 @@
   // cluster the way they do on the home page.
   const GROUPS=[
     {ac:"--guard",  slugs:["ClaudeWatch","shipshape"]},
-    {ac:"--orient", slugs:["beacon","tack"]},
-    {ac:"--ship",   slugs:["anchor","moor"]},
-    {ac:"--build",  slugs:["logbook","sextant"]}
+    {ac:"--orient", slugs:["tack","beacon"]},
+    {ac:"--ship",   slugs:["anchor"]},
+    {ac:"--build",  slugs:["sextant","cleat"]}
   ];
   const accentVar=(token,shade)=> shade
     ? `color-mix(in srgb, var(${token}) ${Math.round((1-(.26+.2*shade))*100)}%, var(--fg))`

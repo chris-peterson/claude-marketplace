@@ -1,6 +1,6 @@
 # How the plugins fit together
 
-The plugins in this marketplace cover distinct stages of a Claude Code session — safety, work tracking, awareness, spec-driven authoring, diff review, and knowledge capture. Each is independently useful; together they form a workflow stack.
+The plugins in this marketplace cover distinct stages of a Claude Code session — safety, work tracking, awareness, spec-driven authoring, and landing the change. Each is independently useful; together they form a workflow stack.
 
 ## Roles by lifecycle stage
 
@@ -10,9 +10,7 @@ The plugins in this marketplace cover distinct stages of a Claude Code session �
 | tack | Inflight | Track routes, pivots, and linked deliverables across sessions |
 | beacon | Inflight | Paint iTerm2 badge + status bar so session state is glanceable |
 | sextant | Inflight | Audit `SPEC.md` coverage, scaffold candidate implementations, and graduate the winner |
-| moor | Review | Step through changed files hunk-by-hunk as a `git difftool --dir-diff` viewer |
-| anchor | Commit & land | Commit with a why-first message, run the change through moor, and open/describe the CR on the forge |
-| logbook | Post-session | Sanitize the transcript into a retrospective committed to a team git repo |
+| anchor | Commit & land | Commit with a why-first message, review the diff hunk by hunk, and open/describe the CR on the forge |
 
 ## Diagram
 
@@ -23,12 +21,9 @@ flowchart LR
     Inflight[Inflight] --> Tack[tack]
     Inflight --> Beacon[beacon]
     Inflight --> Sextant[sextant]
-    Review[Review] --> Moor[moor]
     Land[Commit & land] --> Anchor[anchor]
-    Post[Post-session] --> Logbook[logbook]
 
     Beacon -. resolves branch URL via .-> Tack
-    Anchor -. launches .-> Moor
     Anchor -. links CR to .-> Tack
 ```
 
@@ -38,8 +33,6 @@ flowchart LR
 - **tack** maintains per-route state on disk (routes, tacks, links to MRs / PRs / pipelines). Other tools may read it, but tack itself has no dependencies on the rest.
 - **beacon** is the one plugin with a soft dependency on another: when the iTerm2 status bar's `↗` button is clicked, beacon shells out to `tack` (if on `$PATH` and the route matches the current branch) to resolve the branch's CR/PR/issue URL. If `tack` is absent or has no match, beacon falls back to a plain branch URL or the project URL.
 - **sextant** operates against `SPEC.md` and the `implementations/` tree in your repo. It reads requirement IDs and implementation status, and on `impl-new` / `impl-select` writes directly to those trees. Independent of the other plugins.
-- **moor** is a standalone diff viewer launched by `git difftool --dir-diff`. It reads the diff git hands it and shares no state with the other plugins.
-- **anchor** drives reviewed work into the permanent record: it commits with a why-first message, launches **moor** for hunk-level review, and opens/describes the change request on the forge. Both integrations are soft — without moor it skips the visual review and the commit still lands; without tack it skips linking the CR. When `tack` is present and a route matches, it records the CR as that route's deliverable.
-- **logbook** captures the session transcript after the fact and publishes a sanitized retro to a team-owned git repository. It's decoupled from the inflight plugins.
+- **anchor** drives reviewed work into the permanent record: it commits with a why-first message, walks the diff hunk by hunk, and opens/describes the change request on the forge. Its **tack** integration is soft: when `tack` is present and a route matches, it records the CR as that route's deliverable; without it the CR still lands, unlinked.
 
-Inter-plugin dependencies are all optional: **beacon → tack** (URL resolution) and **anchor → moor** / **anchor → tack** (review and CR linking). Every plugin also works standalone.
+Inter-plugin dependencies are all optional: **beacon → tack** (URL resolution) and **anchor → tack** (CR linking). Every plugin also works standalone.

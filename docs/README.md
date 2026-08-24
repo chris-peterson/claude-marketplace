@@ -185,10 +185,6 @@
 .plugin-card.beacon-card:hover     { border-color: var(--cyan); }
 .plugin-card.claudewatch-card      { border-bottom-color: var(--orange); grid-column: 1 / -1; }
 .plugin-card.claudewatch-card:hover{ border-color: var(--orange); }
-.plugin-card.logbook-card          { border-bottom-color: var(--green); }
-.plugin-card.logbook-card:hover    { border-color: var(--green); }
-.plugin-card.moor-card             { border-bottom-color: var(--pink); }
-.plugin-card.moor-card:hover       { border-color: var(--pink); }
 .plugin-card.sextant-card          { border-bottom-color: var(--yellow); }
 .plugin-card.sextant-card:hover    { border-color: var(--yellow); }
 .plugin-card.tack-card             { border-bottom-color: var(--purple); }
@@ -212,20 +208,6 @@
     <div class="meta">
       <span class="name">beacon</span>
       <span class="desc">At-a-glance Claude Code session awareness</span>
-    </div>
-  </a>
-  <a class="plugin-card logbook-card" href="https://chris-peterson.github.io/logbook/#/">
-    <img class="icon" src="https://chris-peterson.github.io/logbook/favicon.svg" alt=""/>
-    <div class="meta">
-      <span class="name">logbook</span>
-      <span class="desc">AI-coding-session retros, committed to git</span>
-    </div>
-  </a>
-  <a class="plugin-card moor-card" href="https://chris-peterson.github.io/moor/#/">
-    <img class="icon" src="https://chris-peterson.github.io/moor/favicon.svg" alt=""/>
-    <div class="meta">
-      <span class="name">moor</span>
-      <span class="desc">Review AI-generated code</span>
     </div>
   </a>
   <a class="plugin-card sextant-card" href="https://chris-peterson.github.io/sextant/#/">

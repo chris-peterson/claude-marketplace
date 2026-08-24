@@ -33,10 +33,9 @@ jobs:
       - name: Sync sibling plugin repos
         run: bash suite/sync.sh
 
-      - name: Generate doc site data and dependency graph (ephemeral)
+      - name: Generate doc site data (ephemeral)
         run: |
           python3 suite/build-plugins-data.py
-          python3 suite/build-deps-data.py
           python3 suite/build-specs-data.py
 
       - name: Check every plugin is grouped and renderable on the doc site

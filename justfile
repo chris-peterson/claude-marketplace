@@ -10,10 +10,6 @@ sync:
 plugins-data:
     python3 suite/build-plugins-data.py
 
-# Generate docs/deps.json — the dependency graph from declared suite.dependencies.
-deps:
-    python3 suite/build-deps-data.py
-
 # Generate docs/specs.json — the spec browser's tree, from each SPEC.md.
 specs-data:
     python3 suite/build-specs-data.py
@@ -37,7 +33,7 @@ seed-artifacts:
 # record-artifacts is deliberately absent: it writes the committed log from
 # whatever branch each sibling checkout is on, so CI owns it (deploy-docs.yml).
 # Regenerate every docs/ data file, then check catalog coverage.
-build: sync plugins-data deps specs-data artifacts-data check-coverage
+build: sync plugins-data specs-data artifacts-data check-coverage
 
 # Run the suite/ unit tests.
 test:

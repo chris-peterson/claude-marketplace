@@ -9,11 +9,11 @@ page that showcases the suite.
   The rebuild is **event-based** — a plugin release fires a `repository_dispatch`
   (`plugin-released`); own-repo pushes and `workflow_dispatch` also rebuild. The
   workflow runs the `suite/` scripts (sync siblings → generate `docs/plugins.js`
-  + `docs/deps.json` → record counts) before uploading `docs/`.
+  → record counts) before uploading `docs/`.
 - **Local preview:** run `just build` (or at least `just plugins-data`) first to
   generate `docs/plugins.js`, then `python3 -m http.server` from `docs/` and open
   `index.html`. (Hash routing + the relative favicon want HTTP, not `file://`;
-  `plugins.js`/`deps.json` are git-ignored, so the doc site is blank without that build.)
+  `plugins.js` is git-ignored, so the doc site is blank without that build.)
 - **Plugin registry:** `.claude-plugin/marketplace.json` lists the published
   plugins. Each plugin lives in its own repo (`github.com/chris-peterson/<name>`).
 
@@ -28,7 +28,6 @@ dispatch token. The scripts:
 - `build-plugins-data.py` — per-plugin doc site content from each `plugin.yml` → `docs/plugins.js`.
 - `record-artifacts.py` — append a change-point row to `suite/artifacts.csv` (the committed rolling log) when a plugin's artifact set changes. **CI writes this log, not you**: it reads each sibling's checked-out branch, so a local run records unmerged work as shipped — which is why `just build` omits it. `seed-artifacts-history.py` is the one-time bootstrap from each repo's git history.
 - `build-artifacts-data.py` — project `suite/artifacts.csv` into the growth view's series + changelog → `docs/artifacts.json`.
-- `build-deps-data.py` — projects each plugin's declared `suite.dependencies` (a list of `{name, required, reason}`) → `docs/deps.json` (the dependency graph). Edges are declared, never discovered.
 - `check-coverage.py` — fails the build if a `marketplace.json` plugin isn't placed in a doc site `GROUPS` slug list (or vice versa). Runs first in CI and in `just build`.
 
 ## Structure
@@ -65,7 +64,7 @@ dispatch token. The scripts:
 - **Verify plugin behavior against the real skills** before describing it —
   read `../<plugin>/skills/*/SKILL.md`, don't guess.
 - **Namespace every command** as `plugin:skill` (e.g. `/anchor:commit`,
-  `/logbook:note`), in both the command lists and the example sessions.
+  `/tack:start`), in both the command lists and the example sessions.
 - **Colors come from the Dracula CSS tokens** in `:root` — no hardcoded hex in
   layout/UI (favicon/mark SVGs are the exception).
 - This is a **public repo** — no internal hosts, private paths, or personal

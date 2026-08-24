@@ -112,24 +112,47 @@ def build_changelog(rows: list[dict], plugins: list[str],
     """One changelog entry per (date, plugin): the day's artifact change tokens
     plus the latest release published that day (a plugin is often released
     several times a day; only the latest is shown so the log stays legible). The
-    doc site shows the release first, then what changed. Newest entry first."""
+    doc site shows the release first, then what changed. Newest entry first.
+
+    A row retiring a plugin (a `-plugin:` token) carries the last version it
+    ever shipped as `last_release`, so the version someone still has installed
+    is on the line that retires it. That release is reported there alone — it
+    doesn't also open an entry on its own publish date.
+    """
     entries: dict[tuple[str, str], dict] = {}
 
     def entry(date: str, plugin: str) -> dict:
         return entries.setdefault((date, plugin),
             {"date": date, "plugin": plugin, "change": "", "releases": []})
 
+    retired: dict[str, dict] = {}
     for r in rows:
-        entry(r["date"], r["plugin"])["change"] = r["change"]
+        e = entry(r["date"], r["plugin"])
+        e["change"] = r["change"]
+        if "-plugin:" in r["change"]:
+            e["removed"] = True
+            retired[r["plugin"]] = e
+
+    final: dict[str, dict] = {}
+    for p, e in retired.items():
+        last = max(releases_by_plugin.get(p) or [],
+                   key=lambda r: r["published_at"], default=None)
+        if last:
+            final[p] = last
+            e["last_release"] = {"tag": last["tag"], "url": last["url"],
+                                 "notes": last["notes"]}
+
     for p in plugins:
         for rel in releases_by_plugin.get(p, []):
+            if rel is final.get(p):
+                continue
             entry(rel["date"], p)["releases"].append(rel)
     for e in entries.values():
         latest = max(e["releases"], key=lambda r: r["published_at"], default=None)
         e["releases"] = [{"tag": latest["tag"], "url": latest["url"],
                           "notes": latest["notes"]}] if latest else []
 
-    return sorted(entries.values(),
+    return sorted((e for e in entries.values() if e["change"] or e["releases"]),
                   key=lambda r: (r["date"], r["plugin"]), reverse=True)
 
 
@@ -152,7 +175,7 @@ def main() -> int:
 
     releases_by_plugin = {p: fetch_releases(p) for p in plugins}
     changelog = build_changelog(rows, plugins, releases_by_plugin)
-    n_releases = sum(len(e["releases"]) for e in changelog)
+    n_releases = sum(len(e["releases"]) + bool(e.get("last_release")) for e in changelog)
 
     TARGET.write_text(json.dumps({
         "dates": labels,

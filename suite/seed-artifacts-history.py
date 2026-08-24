@@ -15,8 +15,8 @@ artifacts; replaying the change column from empty reconstructs the current set,
 so the visualization is rebuilt from this file alone — no git archaeology at
 render time.
 
-Window: commits before WINDOW_START are ignored. moor's repo carries pre-plugin
-CVS history from 2002; clamping to 2026 starts its line at its first artifacts.
+Window: commits before WINDOW_START are ignored, so a repo that carried history
+from before it was a plugin starts its line at its first artifacts.
 """
 import csv
 import subprocess

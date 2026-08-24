@@ -20,7 +20,7 @@ faster — especially for someone early in their AI-coding journey.
 - Single-file HTML/CSS/JS, consistent with the rest of the page. Reuse the
   plugin favicons and the four functional-area colors.
 
-## Script — emphasis on anchor + logbook
+## Script — emphasis on anchor
 A realistic single session. **tack, beacon, and sextant are intentionally left
 out** — they're about cross-session continuity, ambient status, and spec-driven
 work, none of which read well in a one-and-done session. ClaudeWatch appears
@@ -30,17 +30,15 @@ it.
 1. you → ask Claude to add retry/backoff to an API client
 2. Claude → done, with tests
 3. you → notice the backoff has no jitter (thundering-herd risk)
-4. **`/note`** (logbook) → capture the observation mid-session, before it's lost
-5. you → "before I keep this, let me actually read it"
-6. **the diff** (synthesized mock — a small red/green hunk + a "rejected: <reason>"
+4. you → "before I keep this, let me actually read it"
+5. **the diff** (synthesized mock — a small red/green hunk + a "rejected: <reason>"
    note) → spot the no-jitter hunk, reject it with a course correction
-7. Claude → fixes it (full-jitter backoff, test updated)
-8. **`/commit`** (anchor) → why-first commit message
-9. **`/prepare-review`** (anchor) → rebase on main, push, open a draft CR…
-10. **ClaudeWatch** (watch-git) → intercepts the push, asks to confirm
-11. you → confirm (it's your draft)
-12. Claude → draft change request opened, branch set to delete on merge
-13. **`/retro`** (logbook) → write up the jitter lesson for the team
+6. Claude → fixes it (full-jitter backoff, test updated)
+7. **`/commit`** (anchor) → why-first commit message
+8. **`/prepare-review`** (anchor) → rebase on main, push, open a draft CR…
+9. **ClaudeWatch** (watch-git) → intercepts the push, asks to confirm
+10. you → confirm (it's your draft)
+11. Claude → draft change request opened, branch set to delete on merge
 
 ## Notes
 - Synthesize a small diff card rather than a literal screenshot.
