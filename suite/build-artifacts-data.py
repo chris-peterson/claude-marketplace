@@ -33,13 +33,25 @@ RELEASES_API = "https://api.github.com/repos/chris-peterson/{}/releases"
 
 
 def catalog_groups() -> list[tuple[str, list[str]]]:
-    """[(ac-token, [slug, ...]), ...] in catalog order, from the doc site GROUPS."""
+    """[(ac-token, [slug, ...]), ...] in catalog order, from the doc site GROUPS.
+
+    A group's optional `retired` list follows its `slugs`. The catalog renders
+    only `slugs`, but the growth view covers both: a plugin that has left the
+    roster still happened, and its series has to keep the category color and the
+    place in the stack it held while it shipped. Dropping it instead would take
+    its past artifacts out of every bucket it existed in and rewrite the history
+    the chart is there to show.
+    """
     block = re.search(r"const GROUPS\s*=\s*\[(.*?)\];", INDEX.read_text(), re.S)
     if not block:
         sys.exit("build-artifacts-data: could not find the GROUPS array in docs/index.html")
     groups = []
-    for m in re.finditer(r'ac:\s*"([^"]+)".*?slugs:\s*\[([^\]]*)\]', block.group(1), re.S):
-        groups.append((m.group(1), re.findall(r'"([^"]+)"', m.group(2))))
+    for m in re.finditer(
+            r'ac:\s*"([^"]+)".*?slugs:\s*\[([^\]]*)\](?:\s*,\s*retired:\s*\[([^\]]*)\])?',
+            block.group(1), re.S):
+        names = re.findall(r'"([^"]+)"', m.group(2))
+        names += re.findall(r'"([^"]+)"', m.group(3) or "")
+        groups.append((m.group(1), names))
     return groups
 
 
