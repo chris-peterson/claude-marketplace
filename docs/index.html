@@ -404,7 +404,7 @@
   .changelog .clchange .add{color:var(--green)}
   .changelog .clchange .rem{color:var(--red)}
   .changelog .clchange .init{color:var(--muted);font-style:italic}
-  .changelog .clrow.release{background:color-mix(in srgb,var(--gold) 7%,transparent)}
+  .changelog .clrow:nth-child(even){background:var(--tint-soft)}
   .changelog .clrelease{color:var(--gold);font-weight:600;text-decoration:none;white-space:nowrap}
   .changelog .clrelease:hover{text-decoration:underline;text-underline-offset:2px}
   /* a release with notes gets a dotted underline as a "hover for notes" cue */
@@ -474,7 +474,7 @@
          accent steps down a row per window — safe (red, line 1) → bearings
          (purple, 2) → waypoints (cyan, 3) → learn (green, 4) — so the color
          traces a diagonal and green resolves on the last line of the last
-         window (logbook / the end of the workflow). -->
+         window, where the workflow ends. -->
     <g fill="var(--deep)" stroke="var(--line-h)" stroke-width="0.8">
       <rect x="3"  y="3"  width="16" height="16" rx="2.6"/>
       <rect x="21" y="3"  width="16" height="16" rx="2.6"/>
@@ -686,8 +686,8 @@
   const GROUPS=[
     {key:"safety",    ac:"--guard",  tag:"Stay safe",            slugs:["ClaudeWatch","shipshape"]},
     {key:"bearings",  ac:"--orient", tag:"Keep oriented",        slugs:["beacon","tack"]},
-    {key:"waypoints", ac:"--ship",   tag:"Reach your waypoints", slugs:["anchor","moor"]},
-    {key:"record",    ac:"--build",  tag:"Write it down",        slugs:["logbook","sextant","cleat"]}
+    {key:"waypoints", ac:"--ship",   tag:"Reach your waypoints", slugs:["anchor"]},
+    {key:"record",    ac:"--build",  tag:"Write it down",        slugs:["sextant","cleat"]}
   ];
   // each plugin's accent = its category color, lightened a step per same-category
   // sibling so the two cards in a group are distinct — matching the growth chart's
@@ -973,8 +973,11 @@
         .catch((err)=> console.error("details: failed to load deps.json", err)); } }); },{threshold:.05});
     io.observe(sec);
     window.addEventListener("themechange", ()=>{
-      if(!curModel) return;   // nothing drawn yet; the observer will use the new scheme
+      // Re-resolve first and unconditionally: the maps are filled once as this
+      // block loads, so a swap before the observer fires would otherwise leave
+      // the charts to draw later against the scheme the page opened in.
       paintAccents(); paintTypes(); deepBg=resolve("var(--deep)");
+      if(!curModel) return;   // not drawn yet — the observer draws with what was just resolved
       showDonut(); radar(); if(depsData) depGraph(depsData);
     });
   })();
@@ -982,10 +985,10 @@
   // ---- growth: artifact counts over time (lazy: builds when scrolled in) ----
   (function(){
     const sec=document.getElementById("growth"); if(!sec) return;
-    const css=getComputedStyle(document.documentElement);
-    const hex=(tok)=>css.getPropertyValue(tok).trim();
-    const lighten=(h,a)=>{ const n=parseInt(h.slice(1),16), r=n>>16, g=(n>>8)&255, b=n&255,
-      m=(c)=>Math.round(c+(255-c)*a); return `rgb(${m(r)},${m(g)},${m(b)})`; };
+    const hex=(tok)=>{ const s=document.createElement("span"); s.style.cssText="color:var("+tok+");display:none";
+      document.body.appendChild(s); const v=getComputedStyle(s).color; s.remove(); return v; };
+    const lighten=(c,a)=>{ const [r,g,b]=c.match(/\d+/g).map(Number),
+      m=(x)=>Math.round(x+(255-x)*a); return `rgb(${m(r)},${m(g)},${m(b)})`; };
     const whenReady=(cb)=> window.Chart ? cb() : setTimeout(()=>whenReady(cb),50);
     // minimal markdown → HTML for the release-note popover: headings, bullet
     // lists, bold/italic, inline code, and links. The body is HTML-escaped first,
@@ -1084,7 +1087,7 @@
 </script>
 <script>
 // Landing-page session replay — one realistic cross-plugin session. anchor and
-// logbook lead; the diff card is anchor's review step; ClaudeWatch appears reactively.
+// tack lead; the diff card is anchor's review step; ClaudeWatch appears reactively.
 (function () {
   var FRAMES = [
     { t: "shell", path: "~/src", cmd: "cd orders-api" },
@@ -1119,7 +1122,7 @@
     { t: "ask", cmd: "git push -u origin feature-123", reason: "watch-git — pushes commits to a shared remote", link: "https://git-scm.com/docs/git-push", result: "* [new branch]  feature-123 → feature-123" },
     { t: "enter" },
     { t: "link", text: "#128", href: "#/session", after: " is open and ready for review" },
-    { t: "you", type: true, cmd: "/logbook:retro", stub: "/ret", retro: true, out: "N+1 learning captured and pushed to <a class=\"fr-link\" href=\"#/session\">retros/backend/feature-123</a>" },
+    { t: "you", type: true, cmd: "/tack:end", stub: "/tac", retro: true, out: "<a class=\"fr-link\" href=\"#/session\">#128</a> recorded against route <b>backend/feature-123</b> · route closed" },
     { t: "note", text: "be mindful of database roundtrips; especially with collections that might have many items" },
     { t: "done" }
   ];
@@ -1203,7 +1206,7 @@
     if (f.t === "ask") return set("blocked");
     if (f.t === "done") { label(PROJECT, ""); return set("done"); }  // done drops the task slot (STATE-12)
     if (f.t === "diff" || f.t === "enter" || f.t === "link") return set("busy");
-    if (f.t === "you") return set(/logbook:retro/.test(f.cmd || "") && phase === "retro" ? "retro" : "busy");
+    if (f.t === "you") return set(/tack:end/.test(f.cmd || "") && phase === "retro" ? "retro" : "busy");
     // note / sep — leave the current state (e.g. the retro green persists)
   }
   if (mount && window.mountSession) {

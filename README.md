@@ -28,14 +28,6 @@ At-a-glance session awareness for Claude Code in iTerm2. Paints an iTerm2 badge 
 
 `PreToolUse` hook that enforces command safety rules. Blocks or requires confirmation for destructive git ops, global installs, recursive deletes, and secret exposure — using regex matching that handles compound commands and heredocs that Claude Code's built-in permission system misses.
 
-### [logbook](https://github.com/chris-peterson/logbook)
-
-Turns a Claude Code, Cursor, or GitHub Copilot session into a retrospective committed to a team-owned git repository. Captures session metrics (token usage, tool counts, files touched, overlapping sessions, git activity) and uses them to draft the retro; only the published retro leaves the workstation, transcripts stay local.
-
-### [moor](https://github.com/chris-peterson/moor)
-
-A fast, keyboard-driven diff viewer for reviewing AI-generated code. Opens instantly, shows a two-file or directory diff, and feeds structured review feedback back to the agent that produced the change. Wires up as `git difftool`.
-
 ### [sextant](https://github.com/chris-peterson/sextant)
 
 AI-assisted SPEC-driven development. Maintains a `SPEC.md` contract, audits implementations against it for coverage and drift, and scaffolds candidate implementations so the winner can be graduated to the repo root.

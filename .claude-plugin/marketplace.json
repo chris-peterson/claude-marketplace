@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "anchor",
-      "description": "Git/forge skills that drive reviewed work into the permanent record — commit, prepare-review, preview.",
+      "description": "Git/forge skills that drive reviewed work into the permanent record: commit, prepare-review, preview.",
       "author": {
         "name": "chris-peterson"
       },
@@ -59,34 +59,8 @@
       "homepage": "https://chris-peterson.github.io/cleat/#/"
     },
     {
-      "name": "logbook",
-      "description": "A log of important learnings, e.g. AI-assisted coding session retros.",
-      "author": {
-        "name": "chris-peterson"
-      },
-      "source": {
-        "source": "url",
-        "url": "https://github.com/chris-peterson/logbook.git"
-      },
-      "category": "development",
-      "homepage": "https://chris-peterson.github.io/logbook/#/"
-    },
-    {
-      "name": "moor",
-      "description": "A fast, keyboard-driven diff viewer for reviewing AI-generated code.",
-      "author": {
-        "name": "chris-peterson"
-      },
-      "source": {
-        "source": "url",
-        "url": "https://github.com/chris-peterson/moor.git"
-      },
-      "category": "development",
-      "homepage": "https://chris-peterson.github.io/moor/#/"
-    },
-    {
       "name": "sextant",
-      "description": "AI-assisted SPEC-driven development — write requirements first, audit implementations against them, graduate the winner.",
+      "description": "AI-assisted SPEC-driven development: write requirements first, audit implementations against them, graduate the winner.",
       "author": {
         "name": "chris-peterson"
       },
@@ -99,7 +73,7 @@
     },
     {
       "name": "shipshape",
-      "description": "Keep your Claude Code plugins up to date — reconcile installed plugins against your desired set, update them, prune stale caches, and enforce marketplace auto-update.",
+      "description": "Keep your Claude Code plugins up to date: reconcile installed plugins against your desired set, update them, prune stale caches, and enforce marketplace auto-update.",
       "author": {
         "name": "chris-peterson"
       },
@@ -112,7 +86,7 @@
     },
     {
       "name": "tack",
-      "description": "Route-aware agent that tracks AI-assisted development work — pivots, deliverables, and dependencies — across session boundaries",
+      "description": "Route-aware agent that tracks AI-assisted development work across session boundaries - pivots, deliverables, and dependencies",
       "author": {
         "name": "chris-peterson"
       },
