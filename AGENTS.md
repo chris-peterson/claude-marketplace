@@ -33,8 +33,20 @@ dispatch token. The scripts:
 
 ## Structure
 
-- `docs/index.html` — the landing page, a **single-file doc site** (inline CSS/JS,
-  no framework). Home view + per-plugin views via hash routing (`#/<plugin>`).
+- `docs/index.html` — the landing page: inline CSS/JS, no framework, home view +
+  per-plugin views via hash routing (`#/<plugin>`). The one thing it takes from
+  outside is the family's chrome, by absolute path from the hub at
+  `chris-peterson.github.io`: `/css/tokens.css` (palette and typefaces),
+  `/css/titlebar.css`, and `/js/docsify-shared.js` for `initTitlebar()`. That's
+  what gives this page the same header, breadcrumb, blog link, and day/night
+  toggle as every plugin's docsify site. `specs.html` takes the same three.
+  - **Local preview needs both trees**, since those paths resolve at the domain
+    root: serve a directory with the hub's `docs/` at the root and this `docs/`
+    under `claude-marketplace/`. Serving this `docs/` alone leaves the page
+    unstyled above the fold and dark-only.
+  - Colors resolve through the tokens, so **don't reintroduce a literal**: a
+    chart that bakes one at draw time won't follow the toggle. The two chart
+    blocks redraw on the `themechange` event the toggle fires.
 - `docs/favicon.svg` — the bridge.ai mark (also the nav/footer mark, inline).
 - `issue.md` — roadmap note for a possible next pass.
 - The former docsify files (`docs/README.md`, `relationships.md`, `_sidebar.md`)

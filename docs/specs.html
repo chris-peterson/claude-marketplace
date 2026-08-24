@@ -9,26 +9,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900&family=JetBrains+Mono:wght@400;500;700&family=Spline+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="/js/docsify-shared.js"></script>
+<script>initTheme();</script>
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/titlebar.css">
 <style>
   :root{
-    color-scheme: dark;
-    --abyss:#191a21; --deep:#21222c; --sea:#282a36; --hull:#343746; --line-h:#44475a;
-    --fg:#f8f8f2; --muted:#8e99bd; --faint:#4b527a;
-    --line:#2a2c38; --line-2:#33364a;
-    --cyan:#8be9fd; --green:#50fa7b; --orange:#ffb86c; --pink:#ff79c6;
-    --purple:#bd93f9; --red:#ff5555; --yellow:#f1fa8c; --gold:#e3b341; --claude:#d97757;
+    /* Same ground and same accents as the landing page, which takes them from
+       the family's tokens.css. */
+    --abyss:light-dark(#f7f7f1,#191a21); --deep:light-dark(#efefe8,#21222c);
+    --sea:light-dark(#e8e8e0,#282a36); --hull:light-dark(#dcdcd2,#343746);
+    --line-h:light-dark(#c9c9bd,#44475a);
+    --fg:var(--color-foreground); --muted:light-dark(#5a6896,#8e99bd);
+    --faint:light-dark(#8d94b0,#4b527a);
+    --line:light-dark(#deded4,#2a2c38); --line-2:light-dark(#cfcfc4,#33364a);
+    --cyan:var(--color-cyan); --green:var(--color-green); --orange:var(--color-orange);
+    --pink:var(--color-pink); --purple:var(--color-purple); --red:var(--color-red);
+    --yellow:var(--color-yellow);
+    --gold:light-dark(#a16207,#e3b341); --claude:light-dark(#c2410c,#d97757);
     /* four functional areas → four colors (same mapping as the catalog) */
-    --guard:#ff5555; --orient:#bd93f9; --ship:#8be9fd; --build:#50fa7b;
+    --guard:var(--red); --orient:var(--purple); --ship:var(--cyan); --build:var(--green);
     --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
     --disp:'Fraunces',Georgia,'Times New Roman',serif;
     --body:'Spline Sans',ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--abyss);color:var(--fg);font-family:var(--body);line-height:1.55;-webkit-font-smoothing:antialiased}
+  body{margin:0;padding-top:52px;background:var(--abyss);color:var(--fg);font-family:var(--body);line-height:1.55;-webkit-font-smoothing:antialiased}
   a{color:inherit}
 
   /* --- site nav (mirrors the marketplace) --- */
-  .sitenav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--abyss) 88%,transparent);
+  .sitenav{position:sticky;top:52px;z-index:20;background:color-mix(in srgb,var(--abyss) 88%,transparent);
     backdrop-filter:blur(9px);border-bottom:1px solid var(--line)}
   .nav-inner{max-width:1040px;margin:0 auto;padding:13px 22px;display:flex;align-items:center;justify-content:space-between}
   .brand{display:inline-flex;align-items:center;gap:11px;font-family:var(--mono);font-size:13px;letter-spacing:.05em;color:var(--fg);text-decoration:none}
@@ -121,7 +131,7 @@
   @media(prefers-reduced-motion:reduce){.chev{transition:none}}
 </style>
 </head>
-<body>
+<body class="sidebar-hidden">
 
 <nav class="sitenav">
   <div class="nav-inner">
@@ -166,7 +176,7 @@
     {ac:"--build",  slugs:["logbook","sextant"]}
   ];
   const accentVar=(token,shade)=> shade
-    ? `color-mix(in srgb, var(${token}) ${Math.round((1-(.26+.2*shade))*100)}%, white)`
+    ? `color-mix(in srgb, var(${token}) ${Math.round((1-(.26+.2*shade))*100)}%, var(--fg))`
     : `var(${token})`;
   const AC={}, ORDER=[];
   GROUPS.forEach(g=> g.slugs.forEach((slug,idx)=>{ AC[slug]=accentVar(g.ac,idx); ORDER.push(slug); }));
@@ -309,5 +319,6 @@
       console.error("specs.json load failed:",err); });
 })();
 </script>
+<script>initTitlebar({ name: 'claude-marketplace' });</script>
 </body>
 </html>
