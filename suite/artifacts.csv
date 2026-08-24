@@ -49,5 +49,5 @@ date,plugin,skills,rules,hooks,commands,agents,change
 2026-08-21,beacon,0,1,3,2,0,-skill:beacon +command:install-beacon +command:pause -command:beacon -command:session-mode
 2026-08-21,moor,0,1,3,1,0,+command:install-moor
 2026-08-22,anchor,9,3,2,0,0,-hook:check-cli-freshness -command:anchor
+2026-08-23,moor,0,0,0,0,0,-plugin:moor
 2026-08-24,logbook,0,0,0,0,0,-plugin:logbook
-2026-08-24,moor,0,0,0,0,0,-plugin:moor
