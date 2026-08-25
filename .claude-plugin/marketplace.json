@@ -56,7 +56,20 @@
         "url": "https://github.com/chris-peterson/cleat.git"
       },
       "category": "development",
-      "homepage": "https://chris-peterson.github.io/cleat/#/"
+      "homepage": "https://chris-peterson.github.io/cleat/#/",
+      "relevance": {
+        "topic": "agent instructions",
+        "signals": {
+          "filesRead": [
+            "**/.cursorrules",
+            "**/.cursor/rules/**",
+            "**/.github/copilot-instructions.md",
+            "**/.windsurfrules",
+            "**/GEMINI.md",
+            "**/AGENTS.md"
+          ]
+        }
+      }
     },
     {
       "name": "sextant",
