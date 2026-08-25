@@ -2,9 +2,14 @@
 docs:
     docsify serve docs --open
 
-# Clone or fast-forward the sibling plugin repos listed in marketplace.json.
+# Clone or fast-forward the sibling plugin repos on the plugins.yml roster.
 sync:
     bash suite/sync.sh
+
+# CI's job, for the reason noted on `build`; this recipe is for a deliberate run.
+# Generate .claude-plugin/marketplace.json from plugins.yml + each plugin.yml.
+marketplace:
+    shipyard gen-marketplace-json
 
 # Generate docs/plugins.js — per-plugin doc site copy from each plugin.yml.
 plugins-data:
@@ -30,8 +35,9 @@ artifacts-data:
 seed-artifacts:
     python3 suite/seed-artifacts-history.py
 
-# record-artifacts is deliberately absent: it writes the committed log from
-# whatever branch each sibling checkout is on, so CI owns it (deploy-docs.yml).
+# record-artifacts and marketplace are deliberately absent: both write a
+# committed file from whatever branch each sibling checkout happens to be on, so
+# a local run would publish unmerged work. CI owns them (deploy-docs.yml).
 # Regenerate every docs/ data file, then check catalog coverage.
 build: sync plugins-data specs-data artifacts-data check-coverage
 

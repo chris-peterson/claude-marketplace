@@ -3,11 +3,12 @@
 Each bridge.ai plugin repo carries a `plugin.yml` at its root — the **single
 source of truth** for that plugin's descriptor. It projects into three targets:
 
-- **`.claude-plugin/plugin.json`** — generated in the plugin repo by its
-  `scripts/gen-plugin-json.py`; Claude Code reads the committed file at install.
+- **`.claude-plugin/plugin.json`** — generated in the plugin repo by `shipyard
+  gen-plugin-json`; Claude Code reads the committed file at install.
 - **the marketplace doc site** — the `suite:` block, consumed by
   `suite/build-plugins-data.py` to generate `docs/plugins.js`.
-- **the `marketplace.json` entry** (planned) — the `marketplace:` block.
+- **the `marketplace.json` entry** — the `marketplace:` block, projected by
+  `shipyard gen-marketplace-json` in the marketplace repo.
 
 Authoring rule: edit `plugin.yml`, never the generated `plugin.json`.
 
@@ -25,6 +26,8 @@ Authoring rule: edit `plugin.yml`, never the generated `plugin.json`.
 | `keywords` | plugin.json | List. |
 | `marketplace.category` | marketplace entry | e.g. `development`, `security`. |
 | `marketplace.homepage` | marketplace entry | Hosted docs URL. |
+| `marketplace.relevance` | marketplace entry | Signals that make Claude Code suggest this plugin — see [Suggestions](#suggestions-and-hard-dependencies). Omit if none fit. |
+| `dependencies` | plugin.json | Plugins Claude Code installs alongside this one — see [Suggestions](#suggestions-and-hard-dependencies). Not `suite.dependencies`. |
 | `suite.*` | doc site | Presentation block — keys match the doc site's `PLUGINS` object verbatim (see below). |
 
 ## The `suite:` block (doc site presentation)
@@ -39,6 +42,29 @@ dump (`suite/build-plugins-data.py`):
 - `describe` — one-line descriptions for the plugin's artifacts, as a map of `<category>: <artifact-name>: "<what it's for>"` (categories: `skills` / `rules` / `hooks` / `commands` / `agents`). Surfaced as tooltips in the doc site — on each artifact chip in the catalog card's expander, and (for `hooks`) on the plugin's interop-radar node. The artifact *names* are still derived from `suite/artifacts.csv` (never declared); `describe` only supplies copy for names that exist. A name with no `describe` entry renders without a tooltip; a `describe` entry for a name not in the log is simply unused.
 - `activations` — what triggers this plugin, as a list from `user` (slash commands / keyword skills), `agent` (reacts to the agent's tool calls), and `session` (acts at session start — ambient rules, autoupdate). Drives the interop radar's pulse flares: a node flares on the agent pulse if it lists `agent`, the user pulse if it lists `user` (`session` is declared but doesn't pulse). Omit for the `[user]` default.
 - `examples` / `session` — structured session-playback frames (see an existing migrated plugin for the frame shapes).
+
+## Suggestions and hard dependencies
+
+Two blocks reach Claude Code and nothing else, and Claude Code reports on
+neither: a shape it doesn't recognize is ignored at load time, so the plugin
+quietly does less than its owner wrote. shipyard rejects those at projection.
+[Suggestions and dependencies](https://chris-peterson.github.io/shipyard/#/suggestions-and-dependencies) is the reference; the two traps worth knowing
+before you open `plugin.yml`:
+
+**`relevance` goes under `marketplace:`**, because the marketplace entry is where
+Claude Code reads it. It names a `topic` and at least one signal (`cwd`, `cli`,
+`hosts`, `filesRead`, `manifestDeps`). Signals earn their keep by being narrow —
+a plugin surfaces at most once every three sessions, and `filesRead` over
+`**/CLAUDE.md` fires in nearly all of them. Nothing surfaces at all until an
+administrator allowlists this marketplace in managed settings'
+`pluginSuggestionMarketplaces`.
+
+**`dependencies` is top-level, and is not `suite.dependencies`.** The top-level
+list is hard: Claude Code installs those plugins with this one, enabling this
+enables them, and this plugin is disabled while one is missing. `suite.dependencies`
+is the doc site's graph of preferred backends and optional collaborators — soft
+edges that install nothing and disable nothing. A preferred diff backend belongs
+in the second; declaring it in the first installs a second plugin on everyone.
 
 ## Not in `plugin.yml`
 

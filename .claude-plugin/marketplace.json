@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "anchor",
-      "description": "Git/forge skills that drive reviewed work into the permanent record: commit, prepare-review, preview.",
+      "description": "Consistency across the code-change lifecycle: issue, change request, review, release.",
       "author": {
         "name": "chris-peterson"
       },
@@ -21,7 +21,7 @@
     },
     {
       "name": "beacon",
-      "description": "At-a-glance session awareness for Claude Code in iTerm2.",
+      "description": "At-a-glance awareness across concurrent Claude Code sessions — a terminal-agnostic fleet dashboard plus iTerm2 per-pane painting.",
       "author": {
         "name": "chris-peterson"
       },
@@ -34,7 +34,7 @@
     },
     {
       "name": "ClaudeWatch",
-      "description": "PreToolUse hook that enforces command safety rules via 'claude-watches'",
+      "description": "PreToolUse hook that screens shell commands and the code Claude writes to disk for safety, via 'claude-watchdog'",
       "author": {
         "name": "chris-peterson"
       },
@@ -43,7 +43,30 @@
         "url": "https://github.com/chris-peterson/ClaudeWatch.git"
       },
       "category": "security",
-      "homepage": "https://chris-peterson.github.io/ClaudeWatch/#/"
+      "homepage": "https://chris-peterson.github.io/ClaudeWatch/#/",
+      "relevance": {
+        "topic": "risky shell commands",
+        "signals": {
+          "cli": [
+            "git",
+            "rm",
+            "aws",
+            "curl",
+            "wget",
+            "npm",
+            "pip",
+            "brew",
+            "chmod",
+            "pwsh"
+          ],
+          "filesRead": [
+            "**/.claude/settings.json",
+            "**/.claude/settings.local.json",
+            "**/*.sh",
+            "**/*.ps1"
+          ]
+        }
+      }
     },
     {
       "name": "cleat",
@@ -60,9 +83,9 @@
     },
     {
       "name": "sextant",
-      "description": "AI-assisted SPEC-driven development: write requirements first, audit implementations against them, graduate the winner.",
+      "description": "AI-assisted, best-effort SPEC-driven development — keep requirements in source control, track how the code covers them, reconcile the two either direction.",
       "author": {
-        "name": "chris-peterson"
+        "name": "Chris Peterson"
       },
       "source": {
         "source": "url",
@@ -73,7 +96,7 @@
     },
     {
       "name": "shipshape",
-      "description": "Keep your Claude Code plugins up to date: reconcile installed plugins against your desired set, update them, prune stale caches, and enforce marketplace auto-update.",
+      "description": "Know what's changing in your Claude Code harness and keep it current — every Claude Code upgrade handled, every plugin reconciled, updated, and pruned.",
       "author": {
         "name": "chris-peterson"
       },
@@ -86,7 +109,7 @@
     },
     {
       "name": "tack",
-      "description": "Route-aware agent that tracks AI-assisted development work across session boundaries - pivots, deliverables, and dependencies",
+      "description": "Route tracker for AI-assisted development work — pivots, deliverables, and dependencies — across session boundaries",
       "author": {
         "name": "chris-peterson"
       },

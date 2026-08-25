@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
-# Sync the sibling plugin repos listed in marketplace.json into the workspace
-# (the directory that contains this repo). Clones what's missing, fast-forwards
-# what's present. marketplace.json is the single source of "what plugins exist
-# and where." Runs locally (`just sync`) and in the marketplace deploy CI.
+# Sync the sibling plugin repos on the roster into the workspace (the directory
+# that contains this repo). Clones what's missing, fast-forwards what's present.
+# Runs locally (`just sync`) and in the marketplace deploy CI.
+#
+# The roster comes from plugins.yml, not from the manifest this repo publishes:
+# marketplace.json is generated *from* the synced plugins, so reading it here
+# would make the clone step depend on its own output. `shipyard roster` resolves
+# plugins.yml's URL template with nothing on disk, which is what breaks that.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WORKSPACE="$(dirname "$ROOT")"
-MANIFEST="$ROOT/.claude-plugin/marketplace.json"
 
-jq -r '.plugins[] | "\(.name)|\(.source.url)"' "$MANIFEST" | while IFS='|' read -r name url; do
+shipyard roster --root "$ROOT" | while IFS=$'\t' read -r name url; do
   dest="$WORKSPACE/$name"
   if [ -d "$dest/.git" ]; then
     echo "pull  $name"

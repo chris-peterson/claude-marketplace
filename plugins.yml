@@ -1,0 +1,21 @@
+# The marketplace's own record: who it is and which plugins it ships, in the
+# order the catalog lists them. Nothing *about* a plugin belongs here — that is
+# read from the plugin's own plugin.yml in a sibling checkout, which is what
+# keeps the two from drifting. `shipyard gen-marketplace-json` projects this
+# into .claude-plugin/marketplace.json.
+name: chris-peterson
+description: Chris Peterson's Claude Code plugins
+owner: chris-peterson
+
+# A template rather than a per-plugin URL, so the roster resolves before
+# anything is cloned — which is what suite/sync.sh reads to do the cloning.
+source: https://github.com/{owner}/{name}.git
+
+plugins:
+  - anchor
+  - beacon
+  - ClaudeWatch
+  - cleat
+  - sextant
+  - shipshape
+  - tack

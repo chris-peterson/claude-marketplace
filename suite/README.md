@@ -7,7 +7,7 @@ and aggregate from it.
 
 | Script | Output | Purpose |
 |:---|:---|:---|
-| `sync.sh` | sibling checkouts | clone/fast-forward every plugin in `marketplace.json` |
+| `sync.sh` | sibling checkouts | clone/fast-forward every plugin on the `plugins.yml` roster |
 | `build-plugins-data.py` | `docs/plugins.js` | per-plugin doc site content from each `plugin.yml` |
 | `record-artifacts.py` | `suite/artifacts.csv` | append a change-point row when a plugin's artifact set changes |
 | `build-artifacts-data.py` | `docs/artifacts.json` | project the rolling log into the growth view's series + changelog |
@@ -16,6 +16,32 @@ and aggregate from it.
 `just build` regenerates the doc site's data. `docs/plugins.js` and
 `docs/artifacts.json` are rebuilt each deploy and git-ignored; only `artifacts.csv` is committed, and it has one writer — see
 [The artifact log](#the-artifact-log).
+
+### The marketplace manifest
+
+`.claude-plugin/marketplace.json` is generated, not written. `shipyard
+gen-marketplace-json` projects two sources into it:
+
+- **`plugins.yml`** — this marketplace's own record: its identity, which plugins
+  it ships, the order they list in, and a `source:` URL template. Nothing about a
+  plugin belongs here.
+- **each plugin's `plugin.yml`** — the description, author, category, homepage,
+  and any `relevance` block, read from the sibling checkout.
+
+So a description reworded in a plugin's repo reaches the catalog by regenerating,
+not by a second edit landing here. The template is what lets `sync.sh` resolve
+the roster with nothing on disk yet: reading the manifest instead would make the
+clone step depend on its own output.
+
+**CI is the writer**, for the same reason it owns the artifact log: a local run
+reads whichever branch each sibling checkout happens to be on, so it would
+publish unmerged work. `just marketplace` exists for a deliberate run.
+
+A plugin's `relevance` block (Claude Code suggests it to matching sessions) and
+its top-level `dependencies` list (plugins Claude Code installs alongside it) are
+declared in the plugin and validated as the manifest is generated — see
+[Suggestions and dependencies](https://chris-peterson.github.io/shipyard/#/suggestions-and-dependencies). Neither is `suite.dependencies`, the doc
+site's soft-edge graph, which installs nothing.
 
 ### The artifact log
 
@@ -96,7 +122,7 @@ just set-dispatch-secret
 bash suite/set-dispatch-secret.sh anchor
 ```
 
-Rotating is the same command with a fresh PAT. Adding a plugin: it's already in
-`marketplace.json`, so re-run (or pass just its name). If per-repo secrets ever
+Rotating is the same command with a fresh PAT. Adding a plugin: it's already on
+the roster, so re-run (or pass just its name). If per-repo secrets ever
 become a burden, the alternatives are a **GitHub App** (short-lived tokens
 minted per run) or moving the suite under a **GitHub org** (one shared secret).
