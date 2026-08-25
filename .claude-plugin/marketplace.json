@@ -43,30 +43,7 @@
         "url": "https://github.com/chris-peterson/ClaudeWatch.git"
       },
       "category": "security",
-      "homepage": "https://chris-peterson.github.io/ClaudeWatch/#/",
-      "relevance": {
-        "topic": "risky shell commands",
-        "signals": {
-          "cli": [
-            "git",
-            "rm",
-            "aws",
-            "curl",
-            "wget",
-            "npm",
-            "pip",
-            "brew",
-            "chmod",
-            "pwsh"
-          ],
-          "filesRead": [
-            "**/.claude/settings.json",
-            "**/.claude/settings.local.json",
-            "**/*.sh",
-            "**/*.ps1"
-          ]
-        }
-      }
+      "homepage": "https://chris-peterson.github.io/ClaudeWatch/#/"
     },
     {
       "name": "cleat",
