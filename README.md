@@ -1,6 +1,6 @@
-# claude-marketplace
+# bridge.ai
 
-Claude Code plugins by [chris-peterson](https://github.com/chris-peterson).
+Claude Code plugins by [chris-peterson](https://github.com/chris-peterson), for AI-assisted development. The catalog, with what each plugin does and how they fit together, is at **[bridge.ai](https://chris-peterson.github.io/claude-marketplace/)**.
 
 ## Installation
 
@@ -16,26 +16,32 @@ claude plugin install <name>@chris-peterson
 
 ## Plugins
 
-### [anchor](https://github.com/chris-peterson/anchor)
+Each falls into one of four jobs: stay safe, keep oriented, reach your waypoints, write it down.
 
-Git/forge skills that drive reviewed work into the permanent record. `/anchor:commit` writes why-focused commit messages, `/anchor:prepare-review` opens a change request on the forge, and `/anchor:commit --preview` shows in-flight changes in a visual difftool.
+### [anchor](https://chris-peterson.github.io/anchor/#/) — reach your waypoints
 
-### [beacon](https://github.com/chris-peterson/beacon)
+Keeps your issues, commits, change requests, reviews, and releases consistent — the same quality, formatting, and content every time, not reinvented per change. `/anchor:commit` walks you through the diff, then writes a why-first message; `/anchor:prepare-review` opens the change request.
 
-At-a-glance session awareness for Claude Code in iTerm2. Paints an iTerm2 badge (project name + idle/working/waiting color) and a fixed-layout status bar (project URL, branch, cwd, code, export buttons) so a glance across many windows tells you which sessions need attention.
+### [beacon](https://chris-peterson.github.io/beacon/#/) — keep oriented
 
-### [ClaudeWatch](https://github.com/chris-peterson/ClaudeWatch)
+Colors each session's tab so you can tell what every Claude session is doing at a glance: neutral at rest, amber working, red waiting for you. That's iTerm2 on macOS; on any OS or terminal the same state shows in a fleet dashboard you open in a browser.
 
-`PreToolUse` hook that enforces command safety rules. Blocks or requires confirmation for destructive git ops, global installs, recursive deletes, and secret exposure — using regex matching that handles compound commands and heredocs that Claude Code's built-in permission system misses.
+### [ClaudeWatch](https://chris-peterson.github.io/ClaudeWatch/#/) — stay safe
 
-### [sextant](https://github.com/chris-peterson/sextant)
+Screens every shell command — and the code Claude writes to disk — before it runs, matching real patterns rather than naive prefixes, so reordered flags and chained commands don't slip past. Blocks the genuinely dangerous; asks before anything that changes state.
 
-AI-assisted SPEC-driven development. Maintains a `SPEC.md` contract, audits implementations against it for coverage and drift, and scaffolds candidate implementations so the winner can be graduated to the repo root.
+### [cleat](https://chris-peterson.github.io/cleat/#/) — write it down
 
-### [shipshape](https://github.com/chris-peterson/shipshape)
+Write your project's instructions once, in the file every AI tool reads. AGENTS.md is the file about 30 of them read; Claude Code reads CLAUDE.md and nothing else, so guidance kept in either one alone reaches half your tools. cleat holds a repo in the shape that satisfies both.
 
-Keeps your *other* Claude Code plugins up to date. A `/plugin-maintenance` skill reconciles installed plugins against your desired set, updates them, and prunes the stale caches and orphan data dirs that uninstall leaves behind — while respecting the `.in_use` leases of live sessions. A `SessionStart` hook enforces marketplace auto-update so plugins stay current on their own.
+### [sextant](https://chris-peterson.github.io/sextant/#/) — write it down
 
-### [tack](https://github.com/chris-peterson/tack)
+Keeps a plain-language spec — what the code must do — under source control, and reconciles it with the code in either direction. Written for specs that lag the code as often as they lead it.
 
-Route-aware work tracker for AI-assisted development. Captures pivots, context switches, and multi-repo changes so that work-in-progress survives session boundaries.
+### [shipshape](https://chris-peterson.github.io/shipshape/#/) — stay safe
+
+Tells you what changed in your coding harness and keeps it current: Claude Code itself, and the plugins you've installed. Reconciles what's installed against the set you've declared, updates them, and prunes the caches an update leaves behind.
+
+### [tack](https://chris-peterson.github.io/tack/#/) — keep oriented
+
+Tracks what you're working on across crashes, context overflow, and jumps between projects. Start a fresh session and pick up exactly where you left off.
