@@ -27,6 +27,7 @@
   font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ac,var(--cyan));margin:18px 0 7px}
 
 .session{margin-top:14px;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--abyss);--ac:var(--cyan)}
+.sp-stage{position:relative}
 .session .tape{padding:20px 22px;font-size:15px;line-height:1.55;display:flex;flex-direction:column;gap:12px}
 .fr{opacity:0;transform:translateY(6px);transition:opacity .45s ease,transform .45s ease}
 .fr.show{opacity:1;transform:none}
@@ -168,6 +169,28 @@
 .sp-play{color:var(--ac);border-color:color-mix(in srgb,var(--ac) 34%,transparent)}
 .sp-count{margin-left:auto;color:var(--muted);font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;letter-spacing:.05em}
 .sp-speed{min-width:36px}
+/* The parked screen (mountSession {poster:true}). Its play target borrows the
+   beacon tab's chip treatment — a tinted fill inside a hairline ring — so it
+   reads as part of the pane rather than a video control dropped on top of it. */
+.sp-poster{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:19px;
+  background:radial-gradient(120% 100% at 50% 42%,color-mix(in srgb,var(--ac) 7%,transparent),transparent 70%)}
+.sp-poster-btn{width:84px;height:84px;border-radius:22px;padding:0;cursor:pointer;color:var(--ac);
+  background:color-mix(in srgb,var(--ac) 15%,transparent);
+  border:1px solid color-mix(in srgb,var(--ac) 34%,transparent);
+  box-shadow:0 0 0 8px color-mix(in srgb,var(--ac) 5%,transparent);
+  display:flex;align-items:center;justify-content:center;
+  transition:background .18s,border-color .18s,box-shadow .3s,transform .18s}
+.sp-poster-btn .sp-tri{font-size:31px;line-height:1;margin-left:5px}
+.sp-poster-btn:hover{background:color-mix(in srgb,var(--ac) 24%,transparent);
+  border-color:color-mix(in srgb,var(--ac) 62%,transparent);
+  box-shadow:0 0 0 15px color-mix(in srgb,var(--ac) 7%,transparent);transform:translateY(-1px)}
+.sp-poster-btn:active{transform:none}
+.sp-poster-btn:focus-visible{outline:2px solid var(--ac);outline-offset:4px}
+.sp-poster-meta{font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:color-mix(in srgb,var(--muted) 55%,var(--fg))}
+@media (prefers-reduced-motion:reduce){.sp-poster-btn,.sp-poster-btn:hover{transition:none;transform:none}}
+
 /* blinking caret while a command frame types out */
 .fr.typing .cmdtext::after{content:"";display:inline-block;width:7px;height:1.02em;vertical-align:-2px;margin-left:2px;
   background:var(--ac);animation:sp-caret .9s steps(1) infinite}
@@ -188,7 +211,7 @@
   position:relative;border:1px solid rgba(139,233,253,.14);border-radius:13px;overflow:hidden;
   background:var(--bcn-body);box-shadow:0 22px 55px rgba(0,0,0,.5)}
 .bcn-title{display:flex;align-items:center;gap:11px;background:var(--bcn-abyss);
-  border-bottom:1px solid rgba(248,248,242,.07);padding:7px 13px}
+  border-bottom:1px solid rgba(248,248,242,.07);padding:7px 13px;min-height:55px}   /* holds the bar steady when the tab picks up its task line */
 .bcn-dots{display:inline-flex;gap:7px}
 .bcn-dots i{width:11px;height:11px;border-radius:50%;display:block}
 .bcn-dots i:nth-child(1){background:#ff5f57}.bcn-dots i:nth-child(2){background:#febc2e}.bcn-dots i:nth-child(3){background:#28c840}
@@ -249,13 +272,21 @@
    the session's deliverables: a change request leads at full weight with the
    tab's own task as its title, and the branch URL stands in until one opens. */
 .bcn-stl{position:relative;z-index:1;font-family:var(--bcn-mono);font-size:12.5px;
-  padding:2px 22px 14px;min-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  padding:2px 22px 14px;height:34px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bcn-stl a{text-decoration:underline;text-underline-offset:2px}
 .bcn-stl .stl-link{color:var(--bcn-cyan)}
 .bcn-stl .stl-cr{color:var(--bcn-cyan);font-weight:700}
 .bcn-stl .stl-title{color:var(--bcn-identity);margin-left:9px}
-/* the tape sits bare inside the painted pane; it grows one frame at a time */
-.hub-session{position:relative;z-index:1;margin:0;border:0;border-radius:0;background:transparent;box-shadow:none;--ac:var(--cyan)}
+/* The tape sits bare inside the painted pane. The pane holds one height parked,
+   playing, or finished — the transcript scrolls inside the stage the way a
+   terminal's scrollback does, so the page below it never moves. */
+.hub-session{position:relative;z-index:1;margin:0;border:0;border-radius:0;background:transparent;box-shadow:none;
+  --ac:var(--cyan);--stage-h:clamp(268px,33vh,368px)}
+.hub-session .sp-stage{height:var(--stage-h);overflow-y:auto;overscroll-behavior:contain;
+  scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--ac) 22%,transparent) transparent}
+.hub-session .sp-stage::-webkit-scrollbar{width:10px}
+.hub-session .sp-stage::-webkit-scrollbar-thumb{border:3px solid transparent;border-radius:10px;
+  background:color-mix(in srgb,var(--ac) 22%,transparent);background-clip:padding-box}
 .hub-session .sp-controls{background:var(--bcn-abyss)}
 .hub-session .fr{display:none}
 .hub-session .fr.show{display:block;animation:fr-in .45s ease}

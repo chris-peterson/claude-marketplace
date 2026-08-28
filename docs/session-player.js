@@ -92,8 +92,26 @@
 
   var delayFor = function (f) { if (!f) return 1000; if (f.t === "shell") return 700; if (f.t === "banner") return 1500; if (f.t === "sep") return 550; if (f.t === "thought" || f.t === "event") return 1200; if (f.t === "cmd") return 1500; if (f.t === "diff") return 1700; if (f.t === "watch") return 1500; if (f.t === "ask") return 2600; if (f.t === "enter") return 900; if (f.t === "note") return 2200; if (f.t === "status") return 1300; return 1150; };
 
-  // Autostarts on scroll-in, pauses off-screen, plays once then pins the final
-  // state (no loop). Reduced-motion shows every frame at once.
+  // Wall clock of one play at 1x — each frame's dwell plus the keystrokes the
+  // typewriter spends on it, off the same constants the typing routines use. The
+  // poster prints it, so pressing play is an informed choice.
+  function typeMs(f) { return !f.cmd ? 0 : (f.stub ? 115 * f.stub.length + 700 : 60 * f.cmd.length); }
+  function runtime(frames, opts) {
+    var ms = frames.reduce(function (a, f) {
+      var t = delayFor(f);
+      if (opts.typewriter && f.t === "shell") t += 800 + 75 * (String(f.cmd || "claude").length + 1);
+      if (opts.typewriter && f.t === "you") { t += 15 * String(f.text || "").length + typeMs(f) + (f.retro ? 1300 : 0); }
+      if (opts.typewriter && f.t === "cmd") t += typeMs(f);
+      if (opts.thinking && f.t === "claude") t += (f.establishes ? 650 : 0) + (f.thinkMs || 1500);
+      return a + t;
+    }, 0);
+    var s = Math.round(ms / 5000) * 5;
+    return s >= 60 ? Math.floor(s / 60) + "m " + (s % 60 ? (s % 60) + "s" : "") : s + "s";
+  }
+
+  // Plays once then pins the final state (no loop). Reduced-motion shows every
+  // frame at once. opts.poster parks it until pressed; otherwise it autostarts
+  // on scroll-in and pauses off-screen.
   function buildControls(container) {
     var bar = document.createElement("div");
     bar.className = "sp-controls";
@@ -112,25 +130,54 @@
       setPlaying: function (p) { play.textContent = p ? "⏸" : "▶"; play.setAttribute("aria-label", p ? "Pause" : "Play"); } };
   }
 
-  // opts.controls adds a play/pause/step/restart bar with a step counter and a
-  // 1x/2x speed toggle; opts.typewriter types command frames out char by char.
-  // With no opts this is the inline auto-player the per-plugin previews use.
+  // The parked screen a poster replay opens on. Its play target borrows the
+  // beacon tab's chip treatment — tinted fill inside a hairline ring — so it
+  // reads as part of the pane rather than a video control dropped on top of it.
+  function buildPoster(stage, frames, opts, onPlay) {
+    var p = document.createElement("div");
+    p.className = "sp-poster";
+    p.innerHTML = '<button class="sp-poster-btn" type="button" aria-label="Play the session replay"><span class="sp-tri">▶</span></button>'
+      + '<span class="sp-poster-meta">' + frames.length + ' frames · about ' + runtime(frames, opts) + '</span>';
+    p.querySelector(".sp-poster-btn").addEventListener("click", onPlay);
+    stage.appendChild(p);
+    return p;
+  }
+
+  // opts.controls adds a play/pause/step/restart bar; opts.typewriter types
+  // command frames out char by char; opts.poster parks the replay behind a play
+  // target instead of autostarting. With no opts this is the inline auto-player
+  // the per-plugin previews use.
   function mountSession(container, frames, opts) {
     opts = opts || {};
-    container.innerHTML = '<div class="tape"></div>';
+    // the stage is the transcript's viewport: a consumer that fixes its height
+    // (the hub pane) gets scrollback inside it instead of a growing page
+    container.innerHTML = '<div class="sp-stage"><div class="tape"></div></div>';
+    var stage = container.querySelector(".sp-stage");
     var tape = container.querySelector(".tape");
     var els = frames.map(function (f) { var e = frameEl(f); tape.appendChild(e); return e; });
     var reduce = matchMedia("(prefers-reduced-motion:reduce)").matches;
     if (reduce) {
       els.forEach(function (e) { e.classList.add("show"); });
-      if (opts.controls) buildControls(container).count.textContent = frames.length + " / " + frames.length;
+      if (opts.controls) buildControls(container);
       return;
     }
     var i = 0, playing = false, timer = null, typing = null, typingEl = null,
         thinkTimer = null, contextTimer = null, thinkBubble = null, thinkEl = null,
         thinkFrame = null, thinkIdx = -1, speed = 1, userTouched = false;
     var ctl = opts.controls ? buildControls(container) : null;
+    var poster = opts.poster ? buildPoster(stage, frames, opts, function () { dismissPoster(); play(); }) : null;
+    function dismissPoster() { if (poster) { poster.remove(); poster = null; } }
     function count() { if (ctl && ctl.count) ctl.count.textContent = i + " / " + frames.length; }
+    // hold the newest frame in view as the transcript outgrows the stage. A frame
+    // taller than the viewport pins its head; anything shorter rides the bottom.
+    function follow(el, up) {
+      if (!el || stage.scrollHeight <= stage.clientHeight) return;
+      var view = stage.clientHeight;
+      var target = el.offsetHeight >= view - 24 ? el.offsetTop - 12 : el.offsetTop + el.offsetHeight - view + 18;
+      target = Math.max(0, target);
+      if (!up && target <= stage.scrollTop) return;
+      stage.scrollTop = target;   // a terminal's scrollback jumps; a smooth scroll would trail the frames
+    }
 
     function typeCmd(el, done) {
       var span = el.querySelector(".cmdtext"), box = el.querySelector(".fr-cmd");
@@ -204,9 +251,10 @@
           thinkBubble.className = "fr fr-thinking show";
           thinkBubble.innerHTML = '<span class="tk">· Thinking…</span><span class="tk-meta"> (' + (f.think || "thinking") + ')</span>';
           tape.insertBefore(thinkBubble, el);
+          follow(thinkBubble);
           thinkTimer = setTimeout(function () {
             if (thinkBubble) thinkBubble.remove();
-            el.classList.add("show");
+            el.classList.add("show"); follow(el);
             thinkBubble = thinkEl = thinkFrame = thinkTimer = null; thinkIdx = -1;
             done();
           }, (f.thinkMs || 1500) / speed);
@@ -221,7 +269,7 @@
         return;
       }
       if (opts.onReveal) opts.onReveal(f, idx, f.t === "claude" ? "context" : false);
-      el.classList.add("show");
+      el.classList.add("show"); follow(el);
       // the user confirming the permission prompt: press + select "Yes" in place,
       // rather than echoing a carriage return
       if (f.t === "enter") {
@@ -239,6 +287,7 @@
         thinkBubble.className = "fr fr-thinking show";
         thinkBubble.innerHTML = '<span class="tk">· Thinking…</span><span class="tk-meta"> (retro)</span>';
         tape.insertBefore(thinkBubble, el.nextSibling);
+        follow(thinkBubble);
         thinkEl = el; thinkFrame = f; thinkIdx = idx;
         thinkTimer = setTimeout(function () {
           if (thinkBubble) thinkBubble.remove();
@@ -271,7 +320,7 @@
         if (opts.onReveal && thinkFrame) opts.onReveal(thinkFrame, thinkIdx, "context"); }
       if (thinkTimer) { clearTimeout(thinkTimer); thinkTimer = null; }
       if (thinkBubble) { thinkBubble.remove(); thinkBubble = null; }
-      if (thinkEl) { thinkEl.classList.add("show");
+      if (thinkEl) { thinkEl.classList.add("show"); follow(thinkEl);
         if (opts.onReveal && thinkFrame && thinkFrame.retro) opts.onReveal(thinkFrame, thinkIdx, "retro");
         thinkEl = thinkFrame = null; thinkIdx = -1; }
     }
@@ -297,13 +346,14 @@
       if (frames[i].t === "enter") { var ak = tape.querySelector(".fr-ask"); if (ak) { ak.classList.remove("confirmed"); var ay = ak.querySelector(".t-yes"); if (ay) ay.classList.remove("flash"); } }
       var tb = tape.querySelectorAll(".fr-thinking"); for (var k = 0; k < tb.length; k++) tb[k].remove();
       count(); paintStateAt(i - 1);
+      if (i > 0) follow(els[i - 1], true); else stage.scrollTop = 0;
     }
     function scrollToSection() {
       var sec = (container.closest && container.closest("section")) || container;
       sec.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
     }
     function restart() {
-      scrollToSection(); pause(); i = 0;
+      scrollToSection(); pause(); i = 0; stage.scrollTop = 0;
       var tb = tape.querySelectorAll(".fr-thinking");
       for (var k = 0; k < tb.length; k++) tb[k].remove();
       els.forEach(function (e) { e.classList.remove("show", "typing", "typing-sh", "typing-you");
@@ -315,16 +365,19 @@
       count(); play();
     }
     if (ctl) {
-      // play from a stopped state restarts (and scrolls up); while playing it pauses
-      ctl.play.addEventListener("click", function () { userTouched = true; playing ? pause() : restart(); });
-      ctl.back.addEventListener("click", function () { userTouched = true; stepBack(); });
-      ctl.step.addEventListener("click", function () { userTouched = true; step(); });
-      ctl.restart.addEventListener("click", function () { userTouched = true; restart(); });
+      // the first press leaves the poster; after that, play from a stopped state
+      // restarts (and scrolls up), and while playing it pauses
+      ctl.play.addEventListener("click", function () {
+        if (poster) { dismissPoster(); play(); return; }
+        userTouched = true; playing ? pause() : restart(); });
+      ctl.back.addEventListener("click", function () { userTouched = true; dismissPoster(); stepBack(); });
+      ctl.step.addEventListener("click", function () { userTouched = true; dismissPoster(); step(); });
+      ctl.restart.addEventListener("click", function () { userTouched = true; dismissPoster(); restart(); });
       count();
     }
     // auto-play/pause on scroll — until the viewer takes over via the controls
     var sio = new IntersectionObserver(function (ents) {
-      ents.forEach(function (en) { if (userTouched) return; if (en.isIntersecting) play(); else pause(); });
+      ents.forEach(function (en) { if (userTouched || poster) return; if (en.isIntersecting) play(); else pause(); });
     }, { threshold: .2 });
     sio.observe(container);
   }

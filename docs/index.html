@@ -1156,7 +1156,7 @@
     // note / sep — leave the current state (e.g. the retro green persists)
   }
   if (mount && window.mountSession) {
-    window.mountSession(mount, FRAMES, { controls: true, typewriter: true, thinking: true, onReveal: beaconState });
+    window.mountSession(mount, FRAMES, { controls: true, typewriter: true, thinking: true, poster: true, onReveal: beaconState });
     // the status line is Claude's footer, so it belongs under the transcript and
     // above the player's own controls — which mountSession appends to the mount
     stlEl = document.createElement("div");
