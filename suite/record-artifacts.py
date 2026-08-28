@@ -23,11 +23,20 @@ from _common import (CATS, ROOT, WORKSPACE, change_tokens, counts, empty_members
 CSV = ROOT / "suite" / "artifacts.csv"
 
 
-def head_date(name: str) -> str:
-    return subprocess.run(
-        ["git", "-C", str(WORKSPACE / name), "log", "-1", "--format=%cs", "HEAD"],
+def head_commit(name: str) -> tuple[str, str]:
+    """(committer date, committer instant) for the sibling repo's HEAD.
+
+    Both, because they answer different questions. `%cs` renders in whatever
+    timezone the commit recorded — a CI commit says UTC, a laptop commit says its
+    own offset — so it is stable enough to key and merge a day's rows on, but it
+    is not a day anyone can be shown. `%cI` keeps the offset, which is what lets
+    the doc site name the day in the reader's own timezone.
+    """
+    out = subprocess.run(
+        ["git", "-C", str(WORKSPACE / name), "log", "-1", "--format=%cs %cI", "HEAD"],
         capture_output=True, text=True, check=True,
-    ).stdout.strip()
+    ).stdout.split()
+    return out[0], out[1]
 
 
 def main() -> int:
@@ -39,7 +48,7 @@ def main() -> int:
     dropped = []
     for name in plugin_names():
         cur = members_at(name, "HEAD")
-        date = head_date(name)
+        date, at = head_commit(name)
         # the plugin's set as of strictly before this date, so a same-day re-run
         # merges into one row rather than appending a second
         before = replay([r for r in rows if r["plugin"] == name and r["date"] < date]).get(name, empty_members())
@@ -48,11 +57,12 @@ def main() -> int:
         desired = None
         if any(cur[c] != before[c] for c in CATS):
             c = counts(cur)
-            desired = {"date": date, "plugin": name, **{x: str(c[x]) for x in CATS},
+            desired = {"date": date, "at": at, "plugin": name,
+                       **{x: str(c[x]) for x in CATS},
                        "change": change_tokens(before, cur)}
 
-        cols = ["date", "plugin", *CATS, "change"]
-        if desired and len(same_day) == 1 and all(str(same_day[0][k]) == desired[k] for k in cols):
+        cols = ["date", "at", "plugin", *CATS, "change"]
+        if desired and len(same_day) == 1 and all(str(same_day[0].get(k, "")) == desired[k] for k in cols):
             continue  # already recorded at this date — nothing to do
         if not desired and not same_day:
             continue
@@ -75,8 +85,11 @@ def main() -> int:
     rows.sort(key=lambda r: (r["date"], r["plugin"]))
     with CSV.open("w", newline="") as f:
         w = csv.writer(f, lineterminator="\n")
-        w.writerow(["date", "plugin", *CATS, "change"])
-        w.writerows([[r["date"], r["plugin"], *(r[x] for x in CATS), r["change"]] for r in rows])
+        w.writerow(["date", "at", "plugin", *CATS, "change"])
+        # rows recorded before `at` existed keep an empty instant — they are not
+        # backfilled, and the doc site falls back to their `date` for those
+        w.writerows([[r["date"], r.get("at", ""), r["plugin"],
+                      *(r[x] for x in CATS), r["change"]] for r in rows])
     for date, name, change in recorded:
         print(f"recorded {name} ({date}): {change}")
     for date, name, change in dropped:

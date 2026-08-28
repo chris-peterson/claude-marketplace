@@ -28,13 +28,14 @@ CSV = ROOT / "suite" / "artifacts.csv"
 WINDOW_START = "2026-01-01"
 
 
-def commits(name: str) -> list[tuple[str, str]]:
-    """(hash, committer-date) oldest-first."""
+def commits(name: str) -> list[tuple[str, str, str]]:
+    """(hash, committer-date, committer-instant) oldest-first. The instant rides
+    along so a reseed lays down the same columns the recorder appends."""
     out = subprocess.run(
-        ["git", "-C", str(WORKSPACE / name), "log", "--reverse", "--format=%H %cs"],
+        ["git", "-C", str(WORKSPACE / name), "log", "--reverse", "--format=%H %cs %cI"],
         capture_output=True, text=True, check=True,
     ).stdout
-    return [tuple(line.split(" ", 1)) for line in out.splitlines() if line.strip()]
+    return [tuple(line.split()) for line in out.splitlines() if line.strip()]
 
 
 def main() -> int:
@@ -44,31 +45,31 @@ def main() -> int:
         # multiple same-day commits to the day's final state)
         by_date = {}
         prev = None
-        for h, date in commits(name):
+        for h, date, at in commits(name):
             cur = members_at(name, h)
             if prev is None or any(cur[c] != prev[c] for c in CATS):
                 if date >= WINDOW_START:
-                    by_date[date] = cur  # later commit on the same date wins
+                    by_date[date] = (cur, at)  # later commit on the same date wins
                 prev = cur
 
         # one row per date, diffed against the previous recorded day
         prev_mem = empty_members()
         for date in sorted(by_date):
-            mem = by_date[date]
+            mem, at = by_date[date]
             if all(mem[c] == prev_mem[c] for c in CATS):
                 continue  # an empty-set creation day, or intra-day churn that netted out
             change = change_tokens(prev_mem, mem)
             c = counts(mem)
-            rows.append([date, name, *(c[x] for x in CATS), change])
+            rows.append([date, at, name, *(c[x] for x in CATS), change])
             prev_mem = mem
 
-    rows.sort(key=lambda r: (r[0], r[1]))
+    rows.sort(key=lambda r: (r[0], r[2]))  # date, then plugin
     with CSV.open("w", newline="") as f:
         w = csv.writer(f, lineterminator="\n")
-        w.writerow(["date", "plugin", *CATS, "change"])
+        w.writerow(["date", "at", "plugin", *CATS, "change"])
         w.writerows(rows)
     print(f"seeded {CSV.relative_to(ROOT)} — {len(rows)} change points across "
-          f"{len({r[1] for r in rows})} plugins")
+          f"{len({r[2] for r in rows})} plugins")
     return 0
 
 

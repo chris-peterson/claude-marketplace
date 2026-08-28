@@ -369,8 +369,8 @@
   @keyframes radarPing{0%{r:5px;opacity:.6}3%{opacity:.55}26%{opacity:.14}30%{r:116px;opacity:0}100%{r:116px;opacity:0}}
   @keyframes radarFlare{0%{r:6px;opacity:0}3%{r:11px;opacity:.7}13%{r:28px;opacity:0}100%{r:6px;opacity:0}}
 
-  /* ---------- growth view ---------- */
-  #growth .growthbox{position:relative;height:380px;margin-top:26px;
+  /* ---------- changelog view ---------- */
+  #changelog .growthbox{position:relative;height:380px;margin-top:26px;
     border:1px solid var(--line-2);border-radius:14px;background:var(--deep);padding:18px}
   .changelog{margin-top:24px;border:1px solid var(--line-2);border-radius:14px;
     background:var(--deep);overflow:hidden;max-height:360px;overflow-y:auto;
@@ -492,7 +492,7 @@
         <a href="#install">install</a>
         <a href="#plugins">plugins</a>
         <a href="#session">example</a>
-        <a href="#growth">changelog</a>
+        <a href="#changelog">changelog</a>
         <a href="specs.html">specs</a>
       </div>
   </div>
@@ -582,10 +582,10 @@
 
   <div class="bearings"><span class="tickline"></span></div>
 
-  <!-- ============ GROWTH (artifact counts over time) ============ -->
-  <section id="growth">
-    <h2><a class="secanchor" href="#growth">Changelog</a></h2>
-    <div class="changelog" id="changelog"></div>
+  <!-- ============ CHANGELOG (dated log + artifact counts over time) ============ -->
+  <section id="changelog">
+    <h2><a class="secanchor" href="#changelog">Changelog</a></h2>
+    <div class="changelog" id="cllist"></div>
     <div class="growthbox"><canvas id="growthchart"></canvas></div>
   </section>
 
@@ -901,9 +901,9 @@
     });
   })();
 
-  // ---- growth: artifact counts over time (lazy: builds when scrolled in) ----
+  // ---- changelog: the dated log + artifact counts over time (lazy: builds when scrolled in) ----
   (function(){
-    const sec=document.getElementById("growth"); if(!sec) return;
+    const sec=document.getElementById("changelog"); if(!sec) return;
     const hex=(tok)=>{ const s=document.createElement("span"); s.style.cssText="color:var("+tok+");display:none";
       document.body.appendChild(s); const v=getComputedStyle(s).color; s.remove(); return v; };
     const lighten=(c,a)=>{ const [r,g,b]=c.match(/\d+/g).map(Number),
@@ -949,7 +949,7 @@
         let y=r.bottom+8; if(y+h>innerHeight-8) y=Math.max(8, r.top-h-8);
         tip.style.left=x.toFixed(0)+"px"; tip.style.top=y.toFixed(0)+"px";
       };
-      document.querySelectorAll("#changelog .clrelease.has-notes").forEach((a)=>{
+      document.querySelectorAll("#cllist .clrelease.has-notes").forEach((a)=>{
         a.addEventListener("mouseenter",()=>show(a));
         a.addEventListener("mouseleave",hide);
       });
@@ -963,9 +963,30 @@
       const colorFor=(p)=>{ const c=data.colors[p]; if(!c) return hex("--muted");
         const base=hex(c.token); return c.shade ? lighten(base, .26+.2*c.shade) : base; };
       const esc=(v)=>String(v||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;");
-      document.getElementById("changelog").innerHTML = data.changelog.map((r)=>{
+      // Every event here is an instant, and which calendar day it lands on is
+      // the reader's to decide — so rows are bucketed into local days here
+      // rather than at build time. A change point carries `at` only if it was
+      // recorded after the log grew the column; older ones keep the flat day
+      // they were logged under.
+      const localDay=(iso)=>{ const d=new Date(iso), pad=(n)=>String(n).padStart(2,"0");
+        return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
+      const byDay=new Map();
+      const rowAt=(date,plugin)=>{ const k=date+"|"+plugin; let e=byDay.get(k);
+        if(!e) byDay.set(k, e={date, plugin, change:""}); return e; };
+      // oldest first, so a day that gathers two logged days reads in order
+      [...data.changelog].reverse().forEach((r)=>{
+        const e=rowAt(r.at?localDay(r.at):r.date, r.plugin);
+        e.change=[e.change, r.change].filter(Boolean).join(" ");
+        if(r.removed) e.removed=true;
+        if(r.last_release) e.last_release=r.last_release;
+      });
+      (data.releases||[]).forEach((x)=>{ const e=rowAt(localDay(x.published_at), x.plugin);
+        if(!e.release || x.published_at > e.release.published_at) e.release=x; });
+      const rows=[...byDay.values()].sort((a,b)=>
+        b.date.localeCompare(a.date) || b.plugin.localeCompare(a.plugin));
+      document.getElementById("cllist").innerHTML = rows.map((r)=>{
         const col=colorFor(r.plugin);
-        const rels=(r.releases||[]).map((x)=>{
+        const rels=[r.release].filter(Boolean).map((x)=>{
           const notes=x.notes?` data-notes="${esc(x.notes)}" data-tag="${esc(x.tag)}"`:"";
           return `<a class="clrelease${x.notes?" has-notes":""}" href="${x.url}" target="_blank" rel="noopener"${notes}>released ${x.tag} ↗</a>`;
         });

@@ -49,9 +49,16 @@ site's soft-edge graph, which installs nothing.
 plugin's artifact set:
 
 ```text
-date,plugin,skills,rules,hooks,commands,agents,change
-2026-06-12,anchor,6,2,2,0,0,+skill:issue
+date,at,plugin,skills,rules,hooks,commands,agents,change
+2026-06-12,2026-06-12T14:03:51-07:00,anchor,6,2,2,0,0,+skill:issue
 ```
+
+`date` is the committer date as git recorded it, which keys the row and buckets
+the chart; `at` is the same commit's instant, offset intact, and it is what the
+doc site dates the changelog by. The two are separate because `%cs` renders in
+whichever timezone the commit carried — CI commits say UTC, laptop commits say
+their own offset — so a day built from it is nobody's day in particular. Rows
+predating the `at` column carry an empty one and are dated by `date`.
 
 The `change` column names what moved (`+skill:issue`, or a rename as a paired
 `-skill:address-feedback +skill:resolve-feedback`). Replaying every row's `+/-`

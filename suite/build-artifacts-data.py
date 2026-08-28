@@ -68,7 +68,7 @@ def week_buckets(first: str) -> list[date]:
 
 
 def fetch_releases(plugin: str) -> list[dict]:
-    """Published (non-draft) GitHub releases for a plugin: [{date, tag, url, notes}, ...].
+    """Published (non-draft) GitHub releases for a plugin: [{published_at, tag, url, notes}, ...].
     Network/HTTP failure raises — release enrichment is not optional, so a bad
     fetch fails the build loudly rather than silently dropping events. A
     GITHUB_TOKEN in the env (CI) is used for the higher API rate limit."""
@@ -83,7 +83,7 @@ def fetch_releases(plugin: str) -> list[dict]:
     with urllib.request.urlopen(req, timeout=20) as resp:
         data = json.load(resp)
     return [
-        {"date": r["published_at"][:10], "tag": r["tag_name"], "url": r["html_url"],
+        {"tag": r["tag_name"], "url": r["html_url"],
          "published_at": r["published_at"], "notes": (r.get("body") or "").strip()}
         for r in data if not r.get("draft")
     ]
@@ -107,53 +107,57 @@ def build_series(rows: list[dict], plugins: list[str], buckets: list[date]) -> d
     return series
 
 
-def build_changelog(rows: list[dict], plugins: list[str],
-                    releases_by_plugin: dict[str, list[dict]]) -> list[dict]:
-    """One changelog entry per (date, plugin): the day's artifact change tokens
-    plus the latest release published that day (a plugin is often released
-    several times a day; only the latest is shown so the log stays legible). The
-    doc site shows the release first, then what changed. Newest entry first.
+def build_changelog(rows: list[dict],
+                    releases_by_plugin: dict[str, list[dict]]) -> tuple[list[dict], dict]:
+    """One changelog entry per (date, plugin) artifact change point, newest first,
+    plus the set of releases claimed by a retirement. An entry carries the
+    committer instant as `at` where the log recorded one, so the doc site can name
+    the day in the reader's timezone rather than the committer's.
 
     A row retiring a plugin (a `-plugin:` token) carries the last version it
     ever shipped as `last_release`, so the version someone still has installed
     is on the line that retires it. That release is reported there alone — it
-    doesn't also open an entry on its own publish date.
+    doesn't also open an entry on its own publish date, so it's returned here
+    for the release list to skip.
     """
     entries: dict[tuple[str, str], dict] = {}
-
-    def entry(date: str, plugin: str) -> dict:
-        return entries.setdefault((date, plugin),
-            {"date": date, "plugin": plugin, "change": "", "releases": []})
-
     retired: dict[str, dict] = {}
     for r in rows:
-        e = entry(r["date"], r["plugin"])
+        e = entries.setdefault((r["date"], r["plugin"]),
+                               {"date": r["date"], "plugin": r["plugin"]})
         e["change"] = r["change"]
+        if r.get("at"):
+            e["at"] = r["at"]  # rows recorded before the column stay date-only
         if "-plugin:" in r["change"]:
             e["removed"] = True
             retired[r["plugin"]] = e
 
-    final: dict[str, dict] = {}
+    claimed: dict[str, dict] = {}
     for p, e in retired.items():
         last = max(releases_by_plugin.get(p) or [],
                    key=lambda r: r["published_at"], default=None)
         if last:
-            final[p] = last
+            claimed[p] = last
             e["last_release"] = {"tag": last["tag"], "url": last["url"],
                                  "notes": last["notes"]}
 
-    for p in plugins:
-        for rel in releases_by_plugin.get(p, []):
-            if rel is final.get(p):
-                continue
-            entry(rel["date"], p)["releases"].append(rel)
-    for e in entries.values():
-        latest = max(e["releases"], key=lambda r: r["published_at"], default=None)
-        e["releases"] = [{"tag": latest["tag"], "url": latest["url"],
-                          "notes": latest["notes"]}] if latest else []
+    return sorted(entries.values(), key=lambda r: (r["date"], r["plugin"]),
+                  reverse=True), claimed
 
-    return sorted((e for e in entries.values() if e["change"] or e["releases"]),
-                  key=lambda r: (r["date"], r["plugin"]), reverse=True)
+
+def build_releases(plugins: list[str], releases_by_plugin: dict[str, list[dict]],
+                   claimed: dict[str, dict]) -> list[dict]:
+    """Every published release as a bare instant, for the doc site to date in the
+    viewer's own timezone. A release near midnight UTC belongs to a different day
+    depending on where you're reading from, so the calendar day it lands on is the
+    browser's call, not this build's — which is also where a day's several releases
+    get collapsed to the latest one. Releases already reported by a retirement's
+    `last_release` are left out."""
+    return [{"plugin": p, "published_at": rel["published_at"], "tag": rel["tag"],
+             "url": rel["url"], "notes": rel["notes"]}
+            for p in plugins
+            for rel in releases_by_plugin.get(p, [])
+            if rel is not claimed.get(p)]
 
 
 def main() -> int:
@@ -174,8 +178,9 @@ def main() -> int:
     series = build_series(rows, plugins, buckets)
 
     releases_by_plugin = {p: fetch_releases(p) for p in plugins}
-    changelog = build_changelog(rows, plugins, releases_by_plugin)
-    n_releases = sum(len(e["releases"]) + bool(e.get("last_release")) for e in changelog)
+    changelog, claimed = build_changelog(rows, releases_by_plugin)
+    releases = build_releases(plugins, releases_by_plugin, claimed)
+    n_releases = len(releases) + len(claimed)
 
     TARGET.write_text(json.dumps({
         "dates": labels,
@@ -183,6 +188,7 @@ def main() -> int:
         "colors": colors,
         "series": series,
         "changelog": changelog,
+        "releases": releases,
     }, indent=2))
     print(f"wrote {TARGET.relative_to(ROOT)} — {len(plugins)} plugins, "
           f"{len(labels)} weekly buckets, {len(dates)} change points, "

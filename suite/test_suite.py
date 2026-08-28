@@ -95,22 +95,45 @@ class BuildSeries(unittest.TestCase):
 class BuildChangelog(unittest.TestCase):
     ROWS = [{"plugin": "anchor", "date": "2026-07-08", "change": "+skill:x"}]
     RELEASES = {"anchor": [
-        {"date": "2026-07-08", "tag": "v1.0.0", "url": "u1",
+        {"tag": "v1.0.0", "url": "u1",
          "published_at": "2026-07-08T09:00:00Z", "notes": "first"},
-        {"date": "2026-07-08", "tag": "v1.1.0", "url": "u2",
+        {"tag": "v1.1.0", "url": "u2",
          "published_at": "2026-07-08T15:00:00Z", "notes": "second"},
     ]}
 
-    def test_keeps_only_latest_same_day_release(self):
-        cl = artifacts.build_changelog(self.ROWS, ["anchor"], self.RELEASES)
-        # Several releases on one day collapse to the latest by published_at,
-        # carrying that release's notes through to the changelog.
-        self.assertEqual([r["tag"] for r in cl[0]["releases"]], ["v1.1.0"])
-        self.assertEqual(cl[0]["releases"][0]["notes"], "second")
+    def test_releases_keep_their_instants(self):
+        # Every release travels with its published_at, undated and uncollapsed —
+        # the doc site picks the calendar day in the viewer's timezone.
+        _, claimed = artifacts.build_changelog(self.ROWS, self.RELEASES)
+        rels = artifacts.build_releases(["anchor"], self.RELEASES, claimed)
+        self.assertEqual([(r["tag"], r["published_at"]) for r in rels],
+                         [("v1.0.0", "2026-07-08T09:00:00Z"),
+                          ("v1.1.0", "2026-07-08T15:00:00Z")])
 
-    def test_entry_without_release_stays_empty(self):
-        cl = artifacts.build_changelog(self.ROWS, ["anchor"], {})
-        self.assertEqual(cl[0]["releases"], [])
+    def test_retirement_claims_the_last_release(self):
+        rows = self.ROWS + [{"plugin": "anchor", "date": "2026-07-09",
+                             "change": "-plugin:anchor"}]
+        cl, claimed = artifacts.build_changelog(rows, self.RELEASES)
+        self.assertEqual(cl[0]["last_release"]["tag"], "v1.1.0")
+        # reported on the retirement line alone, so it opens no entry of its own
+        rels = artifacts.build_releases(["anchor"], self.RELEASES, claimed)
+        self.assertEqual([r["tag"] for r in rels], ["v1.0.0"])
+
+    def test_instant_rides_along_when_recorded(self):
+        # `at` is what lets the doc site name the day in the reader's timezone;
+        # rows logged before the column existed pass through without one.
+        rows = [{"plugin": "anchor", "date": "2026-07-08", "change": "+skill:x",
+                 "at": "2026-07-08T00:42:06Z"},
+                {"plugin": "anchor", "date": "2026-07-06", "change": "+skill:w"}]
+        cl, _ = artifacts.build_changelog(rows, {})
+        self.assertEqual(cl[0]["at"], "2026-07-08T00:42:06Z")
+        self.assertNotIn("at", cl[1])
+
+    def test_entry_without_release_stays_bare(self):
+        cl, claimed = artifacts.build_changelog(self.ROWS, {})
+        self.assertEqual(claimed, {})
+        self.assertEqual(artifacts.build_releases(["anchor"], {}, claimed), [])
+        self.assertEqual(cl[0]["change"], "+skill:x")
 
 
 if __name__ == "__main__":
