@@ -1,53 +1,54 @@
-date,plugin,skills,rules,hooks,commands,agents,change
-2026-03-15,ClaudeWatch,1,0,1,0,0,+skill:rules +hook:hooks
-2026-04-01,tack,1,0,2,0,0,+skill:tack +hook:capture-urls +hook:hooks
-2026-04-02,tack,1,0,3,0,0,+hook:session-nudge
-2026-04-27,ClaudeWatch,2,0,1,0,0,+skill:help
-2026-04-28,beacon,1,0,1,1,0,+skill:beacon +hook:hooks +command:beacon
-2026-04-29,logbook,1,0,0,1,0,+skill:retro +command:logbook
-2026-04-29,tack,1,0,3,1,0,+command:tack
-2026-05-01,logbook,2,0,0,1,0,+skill:session-id
-2026-05-06,ClaudeWatch,2,0,2,0,0,+hook:cli-freshness
-2026-05-06,beacon,1,0,2,1,0,+hook:cli-freshness
-2026-05-06,logbook,2,0,2,1,0,+hook:cli-freshness +hook:hooks
-2026-05-06,tack,1,0,4,1,0,+hook:cli-freshness
-2026-05-17,logbook,3,0,2,1,0,+skill:note
-2026-05-18,sextant,4,0,0,0,0,+skill:impl-new +skill:impl-select +skill:spec-audit +skill:spec-req
-2026-05-30,moor,0,0,2,1,0,+hook:cli-freshness +hook:hooks +command:moor
-2026-05-31,ClaudeWatch,3,0,2,0,0,+skill:learn
-2026-05-31,anchor,3,0,0,0,0,+skill:commit +skill:prepare-review +skill:preview
-2026-06-01,sextant,5,0,0,0,0,+skill:spec-status +skill:spec-sync -skill:spec-audit
-2026-06-02,anchor,4,2,2,0,0,+skill:address-feedback +rule:rewrite-history-through-anchor +rule:use-forge-clis +hook:emit-rules +hook:hooks
-2026-06-02,moor,0,1,3,1,0,+rule:launch-with-sidecar +hook:emit-rules
-2026-06-09,anchor,5,2,2,0,0,+skill:pipeline +skill:resolve-feedback -skill:address-feedback
-2026-06-11,shipshape,1,0,2,0,0,+skill:plugin-maintenance +hook:enforce-autoupdate +hook:hooks
-2026-06-12,anchor,6,2,2,0,0,+skill:issue
-2026-06-16,beacon,1,0,2,2,0,+command:pause
-2026-06-17,beacon,1,1,3,2,0,+rule:keep-session-labeled +hook:emit-rules
-2026-06-22,beacon,1,1,3,3,0,+command:wrap
-2026-06-23,ClaudeWatch,3,1,3,0,0,+rule:avoid-compound-commands +hook:emit-rules
-2026-06-23,anchor,5,2,2,0,0,-skill:preview
-2026-06-30,ClaudeWatch,2,1,3,0,0,-skill:help
-2026-06-30,anchor,5,3,2,0,0,+rule:omit-attribution-trailers
-2026-06-30,beacon,1,1,3,4,0,+command:done
-2026-06-30,tack,1,0,4,0,0,-command:tack
-2026-07-02,moor,0,1,3,0,0,-command:moor
-2026-07-07,beacon,1,1,3,5,0,+command:release +command:retro -command:wrap
-2026-07-09,logbook,3,0,3,1,0,+hook:orphan-notes
-2026-07-11,anchor,6,3,2,0,0,+skill:issues
-2026-07-17,anchor,7,3,2,0,0,+skill:merge
-2026-07-28,anchor,8,3,2,0,0,+skill:release
-2026-07-31,beacon,1,1,3,2,0,+command:session-mode -command:done -command:pause -command:release -command:retro
-2026-08-06,cleat,0,0,2,0,0,+hook:hooks +hook:prefilter
-2026-08-11,sextant,3,0,0,0,0,-skill:impl-new -skill:impl-select
-2026-08-15,anchor,9,3,2,0,0,+skill:review
-2026-08-15,shipshape,1,0,3,0,0,+hook:claude-code-version
-2026-08-15,tack,3,0,5,0,0,+skill:end +skill:start +hook:landing-nudge
-2026-08-16,anchor,9,3,3,1,0,+hook:check-cli-freshness +command:anchor
-2026-08-19,shipshape,2,0,3,0,0,+skill:claude-code-version
-2026-08-20,ClaudeWatch,2,1,2,0,0,-hook:cli-freshness
-2026-08-21,beacon,0,1,3,2,0,-skill:beacon +command:install-beacon +command:pause -command:beacon -command:session-mode
-2026-08-21,moor,0,1,3,1,0,+command:install-moor
-2026-08-22,anchor,9,3,2,0,0,-hook:check-cli-freshness -command:anchor
-2026-08-24,logbook,0,0,0,0,0,-plugin:logbook
-2026-08-24,moor,0,0,0,0,0,-plugin:moor
+date,at,plugin,skills,rules,hooks,commands,agents,change
+2026-03-15,,ClaudeWatch,1,0,1,0,0,+skill:rules +hook:hooks
+2026-04-01,,tack,1,0,2,0,0,+skill:tack +hook:capture-urls +hook:hooks
+2026-04-02,,tack,1,0,3,0,0,+hook:session-nudge
+2026-04-27,,ClaudeWatch,2,0,1,0,0,+skill:help
+2026-04-28,,beacon,1,0,1,1,0,+skill:beacon +hook:hooks +command:beacon
+2026-04-29,,logbook,1,0,0,1,0,+skill:retro +command:logbook
+2026-04-29,,tack,1,0,3,1,0,+command:tack
+2026-05-01,,logbook,2,0,0,1,0,+skill:session-id
+2026-05-06,,ClaudeWatch,2,0,2,0,0,+hook:cli-freshness
+2026-05-06,,beacon,1,0,2,1,0,+hook:cli-freshness
+2026-05-06,,logbook,2,0,2,1,0,+hook:cli-freshness +hook:hooks
+2026-05-06,,tack,1,0,4,1,0,+hook:cli-freshness
+2026-05-17,,logbook,3,0,2,1,0,+skill:note
+2026-05-18,,sextant,4,0,0,0,0,+skill:impl-new +skill:impl-select +skill:spec-audit +skill:spec-req
+2026-05-30,,moor,0,0,2,1,0,+hook:cli-freshness +hook:hooks +command:moor
+2026-05-31,,ClaudeWatch,3,0,2,0,0,+skill:learn
+2026-05-31,,anchor,3,0,0,0,0,+skill:commit +skill:prepare-review +skill:preview
+2026-06-01,,sextant,5,0,0,0,0,+skill:spec-status +skill:spec-sync -skill:spec-audit
+2026-06-02,,anchor,4,2,2,0,0,+skill:address-feedback +rule:rewrite-history-through-anchor +rule:use-forge-clis +hook:emit-rules +hook:hooks
+2026-06-02,,moor,0,1,3,1,0,+rule:launch-with-sidecar +hook:emit-rules
+2026-06-09,,anchor,5,2,2,0,0,+skill:pipeline +skill:resolve-feedback -skill:address-feedback
+2026-06-11,,shipshape,1,0,2,0,0,+skill:plugin-maintenance +hook:enforce-autoupdate +hook:hooks
+2026-06-12,,anchor,6,2,2,0,0,+skill:issue
+2026-06-16,,beacon,1,0,2,2,0,+command:pause
+2026-06-17,,beacon,1,1,3,2,0,+rule:keep-session-labeled +hook:emit-rules
+2026-06-22,,beacon,1,1,3,3,0,+command:wrap
+2026-06-23,,ClaudeWatch,3,1,3,0,0,+rule:avoid-compound-commands +hook:emit-rules
+2026-06-23,,anchor,5,2,2,0,0,-skill:preview
+2026-06-30,,ClaudeWatch,2,1,3,0,0,-skill:help
+2026-06-30,,anchor,5,3,2,0,0,+rule:omit-attribution-trailers
+2026-06-30,,beacon,1,1,3,4,0,+command:done
+2026-06-30,,tack,1,0,4,0,0,-command:tack
+2026-07-02,,moor,0,1,3,0,0,-command:moor
+2026-07-07,,beacon,1,1,3,5,0,+command:release +command:retro -command:wrap
+2026-07-09,,logbook,3,0,3,1,0,+hook:orphan-notes
+2026-07-11,,anchor,6,3,2,0,0,+skill:issues
+2026-07-17,,anchor,7,3,2,0,0,+skill:merge
+2026-07-28,,anchor,8,3,2,0,0,+skill:release
+2026-07-31,,beacon,1,1,3,2,0,+command:session-mode -command:done -command:pause -command:release -command:retro
+2026-08-06,,cleat,0,0,2,0,0,+hook:hooks +hook:prefilter
+2026-08-11,,sextant,3,0,0,0,0,-skill:impl-new -skill:impl-select
+2026-08-15,,anchor,9,3,2,0,0,+skill:review
+2026-08-15,,shipshape,1,0,3,0,0,+hook:claude-code-version
+2026-08-15,,tack,3,0,5,0,0,+skill:end +skill:start +hook:landing-nudge
+2026-08-16,,anchor,9,3,3,1,0,+hook:check-cli-freshness +command:anchor
+2026-08-19,,shipshape,2,0,3,0,0,+skill:claude-code-version
+2026-08-20,,ClaudeWatch,2,1,2,0,0,-hook:cli-freshness
+2026-08-21,,beacon,0,1,3,2,0,-skill:beacon +command:install-beacon +command:pause -command:beacon -command:session-mode
+2026-08-21,,moor,0,1,3,1,0,+command:install-moor
+2026-08-22,,anchor,9,3,2,0,0,-hook:check-cli-freshness -command:anchor
+2026-08-24,,logbook,0,0,0,0,0,-plugin:logbook
+2026-08-24,,moor,0,0,0,0,0,-plugin:moor
+2026-08-28,2026-08-28T23:51:34Z,tack,2,0,5,1,0,-skill:tack +command:install-tack
