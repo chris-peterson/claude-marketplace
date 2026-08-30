@@ -205,6 +205,8 @@
   .ship .cmdsep{align-self:center;color:var(--muted);font-family:var(--mono);font-size:12px;margin:0 2px}
   .ship .cli{align-self:center;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
     color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 32%,transparent);border-radius:5px;padding:2px 7px}
+  a.cli:hover{text-decoration:none;border-color:color-mix(in srgb,var(--ac) 64%,transparent);
+    background:color-mix(in srgb,var(--ac) 9%,transparent)}
   .ship .ver{align-self:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--muted);
     border:1px solid var(--line-2);border-radius:5px;padding:2px 7px;font-variant-numeric:tabular-nums}
   /* whole-card artifact expander: a chevron at the far right of the header
@@ -693,13 +695,17 @@
     const cmd=`claude plugin install ${slug}@chris-peterson`;
     const comps=p.components && compSummary(p.components);
     // The title — favicon + name as one link — is the card's primary CTA, out to
-    // the plugin's own doc site. The anchor icon copies this card's `#/<slug>`
-    // link (which scrolls to + highlights it); the source icon goes to the repo;
-    // the far-right chevron (or a click on the card body) reveals the artifacts.
+    // the plugin's own doc site. The cli mark goes to that site's command
+    // reference where there is one, since a reader who notices the mark is asking
+    // what the commands are. The anchor icon copies this card's `#/<slug>` link
+    // (which scrolls to + highlights it); the source icon goes to the repo; the
+    // far-right chevron (or a click on the card body) reveals the artifacts.
     return `<article class="ship" data-slug="${slug}" style="--ac:${PLUGIN_AC[slug]}">`+
       `<div class="head">`+
       `<a class="pnamelink" href="${docsUrl(slug)}"><img src="https://chris-peterson.github.io/${slug}/favicon.svg" alt=""><h3>${slug}</h3></a>`+
-      (p.cli?`<span class="cli">cli</span>`:``)+
+      (p.cli?(p.reference
+        ? `<a class="cli" href="${docsUrl(slug)}cli">cli</a>`
+        : `<span class="cli">cli</span>`):``)+
       (p.version?`<span class="ver">v${p.version}</span>`:``)+
       `<a class="iconbtn anchorlink" href="#/${slug}" aria-label="Copy link to the ${slug} card">${LINK_ICO}</a>`+
       `<a class="iconbtn srclink" href="${srcUrl(slug)}" target="_blank" rel="noopener" aria-label="${slug} source on GitHub">${GH_ICO}</a>`+

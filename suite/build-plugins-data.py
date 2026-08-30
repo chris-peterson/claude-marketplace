@@ -4,12 +4,18 @@ plugin.yml (the `suite:` block). Plugin order follows marketplace.json. Every
 plugin must ship a plugin.yml with a suite: block; a missing one fails the build
 (no fallback). docs/plugins.js is ephemeral — regenerated each deploy, not committed.
 
-Two fields are merged in beyond the suite: block, both kept fresh by the
+Three fields are merged in beyond the suite: block, all kept fresh by the
 on-release rebuild:
   - version    — authoritative in plugin.yml; the catalog card shows it as a badge.
   - components — the current named skills/rules/hooks/commands/agents, derived by
                  replaying suite/artifacts.csv (never declared, per the schema's
                  "Not in plugin.yml" rule); the card's expander lists them.
+  - reference  — whether the plugin's doc site publishes a command reference at
+                 /cli, which a top-level cli: block is what decides: shipyard
+                 records the CLI's grammar from that block and renders the page.
+                 `suite: cli:` on its own only says a CLI ships, so the card links
+                 its mark to the reference where there is one and leaves it a
+                 plain mark where there isn't.
 """
 import csv
 import json
@@ -43,6 +49,8 @@ def main() -> int:
         entry = spec["suite"]
         if "version" in spec:
             entry["version"] = str(spec["version"])
+        if "cli" in spec:
+            entry["reference"] = True
         if name in components:
             entry["components"] = components[name]
         plugins[name] = entry
