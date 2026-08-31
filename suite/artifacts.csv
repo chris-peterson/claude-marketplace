@@ -52,3 +52,4 @@ date,at,plugin,skills,rules,hooks,commands,agents,change
 2026-08-24,,logbook,0,0,0,0,0,-plugin:logbook
 2026-08-24,,moor,0,0,0,0,0,-plugin:moor
 2026-08-28,2026-08-28T23:51:34Z,tack,2,0,5,1,0,-skill:tack +command:install-tack
+2026-08-31,2026-08-31T14:19:34-07:00,anchor,9,3,2,0,0,+skill:backlog -skill:issues
