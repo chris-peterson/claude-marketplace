@@ -1,5 +1,8 @@
 # `plugin.yml` schema
 
+> How a plugin describes *itself*. How it talks to its *siblings* is
+> [`authoring/plugin-contract.md`](../authoring/plugin-contract.md).
+
 Each bridge.ai plugin repo carries a `plugin.yml` at its root — the **single
 source of truth** for that plugin's descriptor. It projects into three targets:
 

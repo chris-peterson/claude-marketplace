@@ -23,6 +23,19 @@ page that showcases the suite.
   **Edit `plugins.yml`, never `marketplace.json`** — CI regenerates it and would
   overwrite a hand edit. Everything *about* a plugin (description, author,
   category, homepage, relevance) comes from that plugin's `plugin.yml`.
+  `plugins.yml` also declares the two things only the marketplace knows: the
+  `artifacts:` log the growth view plots, and the catalog's `groups:` — each
+  group's order, accent token, and label, plus the plugins it has `retired:`,
+  which have no roster entry left to read from.
+
+## Plugin authoring (`authoring/`)
+
+Contracts a plugin repo has to hold up, as opposed to the tooling that reads
+them. [`authoring/plugin-contract.md`](authoring/plugin-contract.md) is how one
+plugin tells another that something happened: a routing key on stdout, matched
+by the sibling's `PostToolUse` hook, with no dispatcher between them. Its key
+table is the suite's only shared record of who announces what, and a key belongs
+in it once both sides agree, not once it first fires.
 
 ## Suite toolkit (`suite/`)
 
@@ -32,10 +45,17 @@ canonical descriptor (see `suite/plugin.schema.md`). [`suite/README.md`](suite/R
 is the toolkit reference, including how to release a plugin and set up its
 dispatch token. The scripts:
 
-- `build-plugins-data.py` — per-plugin doc site content from each `plugin.yml` → `docs/plugins.js`.
 - `record-artifacts.py` — append a change-point row to `suite/artifacts.csv` (the committed rolling log) when a plugin's artifact set changes. **CI writes this log, not you**: it reads each sibling's checked-out branch, so a local run records unmerged work as shipped — which is why `just build` omits it. `seed-artifacts-history.py` is the one-time bootstrap from each repo's git history.
-- `build-artifacts-data.py` — project `suite/artifacts.csv` into the growth view's series + changelog → `docs/artifacts.json`.
-- `check-coverage.py` — fails the build if a `marketplace.json` plugin isn't placed in a doc site `GROUPS` slug list (or vice versa). Runs first in CI and in `just build`.
+- `build-specs-data.py` — project each sibling's `SPEC.md` into the spec browser's tree → `docs/specs.json`.
+- `sync.sh` — clone or fast-forward the roster plus the plugins the groups have retired (`shipyard roster --include-retired`), since the growth view reads a retired plugin's history out of its checkout too.
+
+**The doc site's own data files come from shipyard**, which reads this repo as an
+*aggregator* (`plugins.yml`) and the siblings as its spokes: `shipyard
+gen-plugins-js` writes `docs/plugins.js` (the catalog's groups and per-plugin
+copy) and `shipyard gen-artifacts-json` writes `docs/artifacts.json` (the growth
+view's series, changelog, and releases). A change to either projection is a
+change in that repo. `just build` runs both, so a local build needs a `shipyard`
+new enough to have them.
 
 ## Structure
 
@@ -61,13 +81,14 @@ dispatch token. The scripts:
 ## Conventions
 
 - **Per-plugin copy has one source**: each plugin's `plugin.yml` (the `suite:`
-  block). `suite/build-plugins-data.py` generates the `PLUGINS` object into
+  block). `shipyard gen-plugins-js` generates the `PLUGINS` object into
   `docs/plugins.js`, which `index.html` loads — edit gloss/what/commands in the
   plugin's `plugin.yml`, never in `index.html` or `plugins.js`.
-- **Adding a plugin takes two edits**: add its name to `plugins.yml`, and add
-  its slug to a `GROUPS` group in `docs/index.html` — the catalog renders only
-  grouped slugs, so a plugin on the roster alone has data but no card.
-  `suite/check-coverage.py` enforces this (CI + `just build`).
+- **Adding a plugin takes one edit here**: its name on `plugins.yml`'s roster,
+  in the position the catalog should list it. Which group its card lands in is
+  the plugin's own `plugin.yml` (`suite: group:`), naming one of the `groups:`
+  keys this repo declares — shipyard refuses a group name no entry declares, so
+  a plugin can't reach the catalog ungrouped.
 - **Suggestions and hard dependencies live in the plugin, not here.** A plugin's
   `marketplace.relevance:` block asks Claude Code to suggest it to matching
   sessions; a top-level `dependencies:` list names plugins Claude Code installs
