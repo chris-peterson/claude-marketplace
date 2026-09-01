@@ -12,10 +12,39 @@ owner: chris-peterson
 source: https://github.com/{owner}/{name}.git
 
 plugins:
-  - anchor
-  - beacon
   - ClaudeWatch
-  - cleat
-  - sextant
   - shipshape
   - tack
+  - beacon
+  - anchor
+  - sextant
+  - cleat
+
+# The rolling log of each plugin's named artifacts, which the growth view plots.
+artifacts: suite/artifacts.csv
+
+# The catalog's functional areas, in display order. Which group a plugin is in
+# is declared by the plugin, not here: its plugin.yml says `suite: group:`, and
+# shipyard refuses a group name no entry below declares. `accent` names the CSS
+# custom property the group's cards and chart bands take their color from.
+#
+# `retired:` is the one membership this file declares, because its subjects have
+# no roster entry left to read it from. A plugin that has left the marketplace
+# still shipped what it shipped, so it keeps the group and the slot it held.
+groups:
+  - key: safety
+    accent: --guard
+    tag: Stay safe
+  - key: bearings
+    accent: --orient
+    tag: Keep oriented
+  - key: waypoints
+    accent: --ship
+    tag: Reach your waypoints
+    retired:
+      - moor
+  - key: record
+    accent: --build
+    tag: Write it down
+    retired:
+      - logbook

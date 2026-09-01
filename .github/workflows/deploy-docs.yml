@@ -42,19 +42,17 @@ jobs:
 
       - name: Generate doc site data (ephemeral)
         run: |
-          python3 suite/build-plugins-data.py
+          shipyard gen-plugins-js
           python3 suite/build-specs-data.py
-
-      - name: Check every plugin is grouped and renderable on the doc site
-        run: python3 suite/check-coverage.py
 
       - name: Record artifact changes into the rolling log
         run: python3 suite/record-artifacts.py
 
+      # Runs after the recorder, so the growth view plots the change point this
+      # run just logged rather than the one before it. Reads the spokes' tags and
+      # changelogs off disk, which is why the sync step above is its only input.
       - name: Project the growth-view data (ephemeral)
-        run: python3 suite/build-artifacts-data.py
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: shipyard gen-artifacts-json
 
       - name: Commit the generated manifest and artifact log if they changed
         run: |

@@ -393,28 +393,29 @@
   .changelog .clrow:nth-child(even){background:var(--tint-soft)}
   .changelog .clrelease{color:var(--gold);font-weight:600;text-decoration:none;white-space:nowrap}
   .changelog .clrelease:hover{text-decoration:underline;text-underline-offset:2px}
-  /* a release with notes gets a dotted underline as a "hover for notes" cue */
+  /* a release with a summary gets a dotted underline as a "hover me" cue */
   .changelog .clrelease.has-notes{text-decoration:underline dotted;text-underline-offset:3px;text-decoration-color:color-mix(in srgb,var(--gold) 55%,transparent)}
-  .clnotes-tip{position:fixed;z-index:60;max-width:min(440px,86vw);max-height:300px;overflow-y:auto;
+  /* width:max-content lets a short teaser be narrow; the max-height is a guard
+     against the release that runs long, not the shape the card is designed for */
+  .clnotes-tip{position:fixed;z-index:60;width:max-content;max-width:min(420px,86vw);
+    max-height:min(70vh,520px);overflow-y:auto;
     background:var(--sea);border:1px solid var(--line-h);border-radius:11px;padding:12px 15px;
     box-shadow:var(--shadow-pop);opacity:0;visibility:hidden;transition:opacity .12s;
     scrollbar-width:thin;scrollbar-color:var(--line-h) transparent}
   .clnotes-tip.show{opacity:1;visibility:visible}
   .clnotes-tip .cn-tag{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
     text-transform:uppercase;color:var(--gold);margin-bottom:8px}
-  .clnotes-tip .cn-body{font-size:12.5px;line-height:1.55;color:var(--fg);word-break:break-word}
-  /* rendered-markdown children of a release-note body */
-  .clnotes-tip .cn-body .md-h{font-weight:600;color:var(--fg);margin:9px 0 3px}
-  .clnotes-tip .cn-body .md-h:first-child{margin-top:0}
-  .clnotes-tip .cn-body .md-p{margin:4px 0}
-  .clnotes-tip .cn-body .md-p:first-child{margin-top:0}
-  .clnotes-tip .cn-body ul{margin:4px 0;padding-left:18px}
-  .clnotes-tip .cn-body li{margin:2px 0}
-  .clnotes-tip .cn-body code{font-family:var(--mono);font-size:11px;
-    background:color-mix(in srgb,var(--line-h) 45%,transparent);padding:1px 5px;border-radius:5px}
-  .clnotes-tip .cn-body a{color:var(--cyan);text-decoration:underline;text-underline-offset:2px}
-  .clnotes-tip .cn-body strong{color:var(--fg);font-weight:600}
-  .clnotes-tip .cn-body em{font-style:italic}
+  .clnotes-tip .cn-alert{font-size:12.5px;line-height:1.45;font-weight:600;color:var(--fg);
+    border-left:2px solid var(--gold);padding-left:9px;margin-bottom:9px}
+  .clnotes-tip .cn-sec{font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);margin:9px 0 4px}
+  .clnotes-tip .cn-sec:first-child{margin-top:0}
+  .clnotes-tip ul{margin:0;padding-left:15px;font-size:12.5px;line-height:1.5;color:var(--fg)}
+  .clnotes-tip li{margin:3px 0}
+  .clnotes-tip li.cn-more{list-style:none;margin-left:-15px;color:var(--muted);font-style:italic}
+  .clnotes-tip .cn-sec.cn-more{text-transform:none;letter-spacing:0;font-style:italic}
+  .clnotes-tip .cn-full{display:block;margin-top:11px;padding-top:9px;border-top:1px solid var(--line-2);
+    font-size:11.5px;color:var(--cyan)}
   /* unified hover tooltip — radar nodes, the artifact-type donut, and the
      catalog's artifact chips all render into this one styled, cursor-tracking
      card (accent dot + title + mono sub + body/rows). */
@@ -663,20 +664,21 @@
   addEventListener("hashchange", route);
 
   // ---- catalog: render grouped cards from PLUGINS (single source — no HTML dupe) ----
-  const GROUPS=[
-    {key:"safety",    ac:"--guard",  tag:"Stay safe",            slugs:["ClaudeWatch","shipshape"]},
-    {key:"bearings",  ac:"--orient", tag:"Keep oriented",        slugs:["tack","beacon"]},
-    {key:"waypoints", ac:"--ship",   tag:"Reach your waypoints", slugs:["anchor"], retired:["moor"]},
-    {key:"record",    ac:"--build",  tag:"Write it down",        slugs:["sextant","cleat"], retired:["logbook"]}
-  ];
-  // each plugin's accent = its category color, lightened a step per same-category
+  // GROUPS (plugins.js) carries each group's order, accent, and label; which
+  // group a card is in is the plugin's own `suite.group`, so membership has one
+  // home. ACCENT resolves a group key to its custom property.
+  const ACCENT={}; GROUPS.forEach(g=> ACCENT[g.key]=g.accent);
+  const MEMBERS={}; GROUPS.forEach(g=> MEMBERS[g.key]=[]);
+  Object.keys(PLUGINS).forEach((slug)=>{ const k=PLUGINS[slug].group;
+    if(MEMBERS[k]) MEMBERS[k].push(slug); });
+  // each plugin's accent = its group color, lightened a step per same-group
   // sibling so the two cards in a group are distinct — matching the growth chart's
   // brightness banding (.26 + .2·shade). shade 0 stays the base token.
   const accentVar=(token,shade)=> shade
     ? `color-mix(in srgb, var(${token}) ${Math.round((1-(.26+.2*shade))*100)}%, white)`
     : `var(${token})`;
   const PLUGIN_AC={};
-  GROUPS.forEach(g=> g.slugs.forEach((slug,idx)=>{ PLUGIN_AC[slug]=accentVar(g.ac,idx); }));
+  GROUPS.forEach(g=> MEMBERS[g.key].forEach((slug,idx)=>{ PLUGIN_AC[slug]=accentVar(g.accent,idx); }));
   // ---- artifact inventory (from plugins.js `components`, derived from suite/artifacts.csv) ----
   const COMP_ORDER=["skills","rules","hooks","commands","agents"];
   const compSummary=(c)=> COMP_ORDER.filter(k=>c[k]&&c[k].length)
@@ -716,9 +718,9 @@
       `<div class="pacts"><button class="cmdcopy" data-cmd="${cmd}"><span class="cc-cmd"><span class="cc-nb">claude plugin install</span> <span class="cc-nb">${slug}@chris-peterson</span></span><span class="cc-ico">${COPY_ICO}</span></button></div></article>`;
   };
   document.getElementById("catalog").innerHTML = GROUPS.map(g=>
-    `<div class="fgroup reveal" id="g-${g.key}" style="--ac:var(${g.ac})">`+
+    `<div class="fgroup reveal" id="g-${g.key}" style="--ac:var(${g.accent})">`+
       `<div class="ghead"><a class="gtag" href="#g-${g.key}">${g.tag}</a></div>`+
-      `<div class="fleet${g.slugs.length===1?' solo':''}">${g.slugs.map(catCard).join("")}</div></div>`
+      `<div class="fleet${MEMBERS[g.key].length===1?' solo':''}">${MEMBERS[g.key].map(catCard).join("")}</div></div>`
   ).join("");
 
   // ---- card expander: the header chevron (or a click on the card body) toggles
@@ -755,7 +757,7 @@
   // ---- composition: artifact-type donut + interop radar, both from PLUGINS ----
   (function(){
     // shared: plugin order (category order) + a CSS-color resolver (var()/color-mix → rgb)
-    const order=GROUPS.flatMap((g)=>g.slugs);
+    const order=GROUPS.flatMap((g)=>MEMBERS[g.key]);
     const resolve=(c)=>{ const s=document.createElement("span"); s.style.cssText="color:"+c+";display:none";
       document.body.appendChild(s); const v=getComputedStyle(s).color; s.remove(); return v; };
     const pcolor={};
@@ -915,40 +917,40 @@
     const lighten=(c,a)=>{ const [r,g,b]=c.match(/\d+/g).map(Number),
       m=(x)=>Math.round(x+(255-x)*a); return `rgb(${m(r)},${m(g)},${m(b)})`; };
     const whenReady=(cb)=> window.Chart ? cb() : setTimeout(()=>whenReady(cb),50);
-    // minimal markdown → HTML for the release-note popover: headings, bullet
-    // lists, bold/italic, inline code, and links. The body is HTML-escaped first,
-    // so a release note can render but can't inject markup.
-    function renderMD(src){
-      const esc=(s)=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-      const inline=(s)=> esc(s)
-        .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,(m,t,u)=>`<a href="${u}" target="_blank" rel="noopener">${t}</a>`)
-        .replace(/`([^`]+)`/g,"<code>$1</code>")
-        .replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>")
-        .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g,"$1<em>$2</em>");
-      const out=[]; let list=null;
-      const flush=()=>{ if(list){ out.push("<ul>"+list.join("")+"</ul>"); list=null; } };
-      (src||"").replace(/\r\n/g,"\n").split("\n").forEach((ln)=>{
-        const h=ln.match(/^(#{1,6})\s+(.+)$/), li=ln.match(/^\s*[-*+]\s+(.+)$/);
-        if(h){ flush(); out.push(`<div class="md-h">${inline(h[2])}</div>`); }
-        else if(li){ (list=list||[]).push(`<li>${inline(li[1])}</li>`); }
-        else if(!ln.trim()){ flush(); }
-        else { flush(); out.push(`<div class="md-p">${inline(ln)}</div>`); }
+    // A release's hover card shows the teaser the build extracted from the notes
+    // — the alert a release leads with, then each section's heading and the lead
+    // of its first few bullets. The full body is a document, and the link the
+    // card hangs off goes to the release page that renders it properly. Every
+    // field is HTML-escaped, so a release note can't inject markup.
+    function renderSummary(sum, url){
+      const esc=(s)=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      const out=[];
+      if(sum.alert) out.push(`<div class="cn-alert">${esc(sum.alert)}</div>`);
+      (sum.buckets||[]).forEach((s)=>{
+        if(s.title) out.push(`<div class="cn-sec">${esc(s.title)}</div>`);
+        const items=(s.items||[]).map((i)=>`<li>${esc(i)}</li>`);
+        if(s.more) items.push(`<li class="cn-more">+${s.more} more</li>`);
+        out.push(`<ul>${items.join("")}</ul>`);
       });
-      flush(); return out.join("");
+      if(sum.more) out.push(`<div class="cn-sec cn-more">+${sum.more} more section${sum.more>1?"s":""}</div>`);
+      out.push(`<a class="cn-full" href="${url}" target="_blank" rel="noopener">Read the full notes ↗</a>`);
+      return out.join("");
     }
-    // release-notes hover: a fixed popover (the changelog list itself is a
-    // scroll-clipped box, so the tip lives on <body>) reveals the GitHub release
-    // body. It stays open while the pointer is over the link OR the popover, so
-    // long notes can be scrolled. Placed below the link, or above if it'd spill.
-    function wireReleaseNotes(){
+    // release-summary hover: a fixed popover (the changelog list itself is a
+    // scroll-clipped box, so the tip lives on <body>). It stays open while the
+    // pointer is over the link OR the popover, so the footer link is reachable.
+    // Placed below the link, or above if it'd spill.
+    function wireReleaseNotes(summaries){
       let tip=document.querySelector(".clnotes-tip");
       if(!tip){ tip=document.createElement("div"); tip.className="clnotes-tip"; document.body.appendChild(tip); }
       let hideT=null;
       const hide=()=>{ hideT=setTimeout(()=>tip.classList.remove("show"),160); };
       const show=(a)=>{ clearTimeout(hideT);
+        const sum=summaries.get(a.dataset.rel);
+        if(!sum) return;
         tip.innerHTML=`<span class="cn-tag"></span><div class="cn-body"></div>`;
         tip.querySelector(".cn-tag").textContent=`${a.dataset.tag} release notes`;
-        tip.querySelector(".cn-body").innerHTML=renderMD(a.dataset.notes);
+        tip.querySelector(".cn-body").innerHTML=renderSummary(sum, a.href);
         tip.classList.add("show"); tip.style.left="0px"; tip.style.top="0px";
         const r=a.getBoundingClientRect(), w=tip.offsetWidth, h=tip.offsetHeight;
         let x=Math.max(8, Math.min(r.left, innerWidth-w-8));
@@ -965,9 +967,11 @@
     let growthChart=null, growthData=null;
     function build(data){
       growthData=data;
-      // category color, lightened a step per same-category plugin so they stay distinct
+      // group color, lightened a step per same-group plugin so they stay distinct.
+      // The group rides in artifacts.json rather than being read from PLUGINS: a
+      // retired plugin still has a band to draw and no catalog card to read.
       const colorFor=(p)=>{ const c=data.colors[p]; if(!c) return hex("--muted");
-        const base=hex(c.token); return c.shade ? lighten(base, .26+.2*c.shade) : base; };
+        const base=hex(ACCENT[c.group]); return c.shade ? lighten(base, .26+.2*c.shade) : base; };
       const esc=(v)=>String(v||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;");
       // Every event here is an instant, and which calendar day it lands on is
       // the reader's to decide — so rows are bucketed into local days here
@@ -990,25 +994,31 @@
         if(!e.release || x.published_at > e.release.published_at) e.release=x; });
       const rows=[...byDay.values()].sort((a,b)=>
         b.date.localeCompare(a.date) || b.plugin.localeCompare(a.plugin));
+      // Summaries ride a `plugin|tag` key rather than a data attribute — a
+      // teaser is structured, and stringifying it into markup only to parse it
+      // back on hover is a round trip the Map skips.
+      const summaries=new Map();
+      const relKey=(plugin,x)=>`${plugin}|${x.tag}`;
+      const hasSummary=(x)=> !!(x.summary && (x.summary.alert || (x.summary.buckets||[]).length));
+      const tipAttrs=(plugin,x)=>{ if(!hasSummary(x)) return "";
+        summaries.set(relKey(plugin,x), x.summary);
+        return ` data-rel="${esc(relKey(plugin,x))}" data-tag="${esc(x.tag)}"`; };
       document.getElementById("cllist").innerHTML = rows.map((r)=>{
         const col=colorFor(r.plugin);
-        const rels=[r.release].filter(Boolean).map((x)=>{
-          const notes=x.notes?` data-notes="${esc(x.notes)}" data-tag="${esc(x.tag)}"`:"";
-          return `<a class="clrelease${x.notes?" has-notes":""}" href="${x.url}" target="_blank" rel="noopener"${notes}>released ${x.tag} ↗</a>`;
-        });
+        const rels=[r.release].filter(Boolean).map((x)=>
+          `<a class="clrelease${hasSummary(x)?" has-notes":""}" href="${x.url}" target="_blank" rel="noopener"${tipAttrs(r.plugin,x)}>released ${x.tag} ↗</a>`);
         let chg="";
         if(r.change==="init") chg=`<span class="init">created</span>`;
         // a retirement reports the last version the plugin shipped on the same
         // line, since that's the one anyone still has installed
         else if(r.removed){ const lr=r.last_release;
-          const notes=lr&&lr.notes?` data-notes="${esc(lr.notes)}" data-tag="${esc(lr.tag)}"`:"";
-          const tail=lr?` (last release: <a class="clrelease${lr.notes?" has-notes":""}" href="${lr.url}" target="_blank" rel="noopener"${notes}>${esc(lr.tag)} ↗</a>)`:"";
+          const tail=lr?` (last release: <a class="clrelease${hasSummary(lr)?" has-notes":""}" href="${lr.url}" target="_blank" rel="noopener"${tipAttrs(r.plugin,lr)}>${esc(lr.tag)} ↗</a>)`:"";
           chg=`<span class="rem">plugin:removed</span>${tail}`; }
         else if(r.change) chg=r.change.split(" ").map((t)=> t[0]==="+"?`<span class="add">${t}</span>`:`<span class="rem">${t}</span>`).join(" ");
         const inner=[...rels,chg].filter(Boolean).join(`<span class="clsep"> · </span>`);
         return `<div class="clrow${rels.length?" release":""}"><span class="cldate">${r.date}</span><span class="clplug" style="color:${col}">${r.plugin}</span><span class="clchange">${inner}</span></div>`;
       }).join("");
-      wireReleaseNotes();
+      wireReleaseNotes(summaries);
       const datasets = data.plugins.map((p)=>({label:p, data:data.series[p],
         backgroundColor:colorFor(p), stack:"suite", borderWidth:0, maxBarThickness:34}));
       if(growthChart) growthChart.destroy();
