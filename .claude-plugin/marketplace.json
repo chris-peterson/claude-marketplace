@@ -7,32 +7,6 @@
   },
   "plugins": [
     {
-      "name": "anchor",
-      "description": "Consistency across the code-change lifecycle: issue, change request, review, release.",
-      "author": {
-        "name": "chris-peterson"
-      },
-      "source": {
-        "source": "url",
-        "url": "https://github.com/chris-peterson/anchor.git"
-      },
-      "category": "development",
-      "homepage": "https://chris-peterson.github.io/anchor/#/"
-    },
-    {
-      "name": "beacon",
-      "description": "At-a-glance awareness across concurrent Claude Code sessions — a terminal-agnostic sessions view plus iTerm2 per-pane painting.",
-      "author": {
-        "name": "chris-peterson"
-      },
-      "source": {
-        "source": "url",
-        "url": "https://github.com/chris-peterson/beacon.git"
-      },
-      "category": "development",
-      "homepage": "https://chris-peterson.github.io/beacon/#/"
-    },
-    {
       "name": "ClaudeWatch",
       "description": "PreToolUse hook that screens shell commands and the code Claude writes to disk for safety, via 'claude-watchdog'",
       "author": {
@@ -44,45 +18,6 @@
       },
       "category": "security",
       "homepage": "https://chris-peterson.github.io/ClaudeWatch/#/"
-    },
-    {
-      "name": "cleat",
-      "description": "Keep a repo's agent instructions in one AGENTS.md that every tool reads, with CLAUDE.md reduced to a pointer at it.",
-      "author": {
-        "name": "chris-peterson"
-      },
-      "source": {
-        "source": "url",
-        "url": "https://github.com/chris-peterson/cleat.git"
-      },
-      "category": "development",
-      "homepage": "https://chris-peterson.github.io/cleat/#/",
-      "relevance": {
-        "topic": "agent instructions",
-        "signals": {
-          "filesRead": [
-            "**/.cursorrules",
-            "**/.cursor/rules/**",
-            "**/.github/copilot-instructions.md",
-            "**/.windsurfrules",
-            "**/GEMINI.md",
-            "**/AGENTS.md"
-          ]
-        }
-      }
-    },
-    {
-      "name": "sextant",
-      "description": "AI-assisted, best-effort SPEC-driven development — keep requirements in source control, track how the code covers them, reconcile the two either direction.",
-      "author": {
-        "name": "Chris Peterson"
-      },
-      "source": {
-        "source": "url",
-        "url": "https://github.com/chris-peterson/sextant.git"
-      },
-      "category": "development",
-      "homepage": "https://chris-peterson.github.io/sextant/#/"
     },
     {
       "name": "shipshape",
@@ -109,6 +44,71 @@
       },
       "category": "productivity",
       "homepage": "https://chris-peterson.github.io/tack/#/"
+    },
+    {
+      "name": "beacon",
+      "description": "At-a-glance awareness across concurrent Claude Code sessions — a terminal-agnostic sessions view plus iTerm2 per-pane painting.",
+      "author": {
+        "name": "chris-peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/beacon.git"
+      },
+      "category": "development",
+      "homepage": "https://chris-peterson.github.io/beacon/#/"
+    },
+    {
+      "name": "anchor",
+      "description": "Consistency across the code-change lifecycle: issue, change request, review, release.",
+      "author": {
+        "name": "chris-peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/anchor.git"
+      },
+      "category": "development",
+      "homepage": "https://chris-peterson.github.io/anchor/#/"
+    },
+    {
+      "name": "sextant",
+      "description": "AI-assisted, best-effort SPEC-driven development — keep requirements in source control, track how the code covers them, reconcile the two either direction.",
+      "author": {
+        "name": "Chris Peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/sextant.git"
+      },
+      "category": "development",
+      "homepage": "https://chris-peterson.github.io/sextant/#/"
+    },
+    {
+      "name": "cleat",
+      "description": "Keep a repo's agent instructions in one AGENTS.md that every tool reads, with CLAUDE.md reduced to a pointer at it.",
+      "author": {
+        "name": "chris-peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/cleat.git"
+      },
+      "category": "development",
+      "homepage": "https://chris-peterson.github.io/cleat/#/",
+      "relevance": {
+        "topic": "agent instructions",
+        "signals": {
+          "filesRead": [
+            "**/.cursorrules",
+            "**/.cursor/rules/**",
+            "**/.github/copilot-instructions.md",
+            "**/.windsurfrules",
+            "**/GEMINI.md",
+            "**/AGENTS.md"
+          ]
+        }
+      }
     }
   ]
 }
