@@ -172,10 +172,10 @@
 <div class="wrap">
   <p class="eyebrow">bridge.ai &middot; interop</p>
   <h1>Events</h1>
-  <p class="lede">These plugins install one at a time, so none of them can call another. Instead a plugin
-    prints one line when it causes something, and whoever cares matches that line &mdash; no broker, no
-    dispatcher, neither side naming the other. Here is every line the suite has agreed on, and who is
-    listening for it.</p>
+  <p class="lede">A plugin announces a fact it caused as one line, and whoever cares matches that line.
+    Neither side names the other, so either one can change, ship, or be missing entirely without
+    breaking the other. Writing those lines down is what makes the integration auditable: every key
+    here has a named publisher, a declared body, and the list of who is listening.</p>
 
   <div class="anatomy">
     <div class="parts" id="anatomy"></div>
