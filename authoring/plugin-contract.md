@@ -282,11 +282,14 @@ both ends are emitting and matching it.
 
 | Key | Publisher | Subscriber | Body | State |
 |---|---|---|---|---|
-| `codes.bridgeai.anchor/cr.created` | anchor, `scripts/prepare-review.sh --open` | tack, `hooks/capture-urls.sh`<br>beacon, `_read_announcements` (PROV-07 tier 0) | `uri`, `title` | agreed |
-| `codes.bridgeai.anchor/cr.updated` | anchor, `skills/prepare-review`, end of the mutation phase | tack, `hooks/landing-nudge.sh` | `uri`, `title` | agreed |
+| `codes.bridgeai.anchor/cr.created` | anchor, `scripts/prepare-review.sh --open` | tack, `hooks/capture-urls.sh` + `hooks/landing-nudge.sh`<br>beacon, `_read_announcements` (PROV-07 tier 0) | `uri`, `title` | wired |
+| `codes.bridgeai.anchor/cr.updated` | anchor, `skills/prepare-review`, end of the mutation phase | tack, `hooks/capture-urls.sh` + `hooks/landing-nudge.sh`<br>beacon, `_read_announcements` (PROV-07 tier 0) | `uri`, `title` | wired |
 
-Both read `agreed` because the code on either side still carries this contract's
-first draft: the keys `cr.opened` / `cr.described`, and a `KEY=value` body.
+Every subscriber matches **both** keys, because a run announces one or the other
+and never both: a fresh change request reports only `cr.created` and only a
+pre-existing one reports `cr.updated`. A subscriber keyed to a single one is
+silent for half the cases, which is the shape of mistake this table exists to
+make visible.
 
 ## Related
 
