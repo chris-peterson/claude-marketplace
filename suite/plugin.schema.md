@@ -32,6 +32,8 @@ Authoring rule: edit `plugin.yml`, never the generated `plugin.json`.
 | `marketplace.relevance` | marketplace entry | Signals that make Claude Code suggest this plugin — see [Suggestions](#suggestions-and-hard-dependencies). Omit if none fit. |
 | `dependencies` | plugin.json | Plugins Claude Code installs alongside this one — see [Suggestions](#suggestions-and-hard-dependencies). Not `suite.dependencies`. |
 | `suite.*` | doc site | Presentation block — keys match the doc site's `PLUGINS` object verbatim (see below). |
+| `events.publishes` | the event catalog | Events this plugin announces, declared in full: bare `key`, `when` prose, `emitted_by`, and `fields`. See [the interop contract](../authoring/plugin-contract.md#declaring-events). |
+| `events.subscribes` | the event catalog | Events this plugin reacts to: fully-qualified `key`, `handled_by`, `reason`. A consumer names the dependency, never the fields — N consumers restating one schema is N copies that drift. |
 
 ## The `suite:` block (doc site presentation)
 
