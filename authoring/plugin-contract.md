@@ -230,6 +230,22 @@ events:
       reason: records the change request on the session's route
 ```
 
+**Both halves are published**, into each plugin's own events page and into the
+suite catalog that pairs them — so `when:`, `reason:`, and the field descriptions
+are read by someone who has never seen the plugin. Two things follow.
+
+Keep a plugin's internal vocabulary out of them. A spec requirement ID
+(`PROV-07`, `STATUSLINE-03`) names nothing a catalog reader can resolve, least of
+all in the aggregate, where a reader on one plugin's events page has no reason to
+know another's spec. Say what the event or the subscription gets the user:
+`moves the change request to what the session has shipped`, not `feeds
+STATUSLINE-03's delivered line`.
+
+`emitted_by:` and `handled_by:` name the **file**, not a symbol inside it. A file
+is something a reader can open, and a rename shows up in the diff; a function
+name drifts silently, because nothing resolves either one — these fields are
+prose for a reader, not a reference the tooling follows.
+
 `when:` is prose and earns its place. It is where a producer says the thing no
 consumer can infer from a key name: which paths emit it today, whether a
 re-run fires it again, what it means when the same key arrives twice.

@@ -35,6 +35,12 @@ Authoring rule: edit `plugin.yml`, never the generated `plugin.json`.
 | `events.publishes` | the event catalog | Events this plugin announces, declared in full: bare `key`, `when` prose, `emitted_by`, and `fields`. See [the interop contract](../authoring/plugin-contract.md#declaring-events). |
 | `events.subscribes` | the event catalog | Events this plugin reacts to: fully-qualified `key`, `handled_by`, `reason`. A consumer names the dependency, never the fields — N consumers restating one schema is N copies that drift. |
 
+Every field above projects to something published, so its prose is read by
+someone who has never seen the plugin. Keep a plugin's internal vocabulary out
+of it: a spec requirement ID (`PROV-07`) names nothing a catalog reader can
+resolve, and the catalog is where it lands beside every other plugin's. Say what
+the thing gets the user instead.
+
 ## The `suite:` block (doc site presentation)
 
 Keys mirror the doc site's `PLUGINS` entry so the projection is a direct YAML→JSON
