@@ -447,6 +447,7 @@
   .sitefoot .fspecs .sub{color:var(--muted);font-size:12px}
   .sitefoot .fspecs .arrow{color:var(--muted);transition:transform .14s}
   .sitefoot .fspecs:hover .arrow{transform:translateX(3px);color:var(--fg)}
+  .sitefoot .fpages{display:flex;flex-wrap:wrap;gap:12px}
   .sitefoot .fmeta{font-family:var(--mono);font-size:11.5px;color:var(--faint);letter-spacing:.04em}
   .sitefoot .fmeta a{color:var(--muted)}
   .sitefoot .fmeta a:hover{color:var(--fg)}
@@ -497,6 +498,7 @@
         <a href="#session">example</a>
         <a href="#changelog">changelog</a>
         <a href="specs.html">specs</a>
+        <a href="events.html">events</a>
       </div>
   </div>
 </nav>
@@ -593,11 +595,18 @@
   </section>
 
   <footer class="sitefoot">
-    <a class="fspecs" href="specs.html">
-      <span class="glyph">&#9656;</span>
-      <span>Specifications<br><span class="sub">requirements by plugin and category</span></span>
-      <span class="arrow">&rarr;</span>
-    </a>
+    <div class="fpages">
+      <a class="fspecs" href="specs.html">
+        <span class="glyph">&#9656;</span>
+        <span>Specifications<br><span class="sub">requirements by plugin and category</span></span>
+        <span class="arrow">&rarr;</span>
+      </a>
+      <a class="fspecs" href="events.html">
+        <span class="glyph">&#9656;</span>
+        <span>Events<br><span class="sub">what each plugin announces, and who listens</span></span>
+        <span class="arrow">&rarr;</span>
+      </a>
+    </div>
     <span class="fmeta"><a href="https://github.com/chris-peterson/claude-marketplace" target="_blank" rel="noopener">github.com/chris-peterson/claude-marketplace</a></span>
   </footer>
 

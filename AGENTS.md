@@ -52,10 +52,12 @@ dispatch token. The scripts:
 **The doc site's own data files come from shipyard**, which reads this repo as an
 *aggregator* (`plugins.yml`) and the siblings as its spokes: `shipyard
 gen-plugins-js` writes `docs/plugins.js` (the catalog's groups and per-plugin
-copy) and `shipyard gen-artifacts-json` writes `docs/artifacts.json` (the growth
-view's series, changelog, and releases). A change to either projection is a
-change in that repo. `just build` runs both, so a local build needs a `shipyard`
-new enough to have them.
+copy), `shipyard gen-events-json` writes `docs/events.json` (each published
+interop key paired with the plugins that subscribe to it, from both sides'
+`events:` blocks), and `shipyard gen-artifacts-json` writes `docs/artifacts.json`
+(the growth view's series, changelog, and releases). A change to any of those
+projections is a change in that repo. `just build` runs all three, so a local
+build needs a `shipyard` new enough to have them.
 
 ## Structure
 
@@ -65,7 +67,8 @@ new enough to have them.
   `chris-peterson.github.io`: `/css/tokens.css` (palette and typefaces),
   `/css/titlebar.css`, and `/js/docsify-shared.js` for `initTitlebar()`. That's
   what gives this page the same header, breadcrumb, blog link, and day/night
-  toggle as every plugin's docsify site. `specs.html` takes the same three.
+  toggle as every plugin's docsify site. `specs.html` and `events.html` take the
+  same three.
   - **Local preview needs both trees**, since those paths resolve at the domain
     root: serve a directory with the hub's `docs/` at the root and this `docs/`
     under `claude-marketplace/`. Serving this `docs/` alone leaves the page
@@ -73,6 +76,12 @@ new enough to have them.
   - Colors resolve through the tokens, so **don't reintroduce a literal**: a
     chart that bakes one at draw time won't follow the toggle. The two chart
     blocks redraw on the `themechange` event the toggle fires.
+- `docs/events.html` — the interop catalog: one card per announcement, showing
+  the publisher, the key, when it fires, its body fields, and who subscribes.
+  Reads `docs/events.json`, and `docs/plugins.js` for the group each plugin is
+  in, which is where a card's accent comes from. A key with only one end renders
+  with that end dashed — subscribed-with-no-publisher leads the page, since it
+  is always a defect.
 - `docs/favicon.svg` — the bridge.ai mark (also the nav/footer mark, inline).
 - `issue.md` — roadmap note for a possible next pass.
 - The former docsify files (`docs/README.md`, `relationships.md`, `_sidebar.md`)

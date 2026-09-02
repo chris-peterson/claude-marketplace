@@ -278,7 +278,9 @@ So every new subscriber owes both halves:
 
 Every key in the suite, until the manifests above are what the catalog is built
 from. `State` is `agreed` for a key both sides have settled on, and `wired` once
-both ends are emitting and matching it.
+both ends are emitting and matching it. The declarations themselves are rendered
+at [bridge.ai / Events](https://chris-peterson.github.io/claude-marketplace/events.html),
+which pairs each published key with whoever subscribes to it.
 
 | Key | Publisher | Subscriber | Body | State |
 |---|---|---|---|---|

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>bridge.ai — Events</title>
+<meta name="description" content="Every interop announcement the bridge.ai plugins publish, and who listens for it.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900&family=JetBrains+Mono:wght@400;500;700&family=Spline+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="/js/docsify-shared.js"></script>
+<script>initTheme();</script>
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/titlebar.css">
+<style>
+  :root{
+    /* Same ground and same accents as the landing page, which takes them from
+       the family's tokens.css. */
+    --abyss:light-dark(#f7f7f1,#191a21); --deep:light-dark(#efefe8,#21222c);
+    --sea:light-dark(#e8e8e0,#282a36); --hull:light-dark(#dcdcd2,#343746);
+    --line-h:light-dark(#c9c9bd,#44475a);
+    --fg:var(--color-foreground); --muted:light-dark(#5a6896,#8e99bd);
+    --faint:light-dark(#8d94b0,#4b527a);
+    --line:light-dark(#deded4,#2a2c38); --line-2:light-dark(#cfcfc4,#33364a);
+    --cyan:var(--color-cyan); --green:var(--color-green); --orange:var(--color-orange);
+    --pink:var(--color-pink); --purple:var(--color-purple); --red:var(--color-red);
+    --yellow:var(--color-yellow);
+    --gold:light-dark(#a16207,#e3b341); --claude:light-dark(#c2410c,#d97757);
+    /* four functional areas → four colors (same mapping as the catalog) */
+    --guard:var(--red); --orient:var(--purple); --ship:var(--cyan); --build:var(--green);
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --disp:'Fraunces',Georgia,'Times New Roman',serif;
+    --body:'Spline Sans',ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding-top:52px;background:var(--abyss);color:var(--fg);font-family:var(--body);line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+
+  /* --- site nav (mirrors the marketplace) --- */
+  .sitenav{position:sticky;top:52px;z-index:20;background:color-mix(in srgb,var(--abyss) 88%,transparent);
+    backdrop-filter:blur(9px);border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:1040px;margin:0 auto;padding:13px 22px;display:flex;align-items:center;justify-content:space-between}
+  .brand{display:inline-flex;align-items:center;gap:11px;font-family:var(--mono);font-size:13px;letter-spacing:.05em;color:var(--fg);text-decoration:none}
+  .brand img{width:26px;height:26px}
+  .brand b{color:var(--cyan);font-weight:700}
+  .brand .back{color:var(--muted);font-size:15px;transition:transform .14s,color .14s}
+  .brand:hover .back{transform:translateX(-3px);color:var(--fg)}
+  .nav-inner .peer{font-family:var(--mono);font-size:12.5px;color:var(--muted);text-decoration:none}
+  .nav-inner .peer:hover{color:var(--fg)}
+
+  .wrap{max-width:1040px;margin:0 auto;padding:48px 22px 80px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--cyan);margin:0 0 16px}
+  h1{font-family:var(--disp);font-optical-sizing:auto;font-weight:900;font-size:clamp(30px,5vw,50px);
+    line-height:1.02;letter-spacing:-.02em;margin:0 0 14px}
+  .lede{max-width:62ch;color:var(--muted);font-size:15px;margin:0}
+  .lede a{color:var(--fg);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line-h)}
+  .lede a:hover{text-decoration-color:var(--gold)}
+
+  /* --- the anatomy of one line: the page's single set piece --- */
+  .anatomy{margin:34px 0 0;padding:24px 22px 18px;background:var(--deep);border:1px solid var(--line-2);border-radius:13px;overflow-x:auto}
+  .parts{font-family:var(--mono);font-size:clamp(11px,2vw,15px);line-height:1.45;white-space:pre;min-width:min-content}
+  .parts .rule,.parts .caps{color:var(--faint)}
+  .p-ns{color:var(--muted)}
+  .p-who{color:var(--gold);font-weight:700}
+  .p-what{color:var(--fg);font-weight:700}
+  .p-body{color:var(--green)}
+  .gap{color:var(--line-h)}
+  .anatomy .note{margin:16px 0 0;color:var(--muted);font-size:13px;max-width:66ch}
+  .anatomy .note code{font-family:var(--mono);font-size:.87em;color:var(--fg);background:var(--sea);border:1px solid var(--line-2);border-radius:4px;padding:.5px 4px}
+
+  /* --- search rig (matches the requirements browser) --- */
+  .rig{position:sticky;top:53px;z-index:10;margin:30px 0 0;padding:18px 0 14px;
+    background:linear-gradient(var(--abyss) 82%,transparent)}
+  .searchbox{display:flex;align-items:center;gap:12px;background:var(--deep);border:1px solid var(--line-2);
+    border-radius:13px;padding:0 17px;transition:border-color .15s,box-shadow .15s}
+  .searchbox:focus-within{border-color:color-mix(in srgb,var(--gold) 55%,transparent);
+    box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 14%,transparent)}
+  .searchbox svg{width:18px;height:18px;color:var(--muted);flex:none}
+  #q{flex:1;background:none;border:0;outline:none;color:var(--fg);font-family:var(--mono);font-size:15px;padding:15px 0}
+  #q::placeholder{color:var(--faint)}
+  .clear{background:none;border:0;color:var(--muted);cursor:pointer;font-size:19px;padding:4px 6px;display:none;line-height:1}
+  .clear.on{display:block}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center;font-family:var(--mono);font-size:11.5px}
+  .scope{color:var(--faint);letter-spacing:.08em;text-transform:uppercase;margin-right:2px}
+  .tog{color:var(--muted);background:var(--deep);border:1px solid var(--line-2);padding:6px 12px;border-radius:20px;
+    cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:inherit;transition:color .12s,border-color .12s,background .12s}
+  .tog.on{color:var(--fg);border-color:color-mix(in srgb,var(--ac,var(--gold)) 45%,transparent);
+    background:color-mix(in srgb,var(--ac,var(--gold)) 10%,transparent)}
+  .tog .dot{width:8px;height:8px;border-radius:50%;background:var(--faint);flex:none}
+  .tog.on .dot{background:var(--ac,var(--gold));box-shadow:0 0 9px color-mix(in srgb,var(--ac,var(--gold)) 60%,transparent)}
+  .spring{flex:1 1 auto}
+
+  .count{font-family:var(--mono);font-size:12px;color:var(--muted);margin:16px 2px 12px}
+  .count b{color:var(--gold)}
+
+  /* --- one event --- */
+  .ev{border:1px solid var(--line-2);border-radius:13px;background:var(--deep);padding:20px 22px 6px;margin:0 0 14px}
+  .ev.hide{display:none}
+
+  /* the wire: who published → what → who hears it */
+  .wire{display:flex;flex-wrap:wrap;align-items:center;gap:9px;font-family:var(--mono);font-size:13px}
+  .stop{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line-2);background:var(--sea);
+    border-radius:20px;padding:4px 11px;white-space:nowrap}
+  .stop .node{width:8px;height:8px;border-radius:50%;background:var(--ac);flex:none;box-shadow:0 0 9px color-mix(in srgb,var(--ac) 55%,transparent)}
+  .stop.pub{border-color:color-mix(in srgb,var(--ac) 50%,transparent)}
+  .stop.none{background:none;border-style:dashed;border-color:color-mix(in srgb,var(--red) 45%,transparent);color:var(--muted)}
+  .stop.none .node{background:none;border:1px dashed var(--red);box-shadow:none}
+  .run{flex:1 1 22px;min-width:22px;height:1px;background:var(--line-h)}
+  .run.dash{background:repeating-linear-gradient(90deg,var(--line-h) 0 4px,transparent 4px 8px)}
+  .wire .evkey{font-size:14px;font-weight:500;color:var(--fg)}
+  .heard{display:flex;flex-wrap:wrap;gap:7px}
+
+  .say{margin:15px 0 0;font-family:var(--mono);font-size:12.5px;line-height:1.7;color:var(--muted);
+    background:var(--abyss);border:1px solid var(--line);border-radius:9px;padding:11px 13px;overflow-x:auto;white-space:pre}
+  .say .k{color:var(--ac)}
+  .say .fld{color:var(--fg)}
+  .say .val{color:var(--green)}
+  .say .opt{color:var(--faint)}
+
+  .when{margin:14px 0 0;font-size:13.5px;color:var(--fg);max-width:74ch}
+
+  .fields{margin:15px 0 0;border-top:1px solid var(--line);padding-top:12px}
+  .fld-row{display:grid;grid-template-columns:120px 150px 1fr;gap:12px;align-items:baseline;padding:4px 0;font-size:13px}
+  .fld-row .fname{font-family:var(--mono);font-size:12.5px;color:var(--gold)}
+  .fld-row .ftype{font-family:var(--mono);font-size:11px;color:var(--faint);white-space:nowrap}
+  .fld-row .ftype em{font-style:normal;color:var(--orange)}
+  .fld-row .fdesc{color:var(--muted)}
+
+  .ends{margin:14px 0 0;border-top:1px solid var(--line);padding-top:11px}
+  .end-row{display:grid;grid-template-columns:78px 1fr;gap:12px;align-items:baseline;padding:5px 0;font-size:13px}
+  .end-row .lab{font-family:var(--mono);font-size:11px;color:var(--faint)}
+  .end-row .who{font-family:var(--mono);font-size:12.5px;color:var(--fg)}
+  .end-row .where{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .end-row .why{color:var(--muted);display:block;margin-top:2px;max-width:74ch}
+  .ev .fields:empty,.ev .ends:empty{display:none}
+  .ev>*:last-child{margin-bottom:16px}
+
+  /* subscribed with nothing publishing — a defect, so it leads */
+  .defects{border:1px solid color-mix(in srgb,var(--red) 45%,transparent);border-radius:13px;
+    background:color-mix(in srgb,var(--red) 7%,var(--deep));padding:18px 22px;margin:0 0 20px}
+  .defects h2{margin:0 0 4px;font-family:var(--body);font-size:15px;font-weight:600}
+  .defects p{margin:0 0 12px;color:var(--muted);font-size:13px;max-width:70ch}
+
+  mark{background:color-mix(in srgb,var(--gold) 28%,transparent);color:var(--fg);border-radius:3px;padding:0 1px}
+  code{font-family:var(--mono)}
+  .empty{padding:38px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:13px;
+    border:1px solid var(--line-2);border-radius:13px;margin-top:10px}
+
+  .footnote{margin-top:34px;font-family:var(--mono);font-size:11.5px;color:var(--faint);text-align:center;letter-spacing:.02em}
+  .footnote a{color:var(--muted);text-decoration:underline;text-underline-offset:2px}
+  .footnote a:hover{color:var(--fg)}
+
+  @media(max-width:640px){
+    .fld-row{grid-template-columns:1fr;gap:2px}
+    .end-row{grid-template-columns:1fr;gap:2px}
+    .run{display:none}
+  }
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body class="sidebar-hidden">
+
+<nav class="sitenav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html"><span class="back">&larr;</span><img src="favicon.svg" alt=""><span>bridge<b>.ai</b></span></a>
+    <a class="peer" href="specs.html">requirements</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <p class="eyebrow">bridge.ai &middot; interop</p>
+  <h1>Events</h1>
+  <p class="lede">These plugins install one at a time, so none of them can call another. Instead a plugin
+    prints one line when it causes something, and whoever cares matches that line &mdash; no broker, no
+    dispatcher, neither side naming the other. Here is every line the suite has agreed on, and who is
+    listening for it.</p>
+
+  <div class="anatomy">
+    <div class="parts" id="anatomy"></div>
+    <p class="note">The key says who caused the fact and what happened; the body is one compact JSON
+      object, always present, <code>{}</code> when the event carries nothing. A subscriber matches the
+      whole key, anchored, in a <code>PostToolUse</code> hook.</p>
+  </div>
+
+  <div class="rig">
+    <label class="searchbox">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="Search keys, fields, and reasons&hellip;">
+      <button class="clear" id="clear" aria-label="Clear search">&times;</button>
+    </label>
+    <div class="controls">
+      <span class="scope">show</span>
+      <span id="chips" style="display:contents"></span>
+      <span class="spring"></span>
+      <button class="tog" id="tUnpaired" type="button"><span class="dot"></span>only one end</button>
+    </div>
+  </div>
+
+  <div class="count" id="count"></div>
+  <div id="defects"></div>
+  <div id="list"></div>
+  <div class="empty" id="empty" style="display:none">Nothing matches &mdash; shorten the term, or turn a plugin back on.</div>
+
+  <p class="footnote"><a href="index.html">&larr; back to bridge.ai</a> &nbsp;&middot;&nbsp; <a href="specs.html">requirements &rarr;</a></p>
+</div>
+
+<!-- Generated by shipyard gen-plugins-js — supplies each plugin's group, which
+     is where an event's accent comes from: the color says who published it. -->
+<script src="plugins.js"></script>
+<script>
+(function(){
+  const el=(t,c)=>{const e=document.createElement(t); if(c)e.className=c; return e;};
+  const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const escRe=t=>t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+  const hl=(s,term)=>{ s=esc(s); if(!term) return s;
+    return s.replace(new RegExp("("+escRe(term)+")","ig"),"<mark>$1</mark>"); };
+
+  // A plugin's accent is its catalog group's, shaded by its position in that
+  // group — the same derivation the home page and the requirements browser use,
+  // read from the generated catalog rather than restated here.
+  const AC={};
+  (function(){
+    if(typeof PLUGINS!=="object"||typeof GROUPS!=="object") return;
+    const accent={}; GROUPS.forEach(g=>accent[g.key]=g.accent);
+    const seen={};
+    Object.keys(PLUGINS).forEach(name=>{
+      const token=accent[PLUGINS[name].group]; if(!token) return;
+      const idx=seen[token]=(seen[token]||0);  seen[token]=idx+1;
+      AC[name]= idx ? `color-mix(in srgb, var(${token}) ${Math.round((1-(.26+.2*idx))*100)}%, var(--fg))`
+                    : `var(${token})`;
+    });
+  })();
+  const accentOf=name=>AC[name]||"var(--cyan)";
+
+  const NS="codes.bridgeai.";
+
+  // The set piece: one real announcement, cut into the parts a reader has to
+  // tell apart. Every row is the same monospace face, so the braces and the
+  // captions land on the characters they belong to.
+  function anatomy(sample){
+    const bare=sample.key.slice(NS.length), slash=bare.indexOf("/");
+    const segs=[
+      {t:NS,                    cls:"p-ns",   cap:"namespace"},
+      {t:bare.slice(0,slash),   cls:"p-who",  cap:"plugin"},
+      {t:"/",                   cls:"gap"},
+      {t:bare.slice(slash+1),   cls:"p-what", cap:"event"},
+      {t:" ",                   cls:"gap"},
+      {t:bodyOf(sample.fields), cls:"p-body", cap:"json body"}
+    ];
+    const pad=n=>" ".repeat(Math.max(0,n));
+    let line="",rule="",caps="";
+    segs.forEach(g=>{
+      const w=g.t.length;
+      line+='<span class="'+g.cls+'">'+esc(g.t)+'</span>';
+      if(!g.cap){ rule+=pad(w); caps+=pad(w); return; }
+      rule+= w>1 ? "\u2514"+"\u2500".repeat(w-2)+"\u2518" : "\u2502";
+      const left=Math.floor((w-g.cap.length)/2);
+      caps+=pad(left)+g.cap+pad(w-left-g.cap.length);
+    });
+    document.getElementById("anatomy").innerHTML=
+      '<div class="ln">'+line+'</div><div class="rule">'+rule+'</div><div class="caps">'+caps+'</div>';
+  }
+
+  // The announcement as it appears on stdout, with the declared field names in
+  // place of the values a run would carry.
+  const bodyOf=fields=>"{"+(fields||[]).map(f=>'"'+f.name+'":"…"').join(",")+"}";
+  const bodyHtml=fields=>{
+    if(!fields.length) return '<span class="val">{}</span>';
+    return '<span class="val">{</span>'+fields.map(f=>
+      '<span class="fld">"'+esc(f.name)+'"</span><span class="val">:</span>'
+      +'<span class="'+(f.optional?"opt":"val")+'">"…"</span>').join('<span class="val">,</span>')
+      +'<span class="val">}</span>';
+  };
+
+  const model=[], plugins=[];
+  const listEl=document.getElementById("list"), countEl=document.getElementById("count");
+  const q=document.getElementById("q"), clearBtn=document.getElementById("clear");
+  const unpairedBtn=document.getElementById("tUnpaired");
+  const on={}; let unpairedOnly=false;
+
+  function card(ev,orphan){
+    const node=el("article","ev");
+    node.style.setProperty("--ac",accentOf(ev.publisher||""));
+    const subs=ev.subscribers||[], fields=ev.fields||[];
+    const bare=ev.key.startsWith(NS)?ev.key.slice(NS.length):ev.key;
+
+    const wire=el("div","wire");
+    wire.innerHTML=
+      (ev.publisher
+        ? '<span class="stop pub"><span class="node"></span><span class="pubname">'+esc(ev.publisher)+'</span></span>'
+        : '<span class="stop none"><span class="node"></span>nothing publishes this</span>')
+      +'<span class="run'+(ev.publisher?'':' dash')+'"></span>'
+      +'<span class="evkey"><span class="bare">'+esc(bare.split("/").slice(1).join("/"))+'</span></span>'
+      +'<span class="run'+(subs.length?'':' dash')+'"></span>'
+      +(subs.length
+        ? '<span class="heard">'+subs.map(s=>'<span class="stop" style="--ac:'+accentOf(s.subscriber)+'">'
+            +'<span class="node"></span><span class="subname">'+esc(s.subscriber)+'</span></span>').join("")+'</span>'
+        : '<span class="stop none"><span class="node"></span>no subscriber declared</span>');
+    node.appendChild(wire);
+
+    const say=el("div","say");
+    say.innerHTML='<span class="k">'+esc(ev.key)+'</span>'
+      +(orphan?'':' '+bodyHtml(fields));
+    node.appendChild(say);
+
+    let whenEl=null;
+    if(ev.when){ whenEl=el("p","when"); whenEl.innerHTML=esc(ev.when); node.appendChild(whenEl); }
+
+    const fieldEls=[];
+    if(fields.length){
+      const box=el("div","fields");
+      fields.forEach(f=>{
+        const row=el("div","fld-row");
+        row.innerHTML='<span class="fname">'+esc(f.name)+'</span>'
+          +'<span class="ftype">'+esc(f.type||"string")+(f.optional?' &middot; <em>may be empty</em>':'')+'</span>'
+          +'<span class="fdesc">'+esc(f.describe||"")+'</span>';
+        box.appendChild(row);
+        fieldEls.push({name:row.querySelector(".fname"), desc:row.querySelector(".fdesc"), f});
+      });
+      node.appendChild(box);
+    }
+
+    const ends=el("div","ends");
+    if(ev.emitted_by){
+      const row=el("div","end-row");
+      row.innerHTML='<span class="lab">emitted by</span><span class="where">'+esc(ev.emitted_by)+'</span>';
+      ends.appendChild(row);
+    }
+    subs.forEach(s=>{
+      const row=el("div","end-row");
+      row.innerHTML='<span class="lab">heard by</span><span><span class="who">'+esc(s.subscriber)+'</span> '
+        +'<span class="where">'+esc(s.handled_by||"")+'</span>'
+        +(s.reason?'<span class="why">'+esc(s.reason)+'</span>':'')+'</span>';
+      ends.appendChild(row);
+    });
+    if(ends.children.length) node.appendChild(ends);
+
+    const people=[ev.publisher].concat(subs.map(s=>s.subscriber)).filter(Boolean);
+    const hay=[ev.key,ev.when,ev.emitted_by].concat(people)
+      .concat(fields.map(f=>f.name+" "+f.describe))
+      .concat(subs.map(s=>s.handled_by+" "+s.reason)).join(" ").toLowerCase();
+
+    return {el:node, key:ev.key, people, hay, whenEl, when:ev.when||"", fieldEls,
+            unpaired:orphan||!subs.length,
+            keyEl:node.querySelector(".evkey .bare"), bare:bare.split("/").slice(1).join("/")};
+  }
+
+  function chips(){
+    const host=document.getElementById("chips");
+    plugins.forEach(name=>{
+      on[name]=true;
+      const b=el("button","tog on"); b.type="button";
+      b.style.setProperty("--ac",accentOf(name));
+      b.innerHTML='<span class="dot"></span>'+esc(name);
+      b.onclick=()=>{ on[name]=!on[name]; b.classList.toggle("on",on[name]); filter(); };
+      host.appendChild(b);
+    });
+  }
+
+  function filter(){
+    const term=q.value.trim().toLowerCase();
+    let shown=0;
+    model.forEach(m=>{
+      const byPlugin=m.people.some(p=>on[p]) || m.people.length===0;
+      const byTerm=!term || m.hay.includes(term);
+      const byPair=!unpairedOnly || m.unpaired;
+      const show=byPlugin&&byTerm&&byPair;
+      m.el.classList.toggle("hide",!show);
+      if(show){
+        shown++;
+        if(m.keyEl) m.keyEl.innerHTML=hl(m.bare,term);
+        if(m.whenEl) m.whenEl.innerHTML=hl(m.when,term);
+        m.fieldEls.forEach(f=>{ f.name.innerHTML=hl(f.f.name,term);
+                                f.desc.innerHTML=hl(f.f.describe||"",term); });
+      }
+    });
+    const none=document.getElementById("empty");
+    none.style.display=shown?"none":"block";
+    if(!shown) none.textContent= unpairedOnly && !term
+      ? "Every key has both ends — nothing is announcing into silence, and nothing is listening for a key that never fires."
+      : "Nothing matches — shorten the term, or turn a plugin back on.";
+    count(shown);
+  }
+
+  function count(shown){
+    const total=model.length, heard=model.filter(m=>!m.unpaired).length;
+    countEl.innerHTML= shown===total
+      ? '<b>'+total+'</b> event'+(total===1?'':'s')+' &nbsp;&middot;&nbsp; <b>'+heard+'</b> with both ends'
+        +' &nbsp;&middot;&nbsp; across <b>'+plugins.length+'</b> plugins'
+      : '<b>'+shown+'</b> of '+total+' event'+(total===1?'':'s');
+  }
+
+  function build(data){
+    const events=data.events||[], orphans=data.subscribed_only||[];
+    if(orphans.length){
+      const box=el("div","defects");
+      box.innerHTML='<h2>Subscribed, but nobody publishes it</h2>'
+        +'<p>A subscriber that never matches looks exactly like an event that never fired. '
+        +'Each key below is a typo, or one whose publisher was renamed out from under it.</p>';
+      document.getElementById("defects").appendChild(box);
+      orphans.forEach(o=>{
+        const m=card({key:o.key,publisher:"",when:"",fields:[],
+                      subscribers:[{subscriber:o.subscriber,handled_by:o.handled_by,reason:o.reason}]},true);
+        box.appendChild(m.el); model.push(m);
+      });
+    }
+    events.forEach(ev=>{ const m=card(ev,false); listEl.appendChild(m.el); model.push(m); });
+
+    const seen={};
+    model.forEach(m=>m.people.forEach(p=>{ seen[p]=1; }));
+    Object.keys(PLUGINS||{}).forEach(n=>{ if(seen[n]) plugins.push(n); });
+    Object.keys(seen).forEach(n=>{ if(!plugins.includes(n)) plugins.push(n); });
+
+    if(events.length) anatomy(events[0]);
+    chips();
+    count(model.length);
+  }
+
+  let timer=null;
+  q.addEventListener("input",()=>{ clearBtn.classList.toggle("on",q.value.length>0); clearTimeout(timer); timer=setTimeout(filter,110); });
+  clearBtn.onclick=()=>{ q.value=""; clearBtn.classList.remove("on"); filter(); q.focus(); };
+  unpairedBtn.onclick=()=>{ unpairedOnly=!unpairedOnly; unpairedBtn.classList.toggle("on",unpairedOnly); filter(); };
+
+  fetch("events.json").then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(build)
+    .catch(err=>{ document.querySelector(".rig").style.display="none";
+      document.querySelector(".anatomy").style.display="none";
+      const e=document.getElementById("empty");
+      e.style.display="block";
+      e.textContent="couldn't load events.json — run `just build` (or `just events-data`) to generate it";
+      console.error("events.json load failed:",err); });
+})();
+</script>
+<script>initTitlebar({ name: 'claude-marketplace' });</script>
+</body>
+</html>

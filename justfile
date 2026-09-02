@@ -21,6 +21,11 @@ plugins-data:
 specs-data:
     python3 suite/build-specs-data.py
 
+# Generate docs/events.json — the interop catalog, pairing each published key
+# with the plugins that subscribe to it.
+events-data:
+    shipyard gen-events-json
+
 # Append a change-point row to suite/artifacts.csv. CI's job — see the note on build.
 record-artifacts:
     python3 suite/record-artifacts.py
@@ -37,7 +42,7 @@ seed-artifacts:
 # committed file from whatever branch each sibling checkout happens to be on, so
 # a local run would publish unmerged work. CI owns them (deploy-docs.yml).
 # Regenerate every docs/ data file.
-build: sync plugins-data specs-data artifacts-data
+build: sync plugins-data specs-data events-data artifacts-data
 
 # Run the suite/ unit tests.
 test:

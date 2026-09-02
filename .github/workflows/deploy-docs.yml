@@ -43,6 +43,7 @@ jobs:
       - name: Generate doc site data (ephemeral)
         run: |
           shipyard gen-plugins-js
+          shipyard gen-events-json
           python3 suite/build-specs-data.py
 
       - name: Record artifact changes into the rolling log
