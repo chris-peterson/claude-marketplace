@@ -47,8 +47,13 @@
   .brand b{color:var(--cyan);font-weight:700}
   .brand .back{color:var(--muted);font-size:15px;transition:transform .14s,color .14s}
   .brand:hover .back{transform:translateX(-3px);color:var(--fg)}
-  .nav-inner .peer{font-family:var(--mono);font-size:12.5px;color:var(--muted);text-decoration:none}
-  .nav-inner .peer:hover{color:var(--fg)}
+  .navleft{display:flex;align-items:center;gap:10px;min-width:0}
+  .crumbs{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:12.5px;color:var(--muted);
+    white-space:nowrap;overflow:hidden}
+  .crumbs a{color:var(--muted);text-decoration:none}
+  .crumbs a:hover{color:var(--fg)}
+  .crumbs .sep{color:var(--line-h)}
+  .crumbs .here{color:var(--fg)}
 
   .wrap{max-width:1040px;margin:0 auto;padding:48px 22px 80px}
   .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--cyan);margin:0 0 16px}
@@ -69,6 +74,42 @@
   .gap{color:var(--line-h)}
   .anatomy .note{margin:16px 0 0;color:var(--muted);font-size:13px;max-width:66ch}
   .anatomy .note code{font-family:var(--mono);font-size:.87em;color:var(--fg);background:var(--sea);border:1px solid var(--line-2);border-radius:4px;padding:.5px 4px}
+
+  /* --- the flow: publisher to key to subscriber --- */
+  .flow{margin:30px 0 0;padding:22px 22px 18px;background:var(--deep);border:1px solid var(--line-2);border-radius:13px}
+  .flow h2{margin:0;font-family:var(--body);font-size:15px;font-weight:600}
+  .flow .sub{margin:5px 0 0;color:var(--muted);font-size:13px;max-width:72ch}
+  .flowbox{margin-top:18px;overflow-x:auto}
+  .flowbox svg{display:block;font-family:var(--mono)}
+  .band{fill:var(--ac,var(--cyan));opacity:.24;transition:opacity .13s}
+  .band.dead{fill:none;stroke:var(--red);stroke-width:1;stroke-dasharray:3 4;opacity:.55}
+  /* Ordered by specificity, not by preference: every override below has to
+     outrank the .lit dim, or a hover fades the very bands it meant to raise. */
+  .flowbox svg.lit .band{opacity:.05}
+  .flowbox svg.lit .band.dead{opacity:.1}
+  .flowbox svg.lit .band.hot{opacity:.72}
+  .flowbox svg.lit .band.dead.hot{opacity:1;stroke-width:1.5}
+  .flowbox svg .band.off{opacity:.05}
+  .flowbox svg .band.dead.off{opacity:.09}
+  .fnode{cursor:pointer}
+  .fnode rect{fill:var(--sea);stroke:color-mix(in srgb,var(--ac,var(--line-h)) 50%,transparent);stroke-width:1}
+  .fnode .nlab{fill:var(--fg);font-size:12px;font-weight:500}
+  .fnode .nmeta{fill:var(--faint);font-size:10.5px}
+  svg.narrow .fnode .nlab{font-size:11px}
+  svg.narrow .fnode .nmeta{font-size:9.5px}
+  .fnode.none rect{fill:none;stroke:color-mix(in srgb,var(--red) 45%,transparent);stroke-dasharray:3 4}
+  .fnode.none .nlab{fill:var(--muted)}
+  .fnode:hover rect,.fnode.hot rect{fill:var(--hull);stroke:var(--ac,var(--line-h))}
+  .fnode.off{opacity:.3}
+  .flowbox svg.lit .fnode:not(.hot){opacity:.42}
+  .flow .legend{margin:16px 0 0;display:flex;flex-wrap:wrap;gap:8px 20px;
+    font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  .legend .sw{display:inline-block;width:22px;height:9px;border-radius:2px;margin-right:8px;vertical-align:0}
+  .legend .sw.live{background:color-mix(in srgb,var(--cyan) 42%,transparent)}
+  .legend .sw.gone{border:1px dashed var(--red);height:7px}
+  .ev.flash{animation:flash 1.6s ease-out}
+  @keyframes flash{from{box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 45%,transparent)}
+                     to{box-shadow:0 0 0 3px transparent}}
 
   /* --- search rig (matches the requirements browser) --- */
   .rig{position:sticky;top:53px;z-index:10;margin:30px 0 0;padding:18px 0 14px;
@@ -140,6 +181,9 @@
   /* subscribed with nothing publishing — a defect, so it leads */
   .defects{border:1px solid color-mix(in srgb,var(--red) 45%,transparent);border-radius:13px;
     background:color-mix(in srgb,var(--red) 7%,var(--deep));padding:18px 22px;margin:0 0 20px}
+  .defects.gap{border-color:color-mix(in srgb,var(--gold) 45%,transparent);
+    background:color-mix(in srgb,var(--gold) 7%,var(--deep))}
+  .defects.hide{display:none}
   .defects h2{margin:0 0 4px;font-family:var(--body);font-size:15px;font-weight:600}
   .defects p{margin:0 0 12px;color:var(--muted);font-size:13px;max-width:70ch}
 
@@ -153,6 +197,7 @@
   .footnote a:hover{color:var(--fg)}
 
   @media(max-width:640px){
+    .flow{padding:18px 14px 14px}
     .fld-row{grid-template-columns:1fr;gap:2px}
     .end-row{grid-template-columns:1fr;gap:2px}
     .run{display:none}
@@ -164,8 +209,10 @@
 
 <nav class="sitenav">
   <div class="nav-inner">
-    <a class="brand" href="index.html"><span class="back">&larr;</span><img src="favicon.svg" alt=""><span>bridge<b>.ai</b></span></a>
-    <a class="peer" href="specs.html">requirements</a>
+    <div class="navleft">
+      <a class="brand" href="index.html"><span class="back">&larr;</span><img src="favicon.svg" alt=""><span>bridge<b>.ai</b></span></a>
+      <span class="crumbs"><span class="sep">/</span><a href="specs.html">Requirements</a><span class="sep">/</span><span class="here">Events</span></span>
+    </div>
   </div>
 </nav>
 
@@ -183,6 +230,16 @@
       object, always present, <code>{}</code> when the event carries nothing. A subscriber matches the
       whole key, anchored, in a <code>PostToolUse</code> hook.</p>
   </div>
+
+  <section class="flow" id="flow" hidden>
+    <h2>Who announces what, and who acts on it</h2>
+    <p class="sub">A column per plugin, ordered by who feeds whom, with the keys each one announces in
+      the gutter to its right. A plugin that both hears and announces sits between the two it sits
+      between in the work. One band is one subscriber, so a key is as thick as the number of plugins
+      acting on it.</p>
+    <div class="flowbox" id="flowbox"></div>
+    <p class="legend" id="legend"></p>
+  </section>
 
   <div class="rig">
     <label class="searchbox">
@@ -203,7 +260,7 @@
   <div id="list"></div>
   <div class="empty" id="empty" style="display:none">Nothing matches &mdash; shorten the term, or turn a plugin back on.</div>
 
-  <p class="footnote"><a href="index.html">&larr; back to bridge.ai</a> &nbsp;&middot;&nbsp; <a href="specs.html">requirements &rarr;</a></p>
+  <p class="footnote"><a href="specs.html">&larr; back to Requirements</a> &nbsp;&middot;&nbsp; <a href="index.html">bridge.ai</a></p>
 </div>
 
 <!-- Generated by shipyard gen-plugins-js — supplies each plugin's group, which
@@ -274,7 +331,7 @@
       +'<span class="val">}</span>';
   };
 
-  const model=[], plugins=[];
+  const model=[], plugins=[], boxes=[];
   const listEl=document.getElementById("list"), countEl=document.getElementById("count");
   const q=document.getElementById("q"), clearBtn=document.getElementById("clear");
   const unpairedBtn=document.getElementById("tUnpaired");
@@ -347,6 +404,11 @@
             keyEl:node.querySelector(".evkey .bare"), bare:bare.split("/").slice(1).join("/")};
   }
 
+  const chipBtn={};
+  function toggleChip(name){
+    const b=chipBtn[name]; if(!b) return;
+    on[name]=!on[name]; b.classList.toggle("on",on[name]); filter();
+  }
   function chips(){
     const host=document.getElementById("chips");
     plugins.forEach(name=>{
@@ -354,7 +416,8 @@
       const b=el("button","tog on"); b.type="button";
       b.style.setProperty("--ac",accentOf(name));
       b.innerHTML='<span class="dot"></span>'+esc(name);
-      b.onclick=()=>{ on[name]=!on[name]; b.classList.toggle("on",on[name]); filter(); };
+      b.onclick=()=>toggleChip(name);
+      chipBtn[name]=b;
       host.appendChild(b);
     });
   }
@@ -381,7 +444,10 @@
     if(!shown) none.textContent= unpairedOnly && !term
       ? "Every key has both ends — nothing is announcing into silence, and nothing is listening for a key that never fires."
       : "Nothing matches — shorten the term, or turn a plugin back on.";
+    boxes.forEach(b=>b.el.classList.toggle("hide",
+      b.held.every(m=>m.el.classList.contains("hide"))));
     count(shown);
+    syncFlow();
   }
 
   function count(shown){
@@ -400,13 +466,31 @@
         +'<p>A subscriber that never matches looks exactly like an event that never fired. '
         +'Each key below is a typo, or one whose publisher was renamed out from under it.</p>';
       document.getElementById("defects").appendChild(box);
+      const held=[];
       orphans.forEach(o=>{
         const m=card({key:o.key,publisher:"",when:"",fields:[],
                       subscribers:[{subscriber:o.subscriber,handled_by:o.handled_by,reason:o.reason}]},true);
-        box.appendChild(m.el); model.push(m);
+        box.appendChild(m.el); model.push(m); held.push(m);
       });
+      boxes.push({el:box,held:held});
     }
-    events.forEach(ev=>{ const m=card(ev,false); listEl.appendChild(m.el); model.push(m); });
+    // The picture draws only what something listens for, so the keys announcing
+    // into silence land here instead. The contract warns rather than fails on
+    // this one: the two halves ship from separate repos and one lands first.
+    const silent=events.filter(e=>!(e.subscribers||[]).length);
+    if(silent.length){
+      const box=el("div","defects gap");
+      box.innerHTML='<h2>Announced, with nobody listening</h2>'
+        +'<p>Each key below is emitted today and matched by no subscriber. The two halves ship from '
+        +'separate repos, so one lands first; that gap is fine while it is tracked, and these are '
+        +'the ones to track.</p>';
+      document.getElementById("defects").appendChild(box);
+      const held=[];
+      silent.forEach(ev=>{ const m=card(ev,false); box.appendChild(m.el); model.push(m); held.push(m); });
+      boxes.push({el:box,held:held});
+    }
+    events.filter(e=>(e.subscribers||[]).length)
+      .forEach(ev=>{ const m=card(ev,false); listEl.appendChild(m.el); model.push(m); });
 
     const seen={};
     model.forEach(m=>m.people.forEach(p=>{ seen[p]=1; }));
@@ -415,13 +499,311 @@
 
     if(events.length) anatomy(events[0]);
     chips();
+    flow=flowModel(data);
+    drawFlow();
     count(model.length);
+  }
+
+
+  // ---- the flow: plugin columns, keys in the gutters -----------------------
+  // The columns are the plugins, layered by who feeds whom, so a plugin that
+  // both hears and announces sits between the two it sits between in the work.
+  // The keys a plugin announces ride the gutter to its right, and a band
+  // reaching past the next plugin threads through that column in a slot of its
+  // own rather than passing under a node. Only keys something listens for are
+  // drawn; an announcement nobody acts on is a gap the catalog reports.
+  const SVGNS="http://www.w3.org/2000/svg";
+  const svg=(t,a)=>{ const e=document.createElementNS(SVGNS,t);
+    for(const k in a) e.setAttribute(k,a[k]); return e; };
+  const UNIT=22, VGAP=11;
+
+  // A band is a ribbon of constant thickness through its waypoints: level
+  // across a column it only passes through, eased between columns.
+  function ribbon(pts,h){
+    const seg=(a,b,dy)=> a.y===b.y ? " L"+b.x+","+(b.y+dy)
+      : " C"+((a.x+b.x)/2)+","+(a.y+dy)+" "+((a.x+b.x)/2)+","+(b.y+dy)+" "+b.x+","+(b.y+dy);
+    let d="M"+pts[0].x+","+pts[0].y;
+    for(let i=1;i<pts.length;i++) d+=seg(pts[i-1],pts[i],0);
+    d+=" L"+pts[pts.length-1].x+","+(pts[pts.length-1].y+h);
+    for(let i=pts.length-2;i>=0;i--) d+=seg(pts[i+1],pts[i],h);
+    return d+" Z";
+  }
+
+  let flow=null, bands=[], fnodes=[];
+  const flowSec=document.getElementById("flow"), flowBox=document.getElementById("flowbox"),
+        legendEl=document.getElementById("legend");
+
+  function flowModel(data){
+    const keys=[];
+    (data.events||[]).forEach(e=>{
+      const subs=(e.subscribers||[]).map(s=>s.subscriber);
+      if(subs.length) keys.push({key:e.key,publisher:e.publisher||"",subs:subs});
+    });
+    const orphan={};
+    (data.subscribed_only||[]).forEach(o=>{ (orphan[o.key]=orphan[o.key]||[]).push(o.subscriber); });
+    Object.keys(orphan).sort().forEach(k=>keys.push({key:k,publisher:"",subs:orphan[k]}));
+    if(!keys.length) return null;
+    keys.forEach(r=>{
+      const bare=r.key.startsWith(NS)?r.key.slice(NS.length):r.key;
+      r.bare=bare.split("/").slice(1).join("/")||bare;
+      r.h=r.subs.length*UNIT;
+    });
+
+    // A plugin lands one column past the deepest plugin feeding it. The pass
+    // count caps the relaxation, so a cycle settles rather than spinning.
+    const layer={};
+    keys.forEach(r=>{ layer[r.publisher]=0; r.subs.forEach(s=>{ layer[s]=0; }); });
+    const names=Object.keys(layer);
+    for(let pass=0;pass<names.length;pass++){
+      let moved=false;
+      keys.forEach(r=>r.subs.forEach(s=>{
+        if(s!==r.publisher&&layer[s]<=layer[r.publisher]){ layer[s]=layer[r.publisher]+1; moved=true; }
+      }));
+      if(!moved) break;
+    }
+
+    const P={};
+    names.forEach(n=>{ P[n]={name:n,col:2*layer[n],hears:0,announces:0,outH:0,keys:[]}; });
+    keys.forEach(r=>{
+      r.col=2*layer[r.publisher]+1;
+      P[r.publisher].keys.push(r); P[r.publisher].outH+=r.h; P[r.publisher].announces++;
+      r.subs.forEach(s=>{ P[s].hears++; });
+    });
+    names.forEach(n=>{ P[n].h=Math.max(UNIT,P[n].hears*UNIT,P[n].outH); });
+
+    const edges=[];
+    keys.forEach(r=>{
+      edges.push({row:r,pub:r.publisher,sub:null,h:r.h,from:P[r.publisher].col,to:r.col});
+      r.subs.forEach(s=>edges.push({row:r,pub:r.publisher,sub:s,h:UNIT,from:r.col,to:P[s].col}));
+    });
+
+    const cols=[];
+    for(let c=0;c<=2*Math.max.apply(null,names.map(n=>layer[n]))+1;c++)
+      cols.push({index:c,kind:c%2?"key":"plugin",items:[]});
+    const ofPlugin={}, ofKey={};
+    names.forEach(n=>{ ofPlugin[n]={type:"plugin",p:P[n],h:P[n].h}; cols[P[n].col].items.push(ofPlugin[n]); });
+    keys.forEach(r=>{ ofKey[r.key]={type:"key",row:r,h:r.h}; cols[r.col].items.push(ofKey[r.key]); });
+    edges.forEach(e=>{ for(let c=e.from+1;c<e.to;c++) cols[c].items.push({type:"thru",edge:e,h:UNIT}); });
+
+    return {keys:keys,edges:edges,P:P,names:names,ofPlugin:ofPlugin,ofKey:ofKey,
+            cols:cols.filter(c=>c.items.length),
+            orphans:keys.some(r=>!r.publisher)};
+  }
+
+  function drawFlow(){
+    if(!flow) return;
+    flowSec.hidden=false;
+    flowBox.innerHTML="";
+    const cols=flow.cols, P=flow.P, ofPlugin=flow.ofPlugin, ofKey=flow.ofKey;
+    const avail=Math.max(300,Math.floor(flowBox.clientWidth)||880), narrow=avail<640;
+    const pill=narrow?78:104, gut=narrow?16:36;
+    const pillCols=cols.filter(c=>c.kind==="plugin").length,
+          keyCols=Math.max(1,cols.filter(c=>c.kind==="key").length);
+    const keyW=Math.max(narrow?138:186,
+      (avail-pill*pillCols-gut*(cols.length-1))/keyCols);
+    let x=0;
+    cols.forEach(c=>{ c.x=x; c.w=c.kind==="plugin"?pill:keyW; x+=c.w+gut; });
+    const W=Math.max(avail,x-gut);
+
+    cols.forEach(c=>{ c.h=c.items.reduce((a,it)=>a+it.h,0)+VGAP*(c.items.length-1); });
+    const H=Math.max.apply(null,cols.map(c=>c.h));
+
+    // Left to right, so every column orders itself by where the things feeding
+    // it already landed. A source column has nothing to its left and falls back
+    // to the catalog's own order.
+    const mid=it=>it.y+it.h/2;
+    cols.forEach(c=>{
+      c.items.forEach(it=>{
+        if(it.type==="thru"){ it.k1=mid(ofKey[it.edge.row.key]); it.k2=""; }
+        else if(it.type==="key"){ it.k1=mid(ofPlugin[it.row.publisher]); it.k2=it.row.key; }
+        else {
+          const feed=flow.keys.filter(r=>r.subs.indexOf(it.p.name)>=0);
+          it.k1=feed.length ? feed.reduce((a,r)=>a+mid(ofKey[r.key]),0)/feed.length
+                            : plugins.indexOf(it.p.name);
+          it.k2=it.p.name;
+        }
+      });
+      c.items.sort((a,b)=>(a.k1-b.k1)||String(a.k2).localeCompare(String(b.k2)));
+      let y=(H-c.h)/2;
+      c.items.forEach(it=>{ it.y=y; y+=it.h+VGAP; });
+    });
+
+    // Where each band meets a node. Both ends stack in the order of what they
+    // connect to, which is what keeps a bundle from braiding.
+    flow.names.forEach(n=>{
+      let y=ofPlugin[n].y;
+      P[n].keys.slice().sort((a,b)=>ofKey[a.key].y-ofKey[b.key].y)
+        .forEach(r=>{ r.pubY=y; y+=r.h; });
+      y=ofPlugin[n].y;
+      flow.edges.filter(e=>e.sub===n).sort((a,b)=>ofKey[a.row.key].y-ofKey[b.row.key].y)
+        .forEach(e=>{ e.endY=y; y+=UNIT; });
+    });
+    flow.edges.forEach(e=>{ if(e.sub===null){ e.startY=e.row.pubY; e.endY=ofKey[e.row.key].y; } });
+    flow.keys.forEach(r=>{
+      let y=ofKey[r.key].y;
+      flow.edges.filter(e=>e.row===r&&e.sub!==null).sort((a,b)=>a.endY-b.endY)
+        .forEach(e=>{ e.startY=y; y+=UNIT; });
+    });
+
+    const at={}; cols.forEach(c=>{ at[c.index]=c; });
+    const waypoints=e=>{
+      const from=at[e.from], to=at[e.to];
+      const pts=[{x:from.x+from.w,y:e.startY}];
+      for(let c=e.from+1;c<e.to;c++){
+        const col=at[c]; if(!col) continue;
+        const thru=col.items.filter(it=>it.type==="thru"&&it.edge===e)[0];
+        if(thru){ pts.push({x:col.x,y:thru.y}); pts.push({x:col.x+col.w,y:thru.y}); }
+      }
+      pts.push({x:to.x,y:e.endY});
+      return pts;
+    };
+
+    const root=svg("svg",{width:W,height:Math.ceil(H)+2,viewBox:"0 0 "+W+" "+(Math.ceil(H)+2),
+      class:narrow?"narrow":"",
+      role:"img","aria-label":flow.keys.length+" keys, "+
+        flow.edges.filter(e=>e.sub!==null).length+" subscriptions, across "+
+        flow.names.filter(n=>n).length+" plugins in "+pillCols+" columns"});
+
+    bands=[]; fnodes=[];
+    flow.edges.forEach(e=>{
+      const dead=e.sub===null ? !e.pub : !e.sub;
+      const el=svg("path",{d:ribbon(waypoints(e),e.h),class:"band"+(dead?" dead":"")});
+      if(!dead) el.style.setProperty("--ac",accentOf(e.pub||e.sub));
+      root.appendChild(el);
+      bands.push({el:el,key:e.row.key,pub:e.pub,sub:e.sub});
+    });
+
+    // A hover emphasises the whole path through the node, not just the bands
+    // touching it: a publisher lights the keys it announces and everyone acting
+    // on them, a subscriber lights the keys it hears and who published them, a
+    // key lights both its ends.
+    function pathThrough(kind,id){
+      if(kind==="key") return bands.filter(b=>b.key===id);
+      if(kind==="both"){
+        const out=pathThrough("pub",id), heard=pathThrough("sub",id);
+        return out.concat(heard.filter(b=>out.indexOf(b)<0));
+      }
+      const ks={};
+      if(kind==="pub"){
+        bands.forEach(b=>{ if(b.sub===null&&b.pub===id) ks[b.key]=1; });
+        return bands.filter(b=>ks[b.key]);
+      }
+      bands.forEach(b=>{ if(b.sub===id) ks[b.key]=1; });
+      return bands.filter(b=>b.sub===id||(ks[b.key]&&b.sub===null));
+    }
+
+    function wire(g,kind,id,onClick,plugin){
+      fnodes.push({el:g,kind:kind,id:id,plugin:plugin||null});
+      g.addEventListener("mouseenter",()=>{
+        const hot=pathThrough(kind,id), set=new Set(hot);
+        const ks={},pubs={},subs={};
+        hot.forEach(b=>{ ks[b.key]=1; if(b.sub===null) pubs[b.pub]=1; else subs[b.sub]=1; });
+        root.classList.add("lit");
+        bands.forEach(b=>b.el.classList.toggle("hot",set.has(b)));
+        fnodes.forEach(n=>n.el.classList.toggle("hot",
+          n.kind==="key" ? !!ks[n.id] : n.kind==="pub" ? !!pubs[n.id] : !!subs[n.id]));
+      });
+      g.addEventListener("mouseleave",()=>{
+        root.classList.remove("lit");
+        bands.forEach(b=>b.el.classList.remove("hot"));
+        fnodes.forEach(n=>n.el.classList.remove("hot"));
+      });
+      g.addEventListener("click",onClick);
+    }
+
+    const text=(x,y,cls,s,extra)=>{
+      const t=svg("text",Object.assign({x:x,y:y,class:cls,"dominant-baseline":"central"},extra||{}));
+      t.textContent=s; return t;
+    };
+
+    cols.forEach(col=>col.items.forEach(it=>{
+      if(it.type==="thru") return;
+      const g=svg("g",{class:"fnode"});
+      if(it.type==="plugin"){
+        const p=it.p, ac=p.name?accentOf(p.name):"";
+        if(!p.name) g.setAttribute("class","fnode none"); else g.style.setProperty("--ac",ac);
+        g.appendChild(svg("rect",{x:col.x,y:it.y,width:col.w,height:it.h,rx:6}));
+        const roles=[];
+        if(p.hears) roles.push("hears "+p.hears);
+        if(p.announces) roles.push(p.name ? "announces "+p.announces
+          : p.announces+(p.announces===1?" key":" keys"));
+        const cx=col.x+col.w/2, room=Math.floor((it.h-20)/13);
+        const lines=roles.filter(s=>s.length*(narrow?5.7:6.3)<=col.w-8)
+                         .slice(0,Math.max(0,room));
+        const top=it.y+it.h/2-lines.length*6.5;
+        g.appendChild(svg("title")).textContent=
+          (p.name||"nothing publishes these")+(roles.length?": "+roles.join(", "):"");
+        g.appendChild(text(cx,top,"nlab",p.name||"nobody",{"text-anchor":"middle"}));
+        lines.forEach((s,i)=>g.appendChild(text(cx,top+15+i*13,"nmeta",s,{"text-anchor":"middle"})));
+        wire(g,p.announces&&p.hears?"both":p.announces?"pub":"sub",p.name,
+          ()=>{ if(p.name) toggleChip(p.name); },p.name);
+      } else {
+        const r=it.row;
+        if(r.publisher) g.style.setProperty("--ac",accentOf(r.publisher));
+        g.appendChild(svg("rect",{x:col.x,y:it.y,width:col.w,height:it.h,rx:6}));
+        g.appendChild(svg("title")).textContent=r.key;
+        const cy=it.y+it.h/2;
+        g.appendChild(text(col.x+12,cy,"nlab",r.bare));
+        const wants=r.publisher?[r.subs.length+" heard",String(r.subs.length)]:["no publisher","none"];
+        const room=col.w-24-r.bare.length*(narrow?6.7:7.3)-14;
+        const meta=wants.filter(w=>w.length*(narrow?5.7:6.3)<=room)[0];
+        if(meta){
+          const t=text(col.x+col.w-12,cy,"nmeta",meta,{"text-anchor":"end"});
+          if(!r.publisher) t.style.fill="var(--red)";
+          g.appendChild(t);
+        }
+        wire(g,"key",r.key,()=>jumpTo(r.key));
+      }
+      root.appendChild(g);
+    }));
+
+    flowBox.appendChild(root);
+    legend();
+    syncFlow();
+  }
+
+  // Only the states on screen get a line.
+  function legend(){
+    const bits=['<span><span class="sw live"></span>a plugin acts on this key</span>'];
+    if(flow&&flow.orphans)
+      bits.push('<span><span class="sw gone"></span>nothing publishes this (a defect)</span>');
+    bits.push('<span>hover to trace a path &middot; click a key for its card, a plugin to filter</span>');
+    legendEl.innerHTML=bits.join("");
+  }
+
+  // The graph shows what the list shows: a key the filters have hidden fades,
+  // and so does a plugin whose chip is off.
+  function syncFlow(){
+    if(!bands.length) return;
+    const hidden={};
+    model.forEach(m=>{ if(m.el.classList.contains("hide")) hidden[m.key]=1; });
+    bands.forEach(b=>b.el.classList.toggle("off",!!hidden[b.key]));
+    fnodes.forEach(n=>{ if(n.plugin) n.el.classList.toggle("off",on[n.plugin]===false); });
+  }
+
+  // Clicking a key should always land on its card, so a filter hiding that card
+  // is lifted rather than leaving the click doing nothing.
+  function jumpTo(key){
+    const m=model.filter(m=>m.key===key)[0];
+    if(!m) return;
+    if(m.el.classList.contains("hide")){
+      q.value=""; clearBtn.classList.remove("on");
+      if(unpairedOnly){ unpairedOnly=false; unpairedBtn.classList.remove("on"); }
+      m.people.forEach(p=>{ if(!on[p]) toggleChip(p); });
+      filter();
+    }
+    const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
+    m.el.scrollIntoView({behavior:still?"auto":"smooth",block:"center"});
+    m.el.classList.remove("flash"); void m.el.offsetWidth; m.el.classList.add("flash");
   }
 
   let timer=null;
   q.addEventListener("input",()=>{ clearBtn.classList.toggle("on",q.value.length>0); clearTimeout(timer); timer=setTimeout(filter,110); });
   clearBtn.onclick=()=>{ q.value=""; clearBtn.classList.remove("on"); filter(); q.focus(); };
   unpairedBtn.onclick=()=>{ unpairedOnly=!unpairedOnly; unpairedBtn.classList.toggle("on",unpairedOnly); filter(); };
+
+  let rTimer=null;
+  window.addEventListener("resize",()=>{ clearTimeout(rTimer); rTimer=setTimeout(drawFlow,160); });
 
   fetch("events.json").then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
     .then(build)

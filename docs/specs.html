@@ -46,8 +46,24 @@
   .brand b{color:var(--cyan);font-weight:700}
   .brand .back{color:var(--muted);font-size:15px;transition:transform .14s,color .14s}
   .brand:hover .back{transform:translateX(-3px);color:var(--fg)}
-  .nav-inner .peer{font-family:var(--mono);font-size:12.5px;color:var(--muted);text-decoration:none}
-  .nav-inner .peer:hover{color:var(--fg)}
+  .navleft{display:flex;align-items:center;gap:10px;min-width:0}
+  .crumbs{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:12.5px;color:var(--muted);
+    white-space:nowrap;overflow:hidden}
+  .crumbs a{color:var(--muted);text-decoration:none}
+  .crumbs a:hover{color:var(--fg)}
+  .crumbs .sep{color:var(--line-h)}
+  .crumbs .here{color:var(--fg)}
+
+  /* the one page that lives under this one */
+  .child{display:inline-flex;align-items:center;gap:12px;margin-top:22px;text-decoration:none;
+    font-family:var(--mono);font-size:13px;color:var(--fg);
+    background:var(--deep);border:1px solid var(--line-2);border-radius:11px;padding:12px 17px;
+    transition:border-color .14s,background .14s}
+  .child:hover{border-color:color-mix(in srgb,var(--gold) 50%,transparent);background:var(--sea)}
+  .child .glyph{color:var(--gold)}
+  .child .sub{color:var(--muted);font-size:12px}
+  .child .arrow{color:var(--muted);transition:transform .14s}
+  .child:hover .arrow{transform:translateX(3px);color:var(--fg)}
 
   .wrap{max-width:1040px;margin:0 auto;padding:48px 22px 80px}
   .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--cyan);margin:0 0 16px}
@@ -137,14 +153,22 @@
 
 <nav class="sitenav">
   <div class="nav-inner">
-    <a class="brand" href="index.html"><span class="back">&larr;</span><img src="favicon.svg" alt=""><span>bridge<b>.ai</b></span></a>
-    <a class="peer" href="events.html">events</a>
+    <div class="navleft">
+      <a class="brand" href="index.html"><span class="back">&larr;</span><img src="favicon.svg" alt=""><span>bridge<b>.ai</b></span></a>
+      <span class="crumbs"><span class="sep">/</span><span class="here">Requirements</span></span>
+    </div>
   </div>
 </nav>
 
 <div class="wrap">
   <p class="eyebrow">bridge.ai &middot; specifications</p>
   <h1>Requirements</h1>
+
+  <a class="child" href="events.html">
+    <span class="glyph">&#9656;</span>
+    <span>Events<br><span class="sub">what each plugin announces, and who listens</span></span>
+    <span class="arrow">&rarr;</span>
+  </a>
 
   <div class="rig">
     <label class="searchbox">
@@ -165,7 +189,7 @@
   <div class="tree" id="tree"></div>
   <div class="empty" id="empty" style="display:none">nothing matches &mdash; try a shorter term or toggle a filter back on</div>
 
-  <p class="footnote"><a href="index.html">&larr; back to bridge.ai</a> &nbsp;&middot;&nbsp; <a href="events.html">events &rarr;</a></p>
+  <p class="footnote"><a href="index.html">&larr; back to bridge.ai</a></p>
 </div>
 
 <script>

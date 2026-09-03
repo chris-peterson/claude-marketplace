@@ -75,13 +75,30 @@ build needs a `shipyard` new enough to have them.
     unstyled above the fold and dark-only.
   - Colors resolve through the tokens, so **don't reintroduce a literal**: a
     chart that bakes one at draw time won't follow the toggle. The two chart
-    blocks redraw on the `themechange` event the toggle fires.
-- `docs/events.html` — the interop catalog: one card per announcement, showing
+    blocks redraw on the `themechange` event the toggle fires. The events flow
+    diagram needs no such hook: it sets `--ac` on the SVG nodes and leaves the
+    resolution to CSS, so the toggle reaches it without a redraw.
+- `docs/specs.html` — the requirements browser, and the parent of the events
+  page: the landing page links only here, and `events.html` hangs off the child
+  card under its title.
+- `docs/events.html` — the interop catalog, under Requirements in its
+  breadcrumb. It opens on a flow diagram whose **columns are the plugins**,
+  layered by who feeds whom, with the keys each one announces in the gutter to
+  its right — so a plugin that both hears and announces lands between the two it
+  sits between in the work, and a band reaching past the next plugin threads
+  through that column in a slot of its own. Below it, one card per announcement:
   the publisher, the key, when it fires, its body fields, and who subscribes.
-  Reads `docs/events.json`, and `docs/plugins.js` for the group each plugin is
-  in, which is where a card's accent comes from. A key with only one end renders
-  with that end dashed — subscribed-with-no-publisher leads the page, since it
-  is always a defect.
+  Diagram and cards are laid out from the same rows, so the search and chips
+  below fade the bands above, hovering a node traces the whole path through it,
+  and clicking a key opens its card. Reads `docs/events.json`, and
+  `docs/plugins.js` for the group each plugin is in, which is where a card's
+  accent comes from.
+  - **A key with one end belongs to the catalog, not the picture.** The diagram
+    draws only what something listens for. A published key nobody subscribes to
+    gets its own amber box above the list, matching how the contract treats it:
+    a warn, not a failure, since the two halves ship from separate repos and one
+    lands first. Subscribed-with-no-publisher does draw, dashed off a `nobody`
+    node, and leads the page — that one is always a defect.
 - `docs/favicon.svg` — the bridge.ai mark (also the nav/footer mark, inline).
 - `issue.md` — roadmap note for a possible next pass.
 - The former docsify files (`docs/README.md`, `relationships.md`, `_sidebar.md`)
