@@ -1,4 +1,4 @@
-# The plugin interop contract
+# The plugin events contract
 
 How one bridge.ai plugin tells another that something happened.
 
@@ -24,7 +24,7 @@ codes.bridgeai.<plugin>/<entity>.<event> {"uri":"…"}
 ```
 
 ```text
-codes.bridgeai.anchor/cr.created {"uri":"https://github.com/o/r/pull/3533","title":"Add the interop contract"}
+codes.bridgeai.anchor/cr.created {"uri":"https://github.com/o/r/pull/3533","title":"Add the events contract"}
 ```
 
 | Part | Rule |
@@ -295,7 +295,7 @@ So every new subscriber owes both halves:
 Every key in the suite, until the manifests above are what the catalog is built
 from. `State` is `agreed` for a key both sides have settled on, and `wired` once
 both ends are emitting and matching it. The declarations themselves are rendered
-at [bridge.ai / Events](https://chris-peterson.github.io/claude-marketplace/events.html),
+at [bridge.ai / Events](https://chris-peterson.github.io/claude-marketplace/spec/events),
 which pairs each published key with whoever subscribes to it.
 
 | Key | Publisher | Subscriber | Body | State |

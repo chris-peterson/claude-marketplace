@@ -21,7 +21,7 @@ plugins-data:
 specs-data:
     python3 suite/build-specs-data.py
 
-# Generate docs/events.json — the interop catalog, pairing each published key
+# Generate docs/events.json — the events catalog, pairing each published key
 # with the plugins that subscribe to it.
 events-data:
     shipyard gen-events-json

@@ -321,7 +321,7 @@
   [hidden]{display:none!important}
   .prow{cursor:pointer}
 
-  /* ---------- composition: artifact donut + interop radar ---------- */
+  /* ---------- composition: artifact donut + activity radar ---------- */
   .details{display:grid;grid-template-columns:300px 1fr;gap:28px;margin-top:20px;align-items:start}
   @media(max-width:760px){.details{grid-template-columns:1fr}}
   .panel{border:1px solid var(--line-2);border-radius:14px;background:var(--deep);padding:20px 22px}
@@ -343,13 +343,13 @@
   .dlegend.clickable .row:hover{background:var(--tint-hover);color:var(--fg)}
   .dlegend .sw{width:11px;height:11px;border-radius:3px}
   .dlegend .ct{color:var(--fg);font-variant-numeric:tabular-nums}
-  .interop svg{width:100%;height:auto;display:block}
+  .activity svg{width:100%;height:auto;display:block}
   .panel .ihint{font-family:var(--mono);font-size:11.5px;line-height:1.5;color:var(--muted);margin:-6px 0 4px}
   .panel .ihint b{color:var(--fg);font-weight:500}
   /* tooltip-cursor standard: a hover that reveals the shared tooltip shows
      cursor:help; cursor:pointer is reserved for a click that drills/navigates.
      Decorative SVG text is inert, so it never shows the text I-beam. */
-  .interop text{font-family:var(--mono);pointer-events:none;user-select:none}
+  .activity text{font-family:var(--mono);pointer-events:none;user-select:none}
   /* sonar ping sweeps out from the helm; watcher plugins (ClaudeWatch, beacon)
      light up as the ping reaches their ring — they observe and react. The
      reaction is delayed to the moment the ping crosses the node radius (R/maxR
@@ -497,7 +497,7 @@
         <a href="#plugins">plugins</a>
         <a href="#session">example</a>
         <a href="#changelog">changelog</a>
-        <a href="specs.html">specs</a>
+        <a href="spec/requirements.html">spec</a>
       </div>
   </div>
 </nav>
@@ -561,7 +561,7 @@
     </div>
   </section>
 
-  <!-- ============ PLUGIN DETAILS (artifact breakdown + interop) ============ -->
+  <!-- ============ PLUGIN DETAILS (artifact breakdown + activity) ============ -->
   <section id="details">
     <h3 class="subhead"><a class="secanchor" href="#details">Plugin interactions</a></h3>
     <div class="details reveal">
@@ -576,7 +576,7 @@
           <div class="dlegend" id="donut-legend"></div>
         </div>
       </div>
-      <div class="panel interop">
+      <div class="panel activity">
         <h3>Activity — radar scope</h3>
         <p class="ihint">Each blip is a plugin at its category bearing. The pulse alternates <b style="color:var(--claude)">Claude</b> and <b>user</b> activity — each plugin flares for the activity it reacts to.</p>
         <svg id="radar" viewBox="0 0 360 300" aria-hidden="true"></svg>
@@ -595,7 +595,7 @@
 
   <footer class="sitefoot">
     <div class="fpages">
-      <a class="fspecs" href="specs.html">
+      <a class="fspecs" href="spec/requirements.html">
         <span class="glyph">&#9656;</span>
         <span>Specifications<br><span class="sub">requirements by plugin and category, and the events they announce</span></span>
         <span class="arrow">&rarr;</span>
@@ -757,7 +757,7 @@
     if(a.classList.contains("anchorlink") && location.hash===a.getAttribute("href")) route();
   });
 
-  // ---- composition: artifact-type donut + interop radar, both from PLUGINS ----
+  // ---- composition: artifact-type donut + activity radar, both from PLUGINS ----
   (function(){
     // shared: plugin order (category order) + a CSS-color resolver (var()/color-mix → rgb)
     const order=GROUPS.flatMap((g)=>MEMBERS[g.key]);

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>bridge.ai — Requirements</title>
 <meta name="description" content="Requirements for every bridge.ai plugin, grouped by category.">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900&family=JetBrains+Mono:wght@400;500;700&family=Spline+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -154,7 +154,7 @@
 <nav class="sitenav">
   <div class="nav-inner">
     <div class="navleft">
-      <a class="brand" href="index.html"><span class="back">&larr;</span><img src="favicon.svg" alt=""><span>bridge<b>.ai</b></span></a>
+      <a class="brand" href="../index.html"><span class="back">&larr;</span><img src="../favicon.svg" alt=""><span>bridge<b>.ai</b></span></a>
       <span class="crumbs"><span class="sep">/</span><span class="here">Requirements</span></span>
     </div>
   </div>
@@ -189,7 +189,7 @@
   <div class="tree" id="tree"></div>
   <div class="empty" id="empty" style="display:none">nothing matches &mdash; try a shorter term or toggle a filter back on</div>
 
-  <p class="footnote"><a href="index.html">&larr; back to bridge.ai</a></p>
+  <p class="footnote"><a href="../index.html">&larr; back to bridge.ai</a></p>
 </div>
 
 <script>
@@ -338,7 +338,7 @@
   document.getElementById("tReq").onclick=function(){ scopeReq=!scopeReq; this.classList.toggle("on",scopeReq); filter(); };
   expandBtn.onclick=()=>{ allOpen=!allOpen; expandBtn.textContent=allOpen?"collapse all":"expand all"; if(!q.value.trim()) reset(); };
 
-  fetch("specs.json").then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
+  fetch("../specs.json").then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
     .then(data=>{ build(data.plugins||[]); updateCount(""); })
     .catch(err=>{ treeEl.style.display="none";
       document.getElementById("empty").style.display="block";

@@ -15,6 +15,9 @@ page that showcases the suite.
   generate `docs/plugins.js`, then `python3 -m http.server` from `docs/` and open
   `index.html`. (Hash routing + the relative favicon want HTTP, not `file://`;
   `plugins.js` is git-ignored, so the doc site is blank without that build.)
+- **Committing a new page under `docs/`** takes `git add -f`: `.gitignore` holds
+  `docs/*` for the generated data files, so a new source file there is ignored
+  until it is tracked.
 - **Plugin registry:** `plugins.yml` is the roster — this marketplace's identity,
   which plugins it ships, and the order they list in. `shipyard
   gen-marketplace-json` projects it plus each plugin's own `plugin.yml` into
@@ -53,7 +56,7 @@ dispatch token. The scripts:
 *aggregator* (`plugins.yml`) and the siblings as its spokes: `shipyard
 gen-plugins-js` writes `docs/plugins.js` (the catalog's groups and per-plugin
 copy), `shipyard gen-events-json` writes `docs/events.json` (each published
-interop key paired with the plugins that subscribe to it, from both sides'
+event key paired with the plugins that subscribe to it, from both sides'
 `events:` blocks), and `shipyard gen-artifacts-json` writes `docs/artifacts.json`
 (the growth view's series, changelog, and releases). A change to any of those
 projections is a change in that repo. `just build` runs all three, so a local
@@ -67,8 +70,8 @@ build needs a `shipyard` new enough to have them.
   `chris-peterson.github.io`: `/css/tokens.css` (palette and typefaces),
   `/css/titlebar.css`, and `/js/docsify-shared.js` for `initTitlebar()`. That's
   what gives this page the same header, breadcrumb, blog link, and day/night
-  toggle as every plugin's docsify site. `specs.html` and `events.html` take the
-  same three.
+  toggle as every plugin's docsify site. `spec/requirements.html` and
+  `spec/events.html` take the same three.
   - **Local preview needs both trees**, since those paths resolve at the domain
     root: serve a directory with the hub's `docs/` at the root and this `docs/`
     under `claude-marketplace/`. Serving this `docs/` alone leaves the page
@@ -78,16 +81,20 @@ build needs a `shipyard` new enough to have them.
     blocks redraw on the `themechange` event the toggle fires. The events flow
     diagram needs no such hook: it sets `--ac` on the SVG nodes and leaves the
     resolution to CSS, so the toggle reaches it without a redraw.
-- `docs/specs.html` — the requirements browser, and the parent of the events
-  page: the landing page links only here, and `events.html` hangs off the child
-  card under its title.
-- `docs/events.html` — the interop catalog, under Requirements in its
-  breadcrumb. It opens on a flow diagram whose **columns are the plugins**,
-  layered by who feeds whom, with the keys each one announces in the gutter to
-  its right — so a plugin that both hears and announces lands between the two it
-  sits between in the work, and a band reaching past the next plugin threads
-  through that column in a slot of its own. Below it, one card per announcement:
-  the publisher, the key, when it fires, its body fields, and who subscribes.
+- `docs/spec/index.html` — sends `/spec` to the requirements page, so the
+  section root lands somewhere.
+- `docs/spec/requirements.html` (served at `/spec/requirements`) — the
+  requirements browser, and the parent of the events page: the landing page
+  links only here, and `spec/events.html` hangs off the child card under its
+  title.
+- `docs/spec/events.html` (served at `/spec/events`) — the events catalog,
+  under Requirements in its breadcrumb. It opens on a flow diagram whose
+  **columns are the plugins**, layered by who feeds whom, with the keys each one
+  announces in the gutter to its right — so a plugin that both hears and
+  announces lands between the two it sits between in the work, and a band
+  reaching past the next plugin threads through that column in a slot of its
+  own. Below it, one card per announcement: the publisher, the key, when it
+  fires, its body fields, and who subscribes.
   Diagram and cards are laid out from the same rows, so the search and chips
   below fade the bands above, hovering a node traces the whole path through it,
   and clicking a key opens its card. Reads `docs/events.json`, and
