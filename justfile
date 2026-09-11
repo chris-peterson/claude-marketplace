@@ -1,3 +1,7 @@
+# <-
+default:
+    @just --list
+
 # Serve docs/ with docsify and open a browser.
 docs:
     docsify serve docs --open
