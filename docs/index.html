@@ -175,9 +175,6 @@
   .fgroup .gwhy{color:var(--muted);font-size:14px}
   .fleet{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
   .fleet.solo{grid-template-columns:1fr}
-  /* collapsed rows stretch to equal height (default); once a card is open, drop
-     the stretch so its peer keeps its own height instead of growing empty. */
-  .fleet:has(.ship.open){align-items:start}
   @media(max-width:780px){.fleet{grid-template-columns:1fr}}
 
   .ship{position:relative;display:flex;flex-direction:column;border:1px solid var(--line-2);border-radius:14px;padding:22px;scroll-margin-top:82px;
@@ -209,19 +206,10 @@
     background:color-mix(in srgb,var(--ac) 9%,transparent)}
   .ship .ver{align-self:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--muted);
     border:1px solid var(--line-2);border-radius:5px;padding:2px 7px;font-variant-numeric:tabular-nums}
-  /* whole-card artifact expander: a chevron at the far right of the header
-     toggles the card open, revealing its artifact breakdown. A click anywhere on
-     the card body toggles too; the title link, the docs/source icons, and the
-     install button keep their own actions. Replaces the old <details> subpanel. */
-  .ship:has(.cardtoggle){cursor:pointer}
-  .ship .cardtoggle{align-self:center;flex:none;background:none;border:0;padding:2px;cursor:pointer;
-    color:var(--muted);font-size:12px;line-height:1;display:inline-flex;transition:transform .2s,color .2s}
-  .ship .cardtoggle::before{content:"\25BE"}
-  .ship .cardtoggle:hover,.ship.open .cardtoggle{color:var(--ac)}
-  .ship.open .cardtoggle{transform:rotate(180deg)}
-  .ship .compbody{display:none;margin:13px 0 0;border-top:1px solid var(--line-2);padding-top:12px;
+  /* the artifact breakdown, under a hairline that separates what the plugin is
+     from what it ships */
+  .ship .compbody{display:flex;margin:13px 0 0;border-top:1px solid var(--line-2);padding-top:12px;
     flex-direction:column;gap:8px}
-  .ship.open .compbody{display:flex}
   .ship .compcat{display:grid;grid-template-columns:68px 1fr;gap:11px;align-items:baseline;font-family:var(--mono);font-size:11.5px}
   .ship .compk{color:var(--ac)}
   .ship .compv{color:var(--muted);word-break:break-word;line-height:1.55}
@@ -436,7 +424,7 @@
   @media(max-width:560px){.changelog .clrow{grid-template-columns:78px 1fr;row-gap:3px}
     .changelog .clchange{grid-column:1/-1}}
 
-  /* site footer — a spec-browser call-to-action plus the repo link */
+  /* site footer — a spec-browser call-to-action, the byline, and this site's source */
   .sitefoot{margin-top:64px;padding-top:30px;border-top:1px solid var(--line-h);
     display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
   .sitefoot .fspecs{display:inline-flex;align-items:center;gap:12px;text-decoration:none;
@@ -448,7 +436,8 @@
   .sitefoot .fspecs .arrow{color:var(--muted);transition:transform .14s}
   .sitefoot .fspecs:hover .arrow{transform:translateX(3px);color:var(--fg)}
   .sitefoot .fpages{display:flex;flex-wrap:wrap;gap:12px}
-  .sitefoot .fmeta{font-family:var(--mono);font-size:11.5px;color:var(--faint);letter-spacing:.04em}
+  .sitefoot .fmeta{display:flex;flex-direction:column;align-items:flex-end;gap:5px;
+    font-family:var(--mono);font-size:11.5px;color:var(--faint);letter-spacing:.04em}
   .sitefoot .fmeta a{color:var(--muted)}
   .sitefoot .fmeta a:hover{color:var(--fg)}
 </style>
@@ -601,7 +590,10 @@
         <span class="arrow">&rarr;</span>
       </a>
     </div>
-    <span class="fmeta"><a href="https://github.com/chris-peterson/claude-marketplace" target="_blank" rel="noopener">github.com/chris-peterson/claude-marketplace</a></span>
+    <span class="fmeta">
+      <a href="https://github.com/chris-peterson" target="_blank" rel="noopener">github.com/chris-peterson</a>
+      <a href="https://github.com/chris-peterson/claude-marketplace" target="_blank" rel="noopener">source</a>
+    </span>
   </footer>
 
   </div><!-- /#home -->
@@ -615,9 +607,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4" defer></script>
 <script>
   const docsUrl = (s)=>`https://chris-peterson.github.io/${s}/#/`;
-  const srcUrl  = (s)=>`https://github.com/chris-peterson/${s}`;
   const COPY_ICO = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
-  const GH_ICO = `<svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 .2a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38l-.01-1.49c-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.13 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.11.16 1.93.08 2.13.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A8 8 0 0 0 8 .2Z"/></svg>`;
   const LINK_ICO = `<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 0 1 0 10h-2"/><path d="M8 12h8"/></svg>`;
 
   // escape a string for use inside a double-quoted HTML/SVG attribute (data-tip, etc.)
@@ -645,10 +635,9 @@
     if(e.target.closest&&e.target.closest("[data-tip]")) placeTip(e.clientX,e.clientY); });
   document.addEventListener("mouseout",(e)=>{ if(e.target.closest&&e.target.closest("[data-tip]")) hideTip(); });
 
-  // ---- routing: a #/<slug> hash scrolls to, expands, and highlights that
-  // plugin's card, so a shared link lands on its full detail with clear emphasis.
-  // The card's anchor icon is how you get that link; the title and source icon
-  // are the ways out to the external sites. ----
+  // ---- routing: a #/<slug> hash scrolls to and highlights that plugin's card,
+  // so a shared link lands on it with clear emphasis. The card's anchor icon is
+  // how you get that link; the title is the way out to the plugin's own site. ----
   function route(){
     const m=location.hash.match(/^#\/(.+)$/);
     if(!m || !PLUGINS[m[1]]) return;
@@ -656,10 +645,6 @@
     if(!card) return;
     const rm=matchMedia("(prefers-reduced-motion:reduce)").matches;
     document.querySelectorAll("#catalog .ship.linked").forEach((c)=>{ if(c!==card) c.classList.remove("linked"); });
-    if(card.querySelector(".compbody") && !card.classList.contains("open")){
-      card.classList.add("open");
-      const t=card.querySelector(".cardtoggle"); if(t) t.setAttribute("aria-expanded","true");
-    }
     card.classList.add("linked");
     card.scrollIntoView({behavior:rm?"auto":"smooth",block:"center"});
     card.classList.remove("flash"); void card.offsetWidth; card.classList.add("flash");
@@ -684,8 +669,6 @@
   GROUPS.forEach(g=> MEMBERS[g.key].forEach((slug,idx)=>{ PLUGIN_AC[slug]=accentVar(g.accent,idx); }));
   // ---- artifact inventory (from plugins.js `components`, derived from suite/artifacts.csv) ----
   const COMP_ORDER=["skills","rules","hooks","commands","agents"];
-  const compSummary=(c)=> COMP_ORDER.filter(k=>c[k]&&c[k].length)
-    .map(k=>`${c[k].length} ${c[k].length===1?k.slice(0,-1):k}`).join(" · ");
   // each artifact name is a hoverable chip; if the plugin's plugin.yml declares a
   // `describe:` entry for it (suite: describe: <category>: <name>: "..."), the name
   // carries a data-tip explaining what it's for.
@@ -698,13 +681,12 @@
   const catCard=(slug)=>{
     const p=PLUGINS[slug];
     const cmd=`claude plugin install ${slug}@chris-peterson`;
-    const comps=p.components && compSummary(p.components);
+    const compHtml=p.components ? compDetails(p) : ``;
     // The title — favicon + name as one link — is the card's primary CTA, out to
     // the plugin's own doc site. The cli mark goes to that site's command
     // reference where there is one, since a reader who notices the mark is asking
-    // what the commands are. The anchor icon copies this card's `#/<slug>` link
-    // (which scrolls to + highlights it); the source icon goes to the repo; the
-    // far-right chevron (or a click on the card body) reveals the artifacts.
+    // what the commands are. The anchor icon copies this card's `#/<slug>` link,
+    // which scrolls to and highlights it.
     return `<article class="ship" data-slug="${slug}" style="--ac:${PLUGIN_AC[slug]}">`+
       `<div class="head">`+
       `<a class="pnamelink" href="${docsUrl(slug)}"><img src="https://chris-peterson.github.io/${slug}/favicon.svg" alt=""><h3>${slug}</h3></a>`+
@@ -713,11 +695,9 @@
         : `<span class="cli">cli</span>`):``)+
       (p.version?`<span class="ver">v${p.version}</span>`:``)+
       `<a class="iconbtn anchorlink" href="#/${slug}" aria-label="Copy link to the ${slug} card">${LINK_ICO}</a>`+
-      `<a class="iconbtn srclink" href="${srcUrl(slug)}" target="_blank" rel="noopener" aria-label="${slug} source on GitHub">${GH_ICO}</a>`+
-      (comps?`<button class="cardtoggle" type="button" aria-expanded="false" aria-label="Show ${slug} artifacts: ${comps}"></button>`:``)+
       `</div>`+
       `<p class="what">${p.pitch||p.what}</p>`+
-      (comps?`<div class="compbody">${compDetails(p)}</div>`:``)+
+      (compHtml?`<div class="compbody">${compHtml}</div>`:``)+
       `<div class="pacts"><button class="cmdcopy" data-cmd="${cmd}"><span class="cc-cmd"><span class="cc-nb">claude plugin install</span> <span class="cc-nb">${slug}@chris-peterson</span></span><span class="cc-ico">${COPY_ICO}</span></button></div></article>`;
   };
   document.getElementById("catalog").innerHTML = GROUPS.map(g=>
@@ -725,19 +705,6 @@
       `<div class="ghead"><a class="gtag" href="#g-${g.key}">${g.tag}</a></div>`+
       `<div class="fleet${MEMBERS[g.key].length===1?' solo':''}">${MEMBERS[g.key].map(catCard).join("")}</div></div>`
   ).join("");
-
-  // ---- card expander: the header chevron (or a click on the card body) toggles
-  // the artifact breakdown open. The title/anchor/source links and the install
-  // button keep their own actions; an in-progress text selection wins over it. ----
-  document.querySelectorAll("#catalog .ship").forEach((card)=>{
-    if(!card.querySelector(".compbody")) return;
-    card.addEventListener("click",(e)=>{
-      if(e.target.closest("a,.cmdcopy,code")) return;
-      if(window.getSelection && String(window.getSelection()).trim()) return;
-      const open=card.classList.toggle("open");
-      const t=card.querySelector(".cardtoggle"); if(t) t.setAttribute("aria-expanded", open?"true":"false");
-    });
-  });
 
   // ---- copy-to-clipboard (delegated) ----
   document.addEventListener("click",(e)=>{
