@@ -3,7 +3,7 @@
 # release workflows can dispatch to this repo. Use it to pre-provision every
 # plugin, add a new one, or rotate the token (just re-run with a fresh value).
 #
-#   bash suite/set-dispatch-secret.sh            # all plugins in marketplace.json
+#   bash suite/set-dispatch-secret.sh            # every plugin on the roster
 #   bash suite/set-dispatch-secret.sh anchor     # just one repo
 #
 # The token is read from $MARKETPLACE_DISPATCH_TOKEN or prompted for, and piped
@@ -18,9 +18,14 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-MANIFEST="$ROOT/.claude-plugin/marketplace.json"
-owner="$(jq -r '.owner.name' "$MANIFEST")"
 target="$(git -C "$ROOT" remote get-url origin | sed -E 's#^(git@github\.com:|https://github\.com/)##; s#\.git$##')"
+owner="${target%%/*}"
+
+# The roster comes from plugins.yml, like sync.sh's, rather than from the
+# manifest this repo publishes: CI regenerates that manifest, so a plugin added
+# to the roster is absent from it until the next deploy — and a plugin that was
+# just added is exactly the one whose release needs the secret.
+roster="$(shipyard roster --root "$ROOT" | cut -f1)"
 
 token="${MARKETPLACE_DISPATCH_TOKEN:-}"
 if [ -z "$token" ]; then
@@ -66,8 +71,10 @@ echo "can repository_dispatch to $target"
 
 if [ $# -ge 1 ]; then
   names="$1"
+  printf '%s\n' "$roster" | grep -qx -- "$1" \
+    || echo "note: $1 is not on the plugins.yml roster"
 else
-  names="$(jq -r '.plugins[].name' "$MANIFEST")"
+  names="$roster"
 fi
 
 for name in $names; do

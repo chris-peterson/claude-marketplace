@@ -17,6 +17,7 @@ plugins:
   - tack
   - beacon
   - anchor
+  - mate
   - sextant
   - cleat
 

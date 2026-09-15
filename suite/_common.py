@@ -2,7 +2,6 @@
 plugin's descriptor, and how to read/diff/replay its artifact set. Sibling
 plugin repos are checked out beside this repo.
 """
-import json
 import os
 import pathlib
 import subprocess
@@ -11,7 +10,7 @@ import yaml
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 WORKSPACE = ROOT.parent
-MANIFEST = ROOT / ".claude-plugin" / "marketplace.json"
+ROSTER = ROOT / "plugins.yml"
 
 # Artifact categories, in the column order of suite/artifacts.csv. count_dir's
 # rule (one skill per dir, one rule/hook/command/agent per file) maps to the
@@ -22,7 +21,11 @@ PLURAL = {v: k for k, v in SINGULAR.items()}  # skill  -> skills
 
 
 def plugin_names() -> list[str]:
-    return [p["name"] for p in json.loads(MANIFEST.read_text())["plugins"]]
+    """The roster, read from plugins.yml rather than from the manifest this repo
+    publishes: CI regenerates that manifest, so a plugin added to the roster is
+    absent from it until the next deploy — and a local run would skip exactly
+    the plugin that was just added."""
+    return yaml.safe_load(ROSTER.read_text())["plugins"]
 
 
 def load_plugin(name: str) -> dict | None:

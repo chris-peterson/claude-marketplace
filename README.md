@@ -34,6 +34,10 @@ Screens every shell command — and the code Claude writes to disk — before it
 
 Write your project's instructions once, in the file every AI tool reads. AGENTS.md is the file about 30 of them read; Claude Code reads CLAUDE.md and nothing else, so guidance kept in either one alone reaches half your tools. cleat holds a repo in the shape that satisfies both.
 
+### [mate](https://chris-peterson.github.io/mate/#/) — reach your waypoints
+
+Makes the change itself, in the two shapes it comes in. `/mate:fix` drives a defect from symptom to shipped fix: root cause, a test that fails for the reason the bug exists, then a sweep for the same bug class. `/mate:feature` adds a capability against the patterns already in the codebase. Between them, one line naming the phase that comes next.
+
 ### [sextant](https://chris-peterson.github.io/sextant/#/) — write it down
 
 Keeps a plain-language spec — what the code must do — under source control, and reconciles it with the code in either direction. Written for specs that lag the code as often as they lead it.

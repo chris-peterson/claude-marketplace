@@ -52,6 +52,6 @@ build: sync plugins-data specs-data events-data artifacts-data
 test:
     cd suite && python3 -m unittest
 
-# Fan MARKETPLACE_DISPATCH_TOKEN out to every plugin repo (prompts for the PAT).
-set-dispatch-secret:
-    bash suite/set-dispatch-secret.sh
+# Fan MARKETPLACE_DISPATCH_TOKEN out to the roster, or one named plugin (prompts for the PAT).
+set-dispatch-secret name="":
+    bash suite/set-dispatch-secret.sh {{name}}
