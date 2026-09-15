@@ -54,3 +54,4 @@ date,at,plugin,skills,rules,hooks,commands,agents,change
 2026-08-28,2026-08-28T23:51:34Z,tack,2,0,5,1,0,-skill:tack +command:install-tack
 2026-08-31,2026-08-31T14:19:34-07:00,anchor,9,3,2,0,0,+skill:backlog -skill:issues
 2026-09-03,2026-09-03T00:14:39Z,tack,2,0,6,1,0,+hook:record-landed
+2026-09-14,2026-09-14T19:28:04-07:00,mate,2,0,3,0,0,+skill:feature +skill:fix +hook:hooks +hook:nudge +hook:react
