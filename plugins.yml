@@ -18,8 +18,8 @@ plugins:
   - beacon
   - anchor
   - mate
-  - sextant
   - cleat
+  - sextant
 
 # The rolling log of each plugin's named artifacts, which the growth view plots.
 artifacts: suite/artifacts.csv
