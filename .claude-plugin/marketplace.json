@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "ClaudeWatch",
-      "description": "PreToolUse hook that screens shell commands and the code Claude writes to disk for safety, via 'claude-watchdog'",
+      "description": "Screens every shell command and every file Claude writes, before either lands. Blocks the dangerous, asks on anything that changes state.",
       "author": {
         "name": "chris-peterson"
       },
@@ -21,7 +21,7 @@
     },
     {
       "name": "shipshape",
-      "description": "Know what's changing in your Claude Code harness and keep it current — every Claude Code upgrade handled, every plugin reconciled, updated, and pruned.",
+      "description": "Know what's changing in your Claude Code harness and keep it current: every Claude Code upgrade handled, every plugin reconciled, updated, and pruned.",
       "author": {
         "name": "chris-peterson"
       },
@@ -34,7 +34,7 @@
     },
     {
       "name": "tack",
-      "description": "Route tracker for AI-assisted development work — pivots, deliverables, and dependencies — across session boundaries",
+      "description": "Route tracker for AI-assisted development work (pivots, deliverables and dependencies) across session boundaries.",
       "author": {
         "name": "chris-peterson"
       },
@@ -47,7 +47,7 @@
     },
     {
       "name": "beacon",
-      "description": "At-a-glance awareness across concurrent Claude Code sessions — a terminal-agnostic sessions view plus iTerm2 per-pane painting.",
+      "description": "At-a-glance awareness across concurrent Claude Code sessions: a Claude Code status line, a CLI and browser dashboard on any terminal, and painted iTerm2 chrome.",
       "author": {
         "name": "chris-peterson"
       },
@@ -73,7 +73,7 @@
     },
     {
       "name": "mate",
-      "description": "The two skills that make the change — /fix for a defect, /feature for a capability — plus a hook that names the phase you are about to enter next.",
+      "description": "An event hub for the bridge.ai plugins: reacts to what each one announces, and names what to run next.",
       "author": {
         "name": "chris-peterson"
       },
@@ -85,21 +85,8 @@
       "homepage": "https://chris-peterson.github.io/mate/#/"
     },
     {
-      "name": "sextant",
-      "description": "AI-assisted, best-effort SPEC-driven development — keep requirements in source control, track how the code covers them, reconcile the two either direction.",
-      "author": {
-        "name": "Chris Peterson"
-      },
-      "source": {
-        "source": "url",
-        "url": "https://github.com/chris-peterson/sextant.git"
-      },
-      "category": "development",
-      "homepage": "https://chris-peterson.github.io/sextant/#/"
-    },
-    {
       "name": "cleat",
-      "description": "Keep a repo's agent instructions in one AGENTS.md that every tool reads, with CLAUDE.md reduced to a pointer at it.",
+      "description": "Keep a repo's instructions in one AGENTS.md that every agent reads, with CLAUDE.md reduced to a pointer at it.",
       "author": {
         "name": "chris-peterson"
       },
@@ -122,6 +109,19 @@
           ]
         }
       }
+    },
+    {
+      "name": "sextant",
+      "description": "AI-assisted, best-effort spec-driven development: keep requirements in source control, track how the code covers them, reconcile the two either direction.",
+      "author": {
+        "name": "Chris Peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/sextant.git"
+      },
+      "category": "development",
+      "homepage": "https://chris-peterson.github.io/sextant/#/"
     }
   ]
 }
