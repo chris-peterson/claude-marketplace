@@ -659,11 +659,12 @@
   const MEMBERS={}; GROUPS.forEach(g=> MEMBERS[g.key]=[]);
   Object.keys(PLUGINS).forEach((slug)=>{ const k=PLUGINS[slug].group;
     if(MEMBERS[k]) MEMBERS[k].push(slug); });
-  // each plugin's accent = its group color, lightened a step per same-group
-  // sibling so the two cards in a group are distinct — matching the growth chart's
-  // brightness banding (.26 + .2·shade). shade 0 stays the base token.
+  // each plugin's accent = its group color, stepped once per same-group sibling so
+  // the cards in a group are distinct (.26 + .2·shade). The step moves away from
+  // the page, not toward white: mixing toward white on a light surface walks the
+  // colour into the background, which took the shaded plugins under 2:1.
   const accentVar=(token,shade)=> shade
-    ? `color-mix(in srgb, var(${token}) ${Math.round((1-(.26+.2*shade))*100)}%, white)`
+    ? `color-mix(in srgb, var(${token}) ${Math.round((1-(.26+.2*shade))*100)}%, light-dark(black, white))`
     : `var(${token})`;
   const PLUGIN_AC={};
   GROUPS.forEach(g=> MEMBERS[g.key].forEach((slug,idx)=>{ PLUGIN_AC[slug]=accentVar(g.accent,idx); }));
@@ -884,8 +885,13 @@
     const sec=document.getElementById("changelog"); if(!sec) return;
     const hex=(tok)=>{ const s=document.createElement("span"); s.style.cssText="color:var("+tok+");display:none";
       document.body.appendChild(s); const v=getComputedStyle(s).color; s.remove(); return v; };
-    const lighten=(c,a)=>{ const [r,g,b]=c.match(/\d+/g).map(Number),
-      m=(x)=>Math.round(x+(255-x)*a); return `rgb(${m(r)},${m(g)},${m(b)})`; };
+    // Steps away from the page surface: toward white on a dark page, toward black
+    // on a light one. Always mixing toward white sank the shaded plugins into a
+    // light background.
+    const shadeStep=(c,a)=>{ const [r,g,b]=c.match(/\d+/g).map(Number),
+      t=matchMedia("(prefers-color-scheme: dark)").matches
+        || getComputedStyle(document.documentElement).colorScheme==="dark" ? 255 : 0,
+      m=(x)=>Math.round(x+(t-x)*a); return `rgb(${m(r)},${m(g)},${m(b)})`; };
     const whenReady=(cb)=> window.Chart ? cb() : setTimeout(()=>whenReady(cb),50);
     // A release's hover card shows the teaser the build extracted from the notes
     // — the alert a release leads with, then each section's heading and the lead
@@ -941,7 +947,7 @@
       // The group rides in artifacts.json rather than being read from PLUGINS: a
       // retired plugin still has a band to draw and no catalog card to read.
       const colorFor=(p)=>{ const c=data.colors[p]; if(!c) return hex("--muted");
-        const base=hex(ACCENT[c.group]); return c.shade ? lighten(base, .26+.2*c.shade) : base; };
+        const base=hex(ACCENT[c.group]); return c.shade ? shadeStep(base, .26+.2*c.shade) : base; };
       const esc=(v)=>String(v||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;");
       // Every event here is an instant, and which calendar day it lands on is
       // the reader's to decide — so rows are bucketed into local days here
