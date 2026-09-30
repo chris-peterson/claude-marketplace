@@ -124,8 +124,15 @@ parsing what follows:
 ```bash
 input=$(cat)
 output=$(printf '%s' "$input" | jq -r '.tool_response.stdout // empty' 2>/dev/null) || exit 0
-line=$(printf '%s' "$output" | grep -m1 '^codes\.bridgeai\.anchor/cr\.created[[:space:]]') || exit 0
-uri=$(printf '%s' "${line#* }" | jq -r '.uri // empty' 2>/dev/null) || exit 0
+line=$(grep -m1 '^codes\.bridgeai\.anchor/cr\.created[[:space:]]' <<<"$output") || exit 0
+uri=$(printf '%s' "${line#* }" | jq -er 'if type == "object" then (.uri // "" | tostring | gsub("[[:cntrl:]]"; "")) else error end' 2>/dev/null) || exit 0
+```
+
+A subscriber with something to tell the agent emits it as JSON on stdout:
+
+```bash
+jq -cn --arg text "A change request opened: $uri" \
+  '{hookSpecificOutput: {hookEventName: "PostToolUse", additionalContext: $text}}'
 ```
 
 Register it in the subscriber's own `hooks.yml`. The publisher gains no entry,
@@ -140,6 +147,23 @@ no config, and no knowledge that anyone subscribed.
   subscriber that errors or hangs taxes turns that have nothing to do with it.
 - **Be idempotent.** There is no ordering guarantee between subscribers and no
   once-only guarantee: a session can publish the same key twice.
+- **Reach the agent through `additionalContext`.** On `PostToolUse`, plain
+  stdout from a hook that exits 0 goes to the debug log and nowhere else: the
+  agent never reads it. Only the JSON form above reaches the agent's context.
+  Plain text reaches the agent on `UserPromptSubmit`, `UserPromptExpansion`,
+  `SessionStart`, and `PostModelSwitch` only ([hooks
+  reference](https://code.claude.com/docs/en/hooks)). A hook that prints plain
+  text on `PostToolUse` passes a test that asserts on its stdout, fires, and is
+  never heard.
+- **Don't pipe a whole tool output into a reader that stops early.** Under
+  `set -o pipefail`, `printf '%s' "$output" | grep -m1 …` fails when grep
+  finds its match and exits before the writer is done: on an output larger than
+  the pipe buffer, the writer gets `SIGPIPE`, the pipeline returns 141, and
+  `|| exit 0` drops a real match. Feed the reader from a here-string
+  (`grep -m1 … <<<"$output"`), which has no writer to kill.
+- **Check a field's type before you use it.** A body that parses can still
+  carry a number where you expect a list. Treat a field of the wrong type the
+  way you treat a body that won't parse: skip it and exit 0.
 - **Silent for facts, printing for judgment.** See below.
 - **Sanitize a value before you render it.** See the next section; this one is
   not optional.
@@ -194,8 +218,11 @@ line in the agent's context, or emit a control sequence into a terminal: an
 ESC inside OSC-8 link text corrupts the pane it renders in.
 
 **Strip control characters from any value before putting it on a terminal
-surface or into the agent's context.** Print with a formatter that does not
-expand escapes (`printf '%s'`, never `'%b'`). Treat every value as text a
+surface or into the agent's context.** That means C1 controls (U+0080 to
+U+009F) as well as C0 and DEL: U+009B is a one-character CSI, so a filter of
+`[\x00-\x1f\x7f]` lets an escape sequence through. jq's
+`gsub("[[:cntrl:]]"; "")` strips all three ranges. Print with a formatter that
+does not expand escapes (`printf '%s'`, never `'%b'`). Treat every value as text a
 stranger wrote, because the producer got it from a forge, a branch name, or a
 commit message.
 
@@ -207,7 +234,7 @@ subscriber prints:
 | The reaction | Subscriber | Guarantee |
 |---|---|---|
 | Bookkeeping (record it, set a flag, touch a file) | does the work, prints nothing | the hook runs, so it happens |
-| A decision (should we open a route? is this the handoff point?) | prints a nudge, acts on nothing | the agent may or may not act |
+| A decision (should we open a route? is this the handoff point?) | emits a nudge as `additionalContext`, acts on nothing | the agent may or may not act |
 
 Facts move over hooks; judgment stays with the agent. Don't route bookkeeping
 through the model's attention, and don't have a hook decide something that needs
@@ -323,10 +350,27 @@ So every new subscriber owes both halves:
 
 - **The synthetic test** — feed a payload carrying the key, assert the reaction;
   feed the near-misses (a longer key sharing the prefix, the key inside a larger
-  word, a body that won't parse, unrelated output), assert silence.
+  word, a body that won't parse, a field of the wrong type, unrelated output),
+  assert silence. Include the key at the top of a stdout larger than the pipe
+  buffer, and a near-miss line ahead of a real one, so the test fails if the
+  anchor, the terminator, or the pipe handling regresses. Assert the reaction
+  on the channel the agent reads (`additionalContext`), not on raw stdout.
 - **The live check** — install both plugins, run the publisher for real, and
-  confirm the reaction. Nothing short of this separates "the matcher is right"
-  from "the line actually arrives."
+  confirm the reaction reached the agent. Nothing short of this separates "the
+  matcher is right" from "the line actually arrives." Write the steps down where
+  the next maintainer will find them.
+
+A headless session makes the live check a single command. Mount the
+subscriber's checkout, have the agent run a command that prints the
+announcement, then ask it what it saw:
+
+```bash
+claude -p --plugin-dir <subscriber-checkout> --allowedTools='Bash(printf:*)' \
+  "Run exactly this Bash command: printf '<announcement line>\n'. Then quote any hook context that arrived after it, or reply NONE."
+```
+
+`NONE` proves nothing on its own: confirm the hook fired (a marker file, a
+side effect) before reading silence as a failure.
 
 ## Published keys
 
