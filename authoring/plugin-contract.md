@@ -143,6 +143,44 @@ no config, and no knowledge that anyone subscribed.
 - **Silent for facts, printing for judgment.** See below.
 - **Sanitize a value before you render it.** See the next section; this one is
   not optional.
+- **Give the user an off switch.** See [Turning a subscription off](#turning-a-subscription-off).
+
+### Turning a subscription off
+
+Installing two plugins turns on every subscription between them, so each one
+needs a way to be turned off without uninstalling either plugin. The switch is a
+git config boolean the subscriber reads before it acts:
+
+```text
+<subscriber>.subscribe.<publisher>                   every key from that publisher
+<subscriber>.subscribe.<publisher>.<entity>-<event>  one key
+```
+
+```bash
+git config --global sextant.subscribe.tack.session-ended false
+```
+
+The dot between entity and event becomes a hyphen because git reads the text
+after the last dot as the variable name, and a variable name allows only letters,
+digits, and `-`. A key is on unless one of the two reads `false`, so a user who
+never sets anything gets the subscription they installed.
+
+**Set a switch globally.** A switch that differs from repo to repo makes a
+reaction that fires in one checkout and not the next, which is hard to trace
+back to its cause. A repo-level value is the exception, for a repo where one
+reaction is known not to fit, and it wins over the global one.
+
+- **Read the switch in the repo the event is about**: the payload's `cwd`, not
+  the hook's working directory, so `git config --get` sees that repo's
+  exception if it has one.
+- **A subscriber that prints names its own switch** at the end of what it
+  prints, as a `git config --global` command, so the user who wants it gone
+  reads how right there. A silent one documents it on the plugin's events page
+  instead.
+- **A hook matching a set of keys checks each one's switch.** Where a set is
+  one fact, like `cr.created` and `cr.updated`, the plugin-level switch is the
+  one to document, since turning off only one of the pair leaves the subscriber
+  silent for half the cases.
 
 ## A parsed value is not a safe value
 
@@ -292,22 +330,10 @@ So every new subscriber owes both halves:
 
 ## Published keys
 
-Every key in the suite, until the manifests above are what the catalog is built
-from. `State` is `agreed` for a key both sides have settled on, and `wired` once
-both ends are emitting and matching it. The declarations themselves are rendered
-at [bridge.ai / Events](https://chris-peterson.github.io/claude-marketplace/spec/events),
-which pairs each published key with whoever subscribes to it.
-
-| Key | Publisher | Subscriber | Body | State |
-|---|---|---|---|---|
-| `codes.bridgeai.anchor/cr.created` | anchor, `scripts/prepare-review.sh --open` | tack, `hooks/capture-urls.sh` + `hooks/landing-nudge.sh`<br>beacon, `_read_announcements` (PROV-07 tier 0) | `uri`, `title` | wired |
-| `codes.bridgeai.anchor/cr.updated` | anchor, `skills/prepare-review`, end of the mutation phase | tack, `hooks/capture-urls.sh` + `hooks/landing-nudge.sh`<br>beacon, `_read_announcements` (PROV-07 tier 0) | `uri`, `title` | wired |
-
-Every subscriber matches **both** keys, because a run announces one or the other
-and never both: a fresh change request reports only `cr.created` and only a
-pre-existing one reports `cr.updated`. A subscriber keyed to a single one is
-silent for half the cases, which is the shape of mistake this table exists to
-make visible.
+[bridge.ai / Events](https://chris-peterson.github.io/claude-marketplace/spec/events)
+is the catalog: every key the plugins declare, built from their manifests on each
+release, with each published key paired with whoever subscribes to it and the
+keys missing an end called out above the list.
 
 ## Related
 
@@ -315,3 +341,5 @@ make visible.
   itself to the marketplace. This document is how it talks to its siblings.
 - The `subscribe` skill builds a subscriber that fires on a **skill invocation**
   rather than an announcement, for reacting to a sibling that publishes nothing.
+  It depends on how the sibling's skill is named and invoked, so where the
+  sibling announces the fact, subscribe to the announcement instead.

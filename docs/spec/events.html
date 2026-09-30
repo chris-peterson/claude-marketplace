@@ -111,6 +111,28 @@
   @keyframes flash{from{box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 45%,transparent)}
                      to{box-shadow:0 0 0 3px transparent}}
 
+  /* --- the off switch each band carries, and the road to labelling it --- */
+  /* Proposed, not yet shipped: dashed and gold so it reads apart from the
+     authoritative catalog around it. */
+  .switches{margin:30px 0 0;padding:22px 22px 18px;border-radius:13px;
+    background:color-mix(in srgb,var(--gold) 5%,var(--abyss));
+    border:1px dashed color-mix(in srgb,var(--gold) 55%,transparent)}
+  .preview-tag{display:inline-block;margin:0 0 10px;padding:3px 10px;border-radius:20px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--gold);border:1px solid color-mix(in srgb,var(--gold) 45%,transparent)}
+  .switches h2{margin:0;font-family:var(--body);font-size:15px;font-weight:600}
+  .switches h3{margin:20px 0 0;font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+  .switches .sub{margin:5px 0 0;color:var(--muted);font-size:13px;max-width:72ch}
+  .switches .sub code,.roadmap code{font-family:var(--mono);font-size:.9em;color:var(--fg);white-space:nowrap}
+  .switches .say{white-space:pre}
+  .roadmap{margin:10px 0 0;padding:0;list-style:none;font-size:13px}
+  .roadmap li{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:baseline;padding:5px 0;border-top:1px solid var(--line)}
+  .roadmap li:first-child{border-top:0}
+  .roadmap .ref{font-family:var(--mono);font-size:12.5px;color:var(--fg)}
+  .roadmap .ref a{text-decoration:underline;text-underline-offset:2px;text-decoration-color:var(--line-h)}
+  .roadmap .ref a:hover{text-decoration-color:var(--gold)}
+  .roadmap .what{color:var(--muted)}
+
   /* --- search rig (matches the requirements browser) --- */
   .rig{position:sticky;top:53px;z-index:10;margin:30px 0 0;padding:18px 0 14px;
     background:linear-gradient(var(--abyss) 82%,transparent)}
@@ -200,6 +222,8 @@
     .flow{padding:18px 14px 14px}
     .fld-row{grid-template-columns:1fr;gap:2px}
     .end-row{grid-template-columns:1fr;gap:2px}
+    .switches{padding:18px 14px 14px}
+    .roadmap li{grid-template-columns:1fr;gap:2px}
     .run{display:none}
   }
   @media(prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -239,6 +263,40 @@
       acting on it.</p>
     <div class="flowbox" id="flowbox"></div>
     <p class="legend" id="legend"></p>
+  </section>
+
+  <section class="switches" id="switches" aria-labelledby="switches-h">
+    <p class="preview-tag">Coming soon &middot; preview</p>
+    <h2 id="switches-h">Turning a subscription off</h2>
+    <p class="sub">Installing two plugins turns on every band between them. The contract gives each
+      band its own off switch, a git config boolean the subscriber reads before it acts, so a user
+      can cut one reaction without uninstalling either plugin. Only sextant reads one so far; the
+      roadmap below is how the rest arrive. A switch is on unless it reads <code>false</code>.
+      Set it with <code>--global</code>, so a reaction behaves the same in every repo; a repo-level
+      value is the exception, for a repo where one reaction doesn't fit.</p>
+    <div class="say">&lt;subscriber&gt;.subscribe.&lt;publisher&gt;                   every band from that publisher
+&lt;subscriber&gt;.subscribe.&lt;publisher&gt;.&lt;entity&gt;-&lt;event&gt;  one band
+
+git config --global sextant.subscribe.tack.session-ended false</div>
+    <p class="sub">The full rules are in <a href="https://github.com/chris-peterson/claude-marketplace/blob/main/authoring/plugin-contract.md#turning-a-subscription-off">the
+      plugin contract</a>.</p>
+
+    <h3>Roadmap, tentative</h3>
+    <ul class="roadmap">
+      <li><span class="ref">sextant</span><span class="what">The first subscriber with a switch
+        (<code>hooks/ledger-signal.sh</code>, on <code>tack/session.ended</code>). It appears in the
+        diagram once its <code>plugin.yml</code> declares the subscription.</span></li>
+      <li><span class="ref"><a href="https://github.com/chris-peterson/tack/issues/88">tack#88</a></span><span class="what">Switches
+        on tack's subscriptions to anchor.</span></li>
+      <li><span class="ref"><a href="https://github.com/chris-peterson/beacon/issues/55">beacon#55</a></span><span class="what">Switches
+        on beacon's subscriptions to anchor and tack.</span></li>
+      <li><span class="ref"><a href="https://github.com/chris-peterson/mate/issues/4">mate#4</a></span><span class="what">Switches
+        on mate's subscriptions, and its <code>/tack:start</code> reaction moves to
+        <code>tack/session.started</code>.</span></li>
+      <li><span class="ref"><a href="https://github.com/chris-peterson/shipyard/issues/31">shipyard#31</a></span><span class="what">shipyard
+        derives each subscription's switch names into <code>events.json</code> and checks that the
+        hook reads them. This page then labels each band with the switch that cuts it.</span></li>
+    </ul>
   </section>
 
   <div class="rig">
