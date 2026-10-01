@@ -57,3 +57,4 @@ date,at,plugin,skills,rules,hooks,commands,agents,change
 2026-09-14,2026-09-14T19:28:04-07:00,mate,2,0,3,0,0,+skill:feature +skill:fix +hook:hooks +hook:nudge +hook:react
 2026-09-27,2026-09-27T16:33:20-07:00,ClaudeWatch,2,2,2,0,0,+rule:ask-is-not-a-confirmation
 2026-09-29,2026-09-29T16:03:26-07:00,tack,3,0,7,1,0,+skill:note +hook:notes-after-compact
+2026-10-01,2026-10-01T19:45:06Z,shipshape,1,0,3,0,0,+skill:maintain-harness -skill:claude-code-version -skill:plugin-maintenance +hook:check-claude-code-version -hook:claude-code-version
