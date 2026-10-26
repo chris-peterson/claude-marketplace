@@ -60,3 +60,4 @@ date,at,plugin,skills,rules,hooks,commands,agents,change
 2026-10-01,2026-10-01T19:45:06Z,shipshape,1,0,3,0,0,+skill:maintain-harness -skill:claude-code-version -skill:plugin-maintenance +hook:check-claude-code-version -hook:claude-code-version
 2026-10-15,2026-10-15T18:18:13-07:00,mate,2,0,4,0,0,+hook:underway
 2026-10-22,2026-10-22T12:41:11-07:00,mate,3,0,4,0,0,+skill:next
+2026-10-26,2026-10-26T16:44:09Z,mate,2,0,2,0,0,-skill:next -hook:nudge -hook:underway
