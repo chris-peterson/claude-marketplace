@@ -450,36 +450,25 @@
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="mark" viewBox="0 0 40 40">
-    <!-- the command bridge: four Claude session windows in a 2×2 grid. Each
-         window carries one plugin interjection in a category color, and the
-         accent steps down a row per window — safe (red, line 1) → bearings
-         (purple, 2) → waypoints (cyan, 3) → learn (green, 4) — so the color
-         traces a diagonal and green resolves on the last line of the last
-         window, where the workflow ends. -->
-    <g fill="var(--deep)" stroke="var(--line-h)" stroke-width="0.8">
-      <rect x="3"  y="3"  width="16" height="16" rx="2.6"/>
-      <rect x="21" y="3"  width="16" height="16" rx="2.6"/>
-      <rect x="3"  y="21" width="16" height="16" rx="2.6"/>
-      <rect x="21" y="21" width="16" height="16" rx="2.6"/>
+    <!-- the helm: one spoke per catalog group, clockwise from the top in route
+         order (plan, safe, oriented, waypoints, charts, orders). The colors
+         are the groups' accent tokens, so the mark follows the theme toggle. -->
+    <circle cx="20" cy="20" r="10.5" fill="none" stroke="var(--muted)" stroke-width="2.2"/>
+    <g stroke-width="2.4" stroke-linecap="round">
+      <line x1="20" y1="20" x2="20" y2="3" stroke="var(--plan)"/>
+      <line x1="20" y1="20" x2="34.72" y2="11.5" stroke="var(--guard)"/>
+      <line x1="20" y1="20" x2="34.72" y2="28.5" stroke="var(--orient)"/>
+      <line x1="20" y1="20" x2="20" y2="37" stroke="var(--ship)"/>
+      <line x1="20" y1="20" x2="5.28" y2="28.5" stroke="var(--chart)"/>
+      <line x1="20" y1="20" x2="5.28" y2="11.5" stroke="var(--build)"/>
     </g>
-    <g fill="var(--muted)" opacity="0.5">
-      <rect x="5.3"  y="9.5"  width="9.6" height="1.5" rx="0.75"/>
-      <rect x="5.3"  y="12.5" width="7.4" height="1.5" rx="0.75"/>
-      <rect x="5.3"  y="15.5" width="5.2" height="1.5" rx="0.75"/>
-      <rect x="23.3" y="6.5"  width="7.8" height="1.5" rx="0.75"/>
-      <rect x="23.3" y="12.5" width="9.2" height="1.5" rx="0.75"/>
-      <rect x="23.3" y="15.5" width="4.6" height="1.5" rx="0.75"/>
-      <rect x="5.3"  y="24.5" width="8.4" height="1.5" rx="0.75"/>
-      <rect x="5.3"  y="27.5" width="5.6" height="1.5" rx="0.75"/>
-      <rect x="5.3"  y="33.5" width="9.0" height="1.5" rx="0.75"/>
-      <rect x="23.3" y="24.5" width="6.8" height="1.5" rx="0.75"/>
-      <rect x="23.3" y="27.5" width="8.8" height="1.5" rx="0.75"/>
-      <rect x="23.3" y="30.5" width="5.8" height="1.5" rx="0.75"/>
-    </g>
-    <rect x="5.3"  y="6.5"  width="6.4" height="1.5" rx="0.75" fill="var(--red)"/>
-    <rect x="23.3" y="9.5"  width="6.4" height="1.5" rx="0.75" fill="var(--purple)"/>
-    <rect x="5.3"  y="30.5" width="6.4" height="1.5" rx="0.75" fill="var(--cyan)"/>
-    <rect x="23.3" y="33.5" width="6.4" height="1.5" rx="0.75" fill="var(--green)"/>
+    <circle cx="20" cy="3" r="2.6" fill="var(--plan)"/>
+    <circle cx="34.72" cy="11.5" r="2.6" fill="var(--guard)"/>
+    <circle cx="34.72" cy="28.5" r="2.6" fill="var(--orient)"/>
+    <circle cx="20" cy="37" r="2.6" fill="var(--ship)"/>
+    <circle cx="5.28" cy="28.5" r="2.6" fill="var(--chart)"/>
+    <circle cx="5.28" cy="11.5" r="2.6" fill="var(--build)"/>
+    <circle cx="20" cy="20" r="3.6" fill="var(--fg)"/>
   </symbol>
 </svg>
 
