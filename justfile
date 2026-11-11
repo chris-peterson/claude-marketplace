@@ -37,6 +37,11 @@ test:
 sync:
     bash suite/sync.sh
 
+# Report what a plugin still needs before it ships in the catalog, with the fix for each gap
+[group('sibling repos')]
+check-plugin +names:
+    shipyard onboarding {{names}}
+
 # Fan MARKETPLACE_DISPATCH_TOKEN out to the roster, or one named plugin (prompts for the PAT)
 [group('sibling repos')]
 set-dispatch-secret name="":

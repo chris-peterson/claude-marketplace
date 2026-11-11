@@ -9,8 +9,8 @@
   --fg:#f8f8f2; --muted:#6272a4; --faint:#4b527a;
   --cyan:#8be9fd; --green:#50fa7b; --orange:#ffb86c; --pink:#ff79c6;
   --purple:#bd93f9; --red:#ff5555; --yellow:#f1fa8c; --gold:#e3b341; --claude:#d97757;
-  /* four functional areas → four colors */
-  --ship:#8be9fd; --guard:#ff5555; --orient:#bd93f9; --build:#50fa7b;
+  /* one color per functional area */
+  --plan:#ffb86c; --ship:#8be9fd; --guard:#ff5555; --orient:#bd93f9; --chart:#ff79c6; --build:#50fa7b;
   --line:rgba(139,233,253,.14); --line-2:rgba(248,248,242,.07);
   --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 }
@@ -21,8 +21,10 @@
    here, the four accents resolve per scheme — the same values unchanged on dark,
    AA-passing darkened ones on light. The panel below keeps the palette as-is. */
 .cw-ex-label{
+  --plan:light-dark(#c2410c,#ffb86c);
   --ship:light-dark(#0e7490,#8be9fd); --guard:light-dark(#b91c1c,#ff5555);
-  --orient:light-dark(#6d28d9,#bd93f9); --build:light-dark(#15803d,#50fa7b);
+  --orient:light-dark(#6d28d9,#bd93f9); --chart:light-dark(#be185d,#ff79c6);
+  --build:light-dark(#15803d,#50fa7b);
   --cyan:light-dark(#0e7490,#8be9fd);
   font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ac,var(--cyan));margin:18px 0 7px}
 

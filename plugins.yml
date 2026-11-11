@@ -12,6 +12,7 @@ owner: chris-peterson
 source: https://github.com/{owner}/{name}.git
 
 plugins:
+  - rig
   - ClaudeWatch
   - shipshape
   - tack
@@ -20,9 +21,14 @@ plugins:
   - mate
   - cleat
   - sextant
+  - fathom
+  - masthead
 
 # The rolling log of each plugin's named artifacts, which the growth view plots.
 artifacts: suite/artifacts.csv
+
+# The hub page that lists each plugin too, which `shipyard onboarding` checks.
+hub: ../chris-peterson.github.io/docs/projects.yml
 
 # The catalog's functional areas, in display order. Which group a plugin is in
 # is declared by the plugin, not here: its plugin.yml says `suite: group:`, and
@@ -33,6 +39,9 @@ artifacts: suite/artifacts.csv
 # no roster entry left to read it from. A plugin that has left the marketplace
 # still shipped what it shipped, so it keeps the group and the slot it held.
 groups:
+  - key: passage
+    accent: --plan
+    tag: Plan the passage
   - key: safety
     accent: --guard
     tag: Stay safe
@@ -42,10 +51,9 @@ groups:
   - key: waypoints
     accent: --ship
     tag: Reach your waypoints
-    retired:
-      - moor
-  - key: record
+  - key: charts
+    accent: --chart
+    tag: Chart the waters
+  - key: orders
     accent: --build
-    tag: Write it down
-    retired:
-      - logbook
+    tag: Leave standing orders

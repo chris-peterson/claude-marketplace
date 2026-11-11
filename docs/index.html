@@ -30,8 +30,8 @@
     --pink:var(--color-pink); --purple:var(--color-purple); --red:var(--color-red);
     --yellow:var(--color-yellow);
     --gold:light-dark(#a16207,#e3b341); --claude:light-dark(#c2410c,#d97757);
-    /* four functional areas → four colors */
-    --ship:var(--cyan); --guard:var(--red); --orient:var(--purple); --build:var(--green);
+    /* one color per functional area */
+    --plan:var(--orange); --ship:var(--cyan); --guard:var(--red); --orient:var(--purple); --chart:var(--pink); --build:var(--green);
     --t-core:var(--green); --t-recommended:var(--green); --t-proving:var(--yellow);
     --t-focused:var(--muted); --t-reference:var(--orange);
     --line:light-dark(rgba(8,145,178,.22),rgba(139,233,253,.14));
@@ -101,7 +101,7 @@
   .lede strong{color:var(--gold);font-weight:700;font-style:normal}
   .lede strong.claude{color:var(--claude)}
   .tagline .cy{color:var(--cyan);font-style:italic}
-  /* hero route — the four capabilities as ordered stops on a course, in flow
+  /* hero route — the capabilities as ordered stops on a course, in flow
      order; each stop deep-links to its catalog group. Blended into the hero
      (no card chrome); label and sub sit inline so the rows aren't narrow. */
   .routecard{position:relative;margin:22px 0 0;max-width:62ch}
@@ -119,9 +119,9 @@
   .stop .txt .sub::before{content:" — ";color:var(--faint)}
   .stop:hover .txt .lab{text-decoration:underline;text-underline-offset:3px}
   .stop:hover .node{box-shadow:0 0 0 3px var(--abyss),0 0 10px -1px var(--ac)}
-  .stop.s-safety{--ac:var(--red)} .stop.s-bearings{--ac:var(--purple)}
-  .stop.s-waypoints{--ac:var(--cyan)} .stop.s-record{--ac:var(--green)}
-  .n-safety{background:var(--red)} .n-bearings{background:var(--purple)} .n-waypoints{background:var(--cyan)} .n-record{background:var(--green)}
+  .stop.s-passage{--ac:var(--orange)} .stop.s-safety{--ac:var(--red)} .stop.s-bearings{--ac:var(--purple)}
+  .stop.s-waypoints{--ac:var(--cyan)} .stop.s-charts{--ac:var(--pink)} .stop.s-orders{--ac:var(--green)}
+  .n-passage{background:var(--orange)} .n-safety{background:var(--red)} .n-bearings{background:var(--purple)} .n-waypoints{background:var(--cyan)} .n-charts{background:var(--pink)} .n-orders{background:var(--green)}
 
   section{padding:14px 0;position:relative}
   #install{padding:10px 0 14px}
@@ -360,7 +360,11 @@
   @keyframes radarFlare{0%{r:6px;opacity:0}3%{r:11px;opacity:.7}13%{r:28px;opacity:0}100%{r:6px;opacity:0}}
 
   /* ---------- changelog view ---------- */
-  #changelog .growthbox{position:relative;height:380px;margin-top:26px;
+  .growthfold{margin-top:22px}
+  .growthfold summary{cursor:pointer;width:max-content;font-family:var(--mono);font-size:11.5px;
+    letter-spacing:.04em;color:var(--muted)}
+  .growthfold summary:hover{color:var(--fg)}
+  #changelog .growthbox{position:relative;height:380px;margin-top:14px;
     border:1px solid var(--line-2);border-radius:14px;background:var(--deep);padding:18px}
   .changelog{margin-top:24px;border:1px solid var(--line-2);border-radius:14px;
     background:var(--deep);overflow:hidden;max-height:360px;overflow-y:auto;
@@ -505,10 +509,12 @@
       <div class="routecard">
         <p class="lead"><b>bridge<span style="color:var(--cyan)">.ai</span></b> helps you:</p>
         <div class="stops">
+          <a class="stop s-passage" href="#g-passage"><span class="node n-passage"></span><span class="txt"><span class="lab">plan the passage</span><span class="sub">pick the plugins for the job</span></span></a>
           <a class="stop s-safety" href="#g-safety"><span class="node n-safety"></span><span class="txt"><span class="lab">stay safe</span><span class="sub">screen risky commands</span></span></a>
           <a class="stop s-bearings" href="#g-bearings"><span class="node n-bearings"></span><span class="txt"><span class="lab">keep oriented</span><span class="sub">see work at a glance</span></span></a>
           <a class="stop s-waypoints" href="#g-waypoints"><span class="node n-waypoints"></span><span class="txt"><span class="lab">reach waypoints</span><span class="sub">land changes cleanly</span></span></a>
-          <a class="stop s-record" href="#g-record"><span class="node n-record"></span><span class="txt"><span class="lab">write it down</span><span class="sub">capture what you learn</span></span></a>
+          <a class="stop s-charts" href="#g-charts"><span class="node n-charts"></span><span class="txt"><span class="lab">chart the waters</span><span class="sub">mark the dragons for the next reader</span></span></a>
+          <a class="stop s-orders" href="#g-orders"><span class="node n-orders"></span><span class="txt"><span class="lab">leave standing orders</span><span class="sub">improve the recipe for next time</span></span></a>
         </div>
       </div>
     </div>
@@ -579,7 +585,10 @@
   <section id="changelog">
     <h2><a class="secanchor" href="#changelog">Changelog</a></h2>
     <div class="changelog" id="cllist"></div>
-    <div class="growthbox"><canvas id="growthchart"></canvas></div>
+    <details class="growthfold" id="growthfold">
+      <summary>Artifacts over time</summary>
+      <div class="growthbox"><canvas id="growthchart"></canvas></div>
+    </details>
   </section>
 
   <footer class="sitefoot">
@@ -1015,6 +1024,9 @@
         .catch((err)=> console.error("growth: failed to load artifacts.json", err))); } }); },{threshold:.05});
     io.observe(sec);
     window.addEventListener("themechange", ()=>{ if(growthData) build(growthData); });
+    // The chart is drawn while its expander is closed, at zero size.
+    document.getElementById("growthfold").addEventListener("toggle", (e)=>{
+      if(e.target.open && growthChart) growthChart.resize(); });
   })();
 
   // ---- reveal-on-scroll for catalog groups ----
