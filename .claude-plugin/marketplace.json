@@ -7,6 +7,19 @@
   },
   "plugins": [
     {
+      "name": "rig",
+      "description": "Launch Claude Code with a named set of plugins, your local plugin checkouts pinned in, and the sandbox when you want it.",
+      "author": {
+        "name": "chris-peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/rig.git"
+      },
+      "category": "development",
+      "homepage": "https://chris-peterson.github.io/rig/#/"
+    },
+    {
       "name": "ClaudeWatch",
       "description": "Screens every shell command and every file Claude writes, before either lands. Blocks the dangerous, asks on anything that changes state.",
       "author": {
@@ -122,6 +135,32 @@
       },
       "category": "development",
       "homepage": "https://chris-peterson.github.io/sextant/#/"
+    },
+    {
+      "name": "fathom",
+      "description": "Keeps the facts of a piece of work in one versioned record and renders each reader's document from it, with every figure traced to a fact.",
+      "author": {
+        "name": "chris-peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/fathom.git"
+      },
+      "category": "documentation",
+      "homepage": "https://chris-peterson.github.io/fathom/#/"
+    },
+    {
+      "name": "masthead",
+      "description": "Bootstraps a documentation hub for a repo and keeps it current, on the docs engine you choose, so the people who come next can find how it works and what to watch out for.",
+      "author": {
+        "name": "chris-peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/masthead.git"
+      },
+      "category": "documentation",
+      "homepage": "https://chris-peterson.github.io/masthead/#/"
     }
   ]
 }
