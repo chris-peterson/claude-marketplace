@@ -55,6 +55,17 @@ jobs:
       - name: Project the growth-view data (ephemeral)
         run: shipyard gen-artifacts-json
 
+      # Reads the artifacts.json the step above wrote, so a release that
+      # dispatched this run is in the changelog and the feed.
+      - name: Generate the What's new page and its feed (ephemeral)
+        run: |
+          python3 -I suite/build-whats-new.py
+          python3 -I suite/changelog_feed.py docs/whats-new.md \
+            --site-url https://chris-peterson.github.io/claude-marketplace/ \
+            --title "bridge.ai: What's new" \
+            --description "Changes across the bridge.ai Claude Code plugins." \
+            --home whats-new --router path --out docs/feed.xml
+
       - name: Commit the generated manifest and artifact log if they changed
         run: |
           tracked='suite/artifacts.csv .claude-plugin/marketplace.json'

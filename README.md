@@ -38,6 +38,10 @@ Tracks what you're working on across crashes, context overflow, and jumps betwee
 
 Colors each session's tab so you can tell what every Claude session is doing at a glance: neutral at rest, amber working, red waiting for you. That's iTerm2 on macOS; on any OS or terminal the same state shows in a fleet dashboard you open in a browser.
 
+### [sonar](https://chris-peterson.github.io/sonar/#/) — keep oriented
+
+Searches everything a session can reach for what you're after: the files it has loaded, the ones they lead to, sibling repos, git history, links, and past transcripts. Shallow matches come back right away; deeper ones arrive when your next turn starts. In preview: no commands yet.
+
 ### [anchor](https://chris-peterson.github.io/anchor/#/) — reach your waypoints
 
 Keeps your issues, commits, change requests, reviews, and releases consistent — the same quality, formatting, and content every time, not reinvented per change. `/anchor:commit` walks you through the diff, then writes a why-first message; `/anchor:prepare-review` opens the change request.

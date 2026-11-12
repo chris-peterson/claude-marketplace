@@ -17,6 +17,7 @@ plugins:
   - shipshape
   - tack
   - beacon
+  - sonar
   - anchor
   - mate
   - cleat
@@ -51,9 +52,13 @@ groups:
   - key: waypoints
     accent: --ship
     tag: Reach your waypoints
+    retired:
+      - moor
   - key: charts
     accent: --chart
     tag: Chart the waters
   - key: orders
     accent: --build
     tag: Leave standing orders
+    retired:
+      - logbook

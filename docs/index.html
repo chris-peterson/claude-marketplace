@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>bridge.ai — Claude Code plugins for AI-assisted work</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="alternate" type="application/rss+xml" title="bridge.ai: What's new" href="feed.xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=JetBrains+Mono:wght@400;500;700&family=Spline+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -83,10 +84,33 @@
   section[id]{scroll-margin-top:118px}
 
   header.hero{padding:44px 0 4px;position:relative;overflow:hidden}
-  /* the mark as atmosphere: large and faint, bleeding off the top-right behind
-     the title. The crisp mark still lives in the nav for identity. */
-  .herowatermark{position:absolute;top:-26px;right:-86px;width:min(440px,48vw);height:min(440px,48vw);
+  /* the mark as atmosphere: faint behind the title, kept whole so every
+     spoke's handle shows. The crisp mark still lives in the nav. */
+  .herowatermark{position:absolute;top:6px;right:-6px;width:min(400px,44vw);height:min(400px,44vw);
     opacity:.12;z-index:0;pointer-events:none;filter:drop-shadow(0 0 46px var(--glow-mark))}
+  /* The mural carries its own opacities: both marks rest as faint as the old
+     watermark, with the dotted wake between them a little stronger. */
+  .herowatermark.heromural{top:0;right:0;left:0;width:100%;height:auto;aspect-ratio:1000/440;filter:none;opacity:1}
+  .heromural .old,.heromural .helm{opacity:.12}
+  .heromural .wake{opacity:.3}
+  .heromural .pulse{display:none}
+  /* One 6.5s beat: the 1.0 mark lights up, a pulse runs the wake left to
+     right, and the helm answers as it reaches the hub. Nothing moves under
+     reduced motion; the resting wake stays. */
+  @media (prefers-reduced-motion:no-preference){
+    .heromural .pulse{display:inline;opacity:.8}
+    .heromural .old{animation:oldbeat 6.5s ease-out 1.2s infinite}
+    .heromural .helm{animation:helmbeat 6.5s ease-out 1.2s infinite}
+    .heromural .pulseband{animation:pulserun 6.5s 1.2s infinite}
+  }
+  @keyframes oldbeat{0%{opacity:.12}9%{opacity:.5}20%{opacity:.5}46%,100%{opacity:.12}}
+  @keyframes helmbeat{0%,42%{opacity:.12}52%{opacity:.24}80%,100%{opacity:.12}}
+  @keyframes pulserun{
+    0%{transform:translateX(0);animation-timing-function:linear}
+    8%{transform:translateX(175px);animation-timing-function:cubic-bezier(.45,.05,.4,1)}
+    50%{transform:translateX(881px);animation-timing-function:linear}
+    62%,100%{transform:translateX(1150px)}
+  }
   .herocontent{position:relative;z-index:1;max-width:62ch}
   @media(max-width:680px){.herowatermark{display:none}}
   .eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.32em;text-transform:uppercase;color:var(--cyan);margin:0 0 18px}
@@ -104,6 +128,22 @@
   /* hero route — the capabilities as ordered stops on a course, in flow
      order; each stop deep-links to its catalog group. Blended into the hero
      (no card chrome); label and sub sit inline so the rows aren't narrow. */
+  /* what's new: a toast in the corner, shown only while the newest dated
+     entry is recent and one this visitor hasn't seen. Dismissing it, or
+     opening the page, marks it seen. */
+  .toast{position:fixed;z-index:40;right:max(18px,env(safe-area-inset-right,0px));bottom:max(18px,env(safe-area-inset-bottom,0px));
+    width:min(340px,calc(100vw - 36px));display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:start;
+    padding:14px 14px 14px 16px;border-radius:14px;background:var(--deep);border:1px solid var(--line-h);
+    box-shadow:0 12px 32px -14px rgba(0,0,0,.45);animation:toastin .5s cubic-bezier(.2,.7,.2,1) .8s both}
+  @keyframes toastin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .toast .glyph{width:10px;height:10px;border-radius:50%;background:var(--chart);margin-top:6px}
+  .toast .t{font-weight:600;font-size:14.5px;color:var(--fg)}
+  .toast .b{grid-column:2;font-size:13.5px;color:var(--muted);line-height:1.45}
+  .toast .go{grid-column:2;justify-self:start;margin-top:6px;font-size:13.5px;font-weight:600;color:var(--chart);text-decoration:none}
+  .toast .go:hover{text-decoration:underline}
+  .toast .x{grid-row:1;grid-column:3;border:0;background:none;color:var(--muted);font-size:18px;line-height:1;cursor:pointer;padding:2px 4px;border-radius:6px}
+  .toast .x:hover{color:var(--fg)} .toast .x:focus-visible,.toast .go:focus-visible{outline:2px solid var(--chart);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){.toast{animation:none}}
   .routecard{position:relative;margin:22px 0 0;max-width:62ch}
   .routecard .lead{color:var(--muted);font-size:14.5px;margin:0 0 12px}
   .routecard .lead b{color:var(--fg);font-weight:600}
@@ -286,6 +326,7 @@
      in last. gated on no-preference so reduced-motion users see it static. */
   @keyframes riseIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:none}}
   @keyframes watermarkIn{from{opacity:0;transform:translateY(12px) scale(1.05)}to{opacity:.12;transform:none}}
+  @keyframes muralIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
   @media(prefers-reduced-motion:no-preference){
     .hero .eyebrow,.hero h1.title,.hero .tagline,.hero .lede,.hero .routecard,.hero .bearings{
       opacity:0;animation:riseIn .68s cubic-bezier(.2,.7,.2,1) both}
@@ -296,6 +337,7 @@
     .hero .routecard{animation-delay:.5s}
     .hero .bearings{animation-delay:.62s}
     .herowatermark{animation:watermarkIn 1.1s cubic-bezier(.2,.7,.2,1) .15s both}
+    .herowatermark.heromural{animation:muralIn 1.1s cubic-bezier(.2,.7,.2,1) .15s both}
   }
 
   /* keyboard focus — a refined accent ring instead of the UA default, keyed to
@@ -360,54 +402,14 @@
   @keyframes radarFlare{0%{r:6px;opacity:0}3%{r:11px;opacity:.7}13%{r:28px;opacity:0}100%{r:6px;opacity:0}}
 
   /* ---------- changelog view ---------- */
+  .cllinks{display:flex;flex-wrap:wrap;gap:6px 22px;margin:4px 0 0;font-size:14px}
+  .cllinks a{color:var(--cyan)}
   .growthfold{margin-top:22px}
   .growthfold summary{cursor:pointer;width:max-content;font-family:var(--mono);font-size:11.5px;
     letter-spacing:.04em;color:var(--muted)}
   .growthfold summary:hover{color:var(--fg)}
   #changelog .growthbox{position:relative;height:380px;margin-top:14px;
     border:1px solid var(--line-2);border-radius:14px;background:var(--deep);padding:18px}
-  .changelog{margin-top:24px;border:1px solid var(--line-2);border-radius:14px;
-    background:var(--deep);overflow:hidden;max-height:360px;overflow-y:auto;
-    scrollbar-width:thin;scrollbar-color:var(--line-h) transparent}
-  .changelog::-webkit-scrollbar{width:11px}
-  .changelog::-webkit-scrollbar-track{background:transparent}
-  .changelog::-webkit-scrollbar-thumb{background:var(--line-h);border-radius:8px;border:3px solid var(--deep)}
-  .changelog::-webkit-scrollbar-thumb:hover{background:var(--muted)}
-  .changelog .clrow{display:grid;grid-template-columns:92px 104px 1fr;gap:14px;align-items:baseline;
-    padding:9px 18px;border-bottom:1px solid var(--line-2);font-family:var(--mono);font-size:12.5px}
-  .changelog .clrow:last-child{border-bottom:0}
-  .changelog .cldate{color:var(--muted);font-variant-numeric:tabular-nums}
-  .changelog .clplug{font-weight:600}
-  .changelog .clchange{color:var(--muted);word-break:break-word}
-  .changelog .clchange .add{color:var(--green)}
-  .changelog .clchange .rem{color:var(--red)}
-  .changelog .clchange .init{color:var(--muted);font-style:italic}
-  .changelog .clrow:nth-child(even){background:var(--tint-soft)}
-  .changelog .clrelease{color:var(--gold);font-weight:600;text-decoration:none;white-space:nowrap}
-  .changelog .clrelease:hover{text-decoration:underline;text-underline-offset:2px}
-  /* a release with a summary gets a dotted underline as a "hover me" cue */
-  .changelog .clrelease.has-notes{text-decoration:underline dotted;text-underline-offset:3px;text-decoration-color:color-mix(in srgb,var(--gold) 55%,transparent)}
-  /* width:max-content lets a short teaser be narrow; the max-height is a guard
-     against the release that runs long, not the shape the card is designed for */
-  .clnotes-tip{position:fixed;z-index:60;width:max-content;max-width:min(420px,86vw);
-    max-height:min(70vh,520px);overflow-y:auto;
-    background:var(--sea);border:1px solid var(--line-h);border-radius:11px;padding:12px 15px;
-    box-shadow:var(--shadow-pop);opacity:0;visibility:hidden;transition:opacity .12s;
-    scrollbar-width:thin;scrollbar-color:var(--line-h) transparent}
-  .clnotes-tip.show{opacity:1;visibility:visible}
-  .clnotes-tip .cn-tag{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
-    text-transform:uppercase;color:var(--gold);margin-bottom:8px}
-  .clnotes-tip .cn-alert{font-size:12.5px;line-height:1.45;font-weight:600;color:var(--fg);
-    border-left:2px solid var(--gold);padding-left:9px;margin-bottom:9px}
-  .clnotes-tip .cn-sec{font-family:var(--mono);font-size:10px;letter-spacing:.1em;
-    text-transform:uppercase;color:var(--muted);margin:9px 0 4px}
-  .clnotes-tip .cn-sec:first-child{margin-top:0}
-  .clnotes-tip ul{margin:0;padding-left:15px;font-size:12.5px;line-height:1.5;color:var(--fg)}
-  .clnotes-tip li{margin:3px 0}
-  .clnotes-tip li.cn-more{list-style:none;margin-left:-15px;color:var(--muted);font-style:italic}
-  .clnotes-tip .cn-sec.cn-more{text-transform:none;letter-spacing:0;font-style:italic}
-  .clnotes-tip .cn-full{display:block;margin-top:11px;padding-top:9px;border-top:1px solid var(--line-2);
-    font-size:11.5px;color:var(--cyan)}
   /* unified hover tooltip — radar nodes, the artifact-type donut, and the
      catalog's artifact chips all render into this one styled, cursor-tracking
      card (accent dot + title + mono sub + body/rows). */
@@ -424,9 +426,6 @@
   .uitip .tl li{display:grid;grid-template-columns:auto 1fr;gap:9px;align-items:baseline}
   .uitip .tl .k{color:var(--fg);font-family:var(--mono);font-size:11px;white-space:nowrap}
   .uitip .tl .v{color:var(--muted)}
-  .changelog .clsep{color:var(--faint)}
-  @media(max-width:560px){.changelog .clrow{grid-template-columns:78px 1fr;row-gap:3px}
-    .changelog .clchange{grid-column:1/-1}}
 
   /* site footer — a spec-browser call-to-action, the byline, and this site's source */
   .sitefoot{margin-top:64px;padding-top:30px;border-top:1px solid var(--line-h);
@@ -478,7 +477,6 @@
         <a href="#install">install</a>
         <a href="#plugins">plugins</a>
         <a href="#session">example</a>
-        <a href="#changelog">changelog</a>
         <a href="spec/requirements.html">spec</a>
       </div>
   </div>
@@ -489,7 +487,68 @@
   <div id="home">
 
   <header class="hero">
-    <svg class="herowatermark" viewBox="0 0 40 40" aria-hidden="true"><use href="#mark"/></svg>
+    <!-- The mural behind the hero: the 1.0 mark on the left and the 2.0 helm on
+         the right, joined by its four colored lines as a dotted wake. Every few
+         seconds the old mark lights up and a pulse runs along the wake into the
+         helm's hub. -->
+    <svg class="herowatermark heromural" viewBox="0 0 1000 440" preserveAspectRatio="xMaxYMin meet" aria-hidden="true">
+      <defs>
+        <linearGradient id="wakefade" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0.22" stop-color="#fff" stop-opacity="0"/>
+          <stop offset="0.52" stop-color="#fff" stop-opacity="1"/>
+          <stop offset="0.70" stop-color="#fff" stop-opacity="1"/>
+          <stop offset="0.80" stop-color="#fff" stop-opacity="0"/>
+        </linearGradient>
+        <mask id="wake" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="440">
+          <rect width="1000" height="440" fill="url(#wakefade)"/>
+        </mask>
+        <linearGradient id="pulsefade" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+          <stop offset="0.75" stop-color="#fff" stop-opacity="1"/>
+          <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+        </linearGradient>
+        <mask id="pulse" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="440">
+          <rect class="pulseband" x="-300" width="300" height="440" fill="url(#pulsefade)"/>
+        </mask>
+        <g id="wakelines">
+          <path d="M100 143.5 H270 C470 143.5 600 205 740 205 L806 220" stroke="var(--guard)"/>
+          <path d="M208 161.5 H270 C470 161.5 600 215 740 215 L806 220" stroke="var(--orient)"/>
+          <path d="M100 287.5 H270 C470 287.5 600 225 740 225 L806 220" stroke="var(--ship)"/>
+          <path d="M208 305.5 H270 C470 305.5 600 235 740 235 L806 220" stroke="var(--build)"/>
+        </g>
+      </defs>
+      <g class="old" transform="translate(30 100) scale(6)">
+        <g fill="var(--deep)" stroke="var(--line-h)" stroke-width="0.8">
+          <rect x="3" y="3" width="16" height="16" rx="2.6"/>
+          <rect x="21" y="3" width="16" height="16" rx="2.6"/>
+          <rect x="3" y="21" width="16" height="16" rx="2.6"/>
+          <rect x="21" y="21" width="16" height="16" rx="2.6"/>
+        </g>
+        <g fill="var(--muted)" opacity="0.5">
+          <rect x="5.3" y="9.5" width="9.6" height="1.5" rx="0.75"/>
+          <rect x="5.3" y="12.5" width="7.4" height="1.5" rx="0.75"/>
+          <rect x="5.3" y="15.5" width="5.2" height="1.5" rx="0.75"/>
+          <rect x="23.3" y="6.5" width="7.8" height="1.5" rx="0.75"/>
+          <rect x="23.3" y="12.5" width="9.2" height="1.5" rx="0.75"/>
+          <rect x="23.3" y="15.5" width="4.6" height="1.5" rx="0.75"/>
+          <rect x="5.3" y="24.5" width="8.4" height="1.5" rx="0.75"/>
+          <rect x="5.3" y="27.5" width="5.6" height="1.5" rx="0.75"/>
+          <rect x="5.3" y="33.5" width="9.0" height="1.5" rx="0.75"/>
+          <rect x="23.3" y="24.5" width="6.8" height="1.5" rx="0.75"/>
+          <rect x="23.3" y="27.5" width="8.8" height="1.5" rx="0.75"/>
+          <rect x="23.3" y="30.5" width="5.8" height="1.5" rx="0.75"/>
+        </g>
+        <rect x="5.3" y="6.5" width="6.4" height="1.5" rx="0.75" fill="var(--guard)"/>
+        <rect x="23.3" y="9.5" width="6.4" height="1.5" rx="0.75" fill="var(--orient)"/>
+        <rect x="5.3" y="30.5" width="6.4" height="1.5" rx="0.75" fill="var(--ship)"/>
+        <rect x="23.3" y="33.5" width="6.4" height="1.5" rx="0.75" fill="var(--build)"/>
+      </g>
+      <g fill="none" stroke-linecap="round" stroke-dasharray="0 17">
+        <use class="wake" href="#wakelines" stroke-width="6" mask="url(#wake)"/>
+        <use class="pulse" href="#wakelines" stroke-width="7" mask="url(#pulse)"/>
+      </g>
+      <use class="helm" href="#mark" x="626" y="40" width="360" height="360"/>
+    </svg>
     <div class="herocontent">
       <p class="eyebrow">Claude Code plugins</p>
       <h1 class="title">bridge<span class="ai">.ai</span></h1>
@@ -502,7 +561,7 @@
           <a class="stop s-safety" href="#g-safety"><span class="node n-safety"></span><span class="txt"><span class="lab">stay safe</span><span class="sub">screen risky commands</span></span></a>
           <a class="stop s-bearings" href="#g-bearings"><span class="node n-bearings"></span><span class="txt"><span class="lab">keep oriented</span><span class="sub">see work at a glance</span></span></a>
           <a class="stop s-waypoints" href="#g-waypoints"><span class="node n-waypoints"></span><span class="txt"><span class="lab">reach waypoints</span><span class="sub">land changes cleanly</span></span></a>
-          <a class="stop s-charts" href="#g-charts"><span class="node n-charts"></span><span class="txt"><span class="lab">chart the waters</span><span class="sub">mark the dragons for the next reader</span></span></a>
+          <a class="stop s-charts" href="#g-charts"><span class="node n-charts"></span><span class="txt"><span class="lab">chart the waters</span><span class="sub">write it up for the next reader</span></span></a>
           <a class="stop s-orders" href="#g-orders"><span class="node n-orders"></span><span class="txt"><span class="lab">leave standing orders</span><span class="sub">improve the recipe for next time</span></span></a>
         </div>
       </div>
@@ -570,15 +629,46 @@
 
   <div class="bearings"><span class="tickline"></span></div>
 
-  <!-- ============ CHANGELOG (dated log + artifact counts over time) ============ -->
+  <!-- ============ CHANGELOG (links to whats-new.html + artifact counts over time) ============ -->
   <section id="changelog">
     <h2><a class="secanchor" href="#changelog">Changelog</a></h2>
-    <div class="changelog" id="cllist"></div>
+    <p class="cllinks"><a href="whats-new.html">What's new, newest first</a><a href="feed.xml">Subscribe via RSS</a></p>
     <details class="growthfold" id="growthfold">
       <summary>Artifacts over time</summary>
       <div class="growthbox"><canvas id="growthchart"></canvas></div>
     </details>
   </section>
+
+  <aside class="toast" id="newstoast" role="status" hidden>
+    <span class="glyph" aria-hidden="true"></span>
+    <span class="t" id="newstitle"></span>
+    <button type="button" class="x" id="newsclose" aria-label="Dismiss">&times;</button>
+    <span class="b" id="newsbody"></span>
+    <a class="go" id="newsgo" href="whats-new.html">See what's new</a>
+  </aside>
+  <script>
+  // The newest dated entry in whats-new.md, against the last one this visitor
+  // saw (kept in this browser only). A toast shows while the entry is recent.
+  (function(){
+    const KEY="bridgeai.seen", RECENT_DAYS=45;
+    const read=()=>{ try{ return localStorage.getItem(KEY)||""; }catch(e){ return ""; } };
+    const mark=(d)=>{ try{ localStorage.setItem(KEY,d); }catch(e){} };
+    fetch("whats-new.md").then((r)=>r.ok?r.text():Promise.reject(r.status)).then((md)=>{
+      const m=md.match(/^## (\d{4}-\d{2}-\d{2})\s*\n+- (.+)$/m); if(!m) return;
+      const latest=m[1]; if(read()>=latest) return;
+      const age=(Date.now()-Date.parse(latest+"T12:00:00Z"))/864e5; if(age>RECENT_DAYS) return;
+      const line=m[2].replace(/^\*\*[^*]+:\*\*\s*/,""), link=line.match(/^\[([^\]]+)\]\([^)]+\):?\s*(.*)$/);
+      document.getElementById("newstitle").textContent=link?link[1]:"New on "+latest;
+      const body=(link?link[2]:line).replace(/[`*]/g,"");
+      document.getElementById("newsbody").textContent=body.charAt(0).toUpperCase()+body.slice(1);
+      document.getElementById("newsgo").href="whats-new.html#"+latest;
+      const toast=document.getElementById("newstoast"); toast.hidden=false;
+      const seen=()=>{ mark(latest); toast.hidden=true; };
+      document.getElementById("newsclose").addEventListener("click",seen);
+      document.getElementById("newsgo").addEventListener("click",()=>mark(latest));
+    }).catch(()=>{});
+  })();
+  </script>
 
   <footer class="sitefoot">
     <div class="fpages">
@@ -878,7 +968,7 @@
     });
   })();
 
-  // ---- changelog: the dated log + artifact counts over time (lazy: builds when scrolled in) ----
+  // ---- changelog: artifact counts over time (lazy: builds when scrolled in); the dated log is whats-new.html ----
   (function(){
     const sec=document.getElementById("changelog"); if(!sec) return;
     const hex=(tok)=>{ const s=document.createElement("span"); s.style.cssText="color:var("+tok+");display:none";
@@ -891,110 +981,27 @@
         || getComputedStyle(document.documentElement).colorScheme==="dark" ? 255 : 0,
       m=(x)=>Math.round(x+(t-x)*a); return `rgb(${m(r)},${m(g)},${m(b)})`; };
     const whenReady=(cb)=> window.Chart ? cb() : setTimeout(()=>whenReady(cb),50);
-    // A release's hover card shows the teaser the build extracted from the notes
-    // — the alert a release leads with, then each section's heading and the lead
-    // of its first few bullets. The full body is a document, and the link the
-    // card hangs off goes to the release page that renders it properly. Every
-    // field is HTML-escaped, so a release note can't inject markup.
-    function renderSummary(sum, url){
-      const esc=(s)=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-      const out=[];
-      if(sum.alert) out.push(`<div class="cn-alert">${esc(sum.alert)}</div>`);
-      (sum.buckets||[]).forEach((s)=>{
-        if(s.title) out.push(`<div class="cn-sec">${esc(s.title)}</div>`);
-        const items=(s.items||[]).map((i)=>`<li>${esc(i)}</li>`);
-        if(s.more) items.push(`<li class="cn-more">+${s.more} more</li>`);
-        out.push(`<ul>${items.join("")}</ul>`);
-      });
-      if(sum.more) out.push(`<div class="cn-sec cn-more">+${sum.more} more section${sum.more>1?"s":""}</div>`);
-      out.push(`<a class="cn-full" href="${url}" target="_blank" rel="noopener">Read the full notes ↗</a>`);
-      return out.join("");
-    }
-    // release-summary hover: a fixed popover (the changelog list itself is a
-    // scroll-clipped box, so the tip lives on <body>). It stays open while the
-    // pointer is over the link OR the popover, so the footer link is reachable.
-    // Placed below the link, or above if it'd spill.
-    function wireReleaseNotes(summaries){
-      let tip=document.querySelector(".clnotes-tip");
-      if(!tip){ tip=document.createElement("div"); tip.className="clnotes-tip"; document.body.appendChild(tip); }
-      let hideT=null;
-      const hide=()=>{ hideT=setTimeout(()=>tip.classList.remove("show"),160); };
-      const show=(a)=>{ clearTimeout(hideT);
-        const sum=summaries.get(a.dataset.rel);
-        if(!sum) return;
-        tip.innerHTML=`<span class="cn-tag"></span><div class="cn-body"></div>`;
-        tip.querySelector(".cn-tag").textContent=`${a.dataset.tag} release notes`;
-        tip.querySelector(".cn-body").innerHTML=renderSummary(sum, a.href);
-        tip.classList.add("show"); tip.style.left="0px"; tip.style.top="0px";
-        const r=a.getBoundingClientRect(), w=tip.offsetWidth, h=tip.offsetHeight;
-        let x=Math.max(8, Math.min(r.left, innerWidth-w-8));
-        let y=r.bottom+8; if(y+h>innerHeight-8) y=Math.max(8, r.top-h-8);
-        tip.style.left=x.toFixed(0)+"px"; tip.style.top=y.toFixed(0)+"px";
-      };
-      document.querySelectorAll("#cllist .clrelease.has-notes").forEach((a)=>{
-        a.addEventListener("mouseenter",()=>show(a));
-        a.addEventListener("mouseleave",hide);
-      });
-      tip.addEventListener("mouseenter",()=>clearTimeout(hideT));
-      tip.addEventListener("mouseleave",hide);
-    }
     let growthChart=null, growthData=null;
     function build(data){
       growthData=data;
       // group color, lightened a step per same-group plugin so they stay distinct.
       // The group rides in artifacts.json rather than being read from PLUGINS: a
       // retired plugin still has a band to draw and no catalog card to read.
-      const colorFor=(p)=>{ const c=data.colors[p]; if(!c) return hex("--muted");
+      // An archived plugin keeps its history and its group's color, crossed out
+      // with an X hatch in the page color so it reads as no longer shipping.
+      const colorFor=(p)=>{ const c=data.colors[p]; if(!c || !ACCENT[c.group]) return hex("--muted");
         const base=hex(ACCENT[c.group]); return c.shade ? shadeStep(base, .26+.2*c.shade) : base; };
-      const esc=(v)=>String(v||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;");
-      // Every event here is an instant, and which calendar day it lands on is
-      // the reader's to decide — so rows are bucketed into local days here
-      // rather than at build time. A change point carries `at` only if it was
-      // recorded after the log grew the column; older ones keep the flat day
-      // they were logged under.
-      const localDay=(iso)=>{ const d=new Date(iso), pad=(n)=>String(n).padStart(2,"0");
-        return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
-      const byDay=new Map();
-      const rowAt=(date,plugin)=>{ const k=date+"|"+plugin; let e=byDay.get(k);
-        if(!e) byDay.set(k, e={date, plugin, change:""}); return e; };
-      // oldest first, so a day that gathers two logged days reads in order
-      [...data.changelog].reverse().forEach((r)=>{
-        const e=rowAt(r.at?localDay(r.at):r.date, r.plugin);
-        e.change=[e.change, r.change].filter(Boolean).join(" ");
-        if(r.removed) e.removed=true;
-        if(r.last_release) e.last_release=r.last_release;
-      });
-      (data.releases||[]).forEach((x)=>{ const e=rowAt(localDay(x.published_at), x.plugin);
-        if(!e.release || x.published_at > e.release.published_at) e.release=x; });
-      const rows=[...byDay.values()].sort((a,b)=>
-        b.date.localeCompare(a.date) || b.plugin.localeCompare(a.plugin));
-      // Summaries ride a `plugin|tag` key rather than a data attribute — a
-      // teaser is structured, and stringifying it into markup only to parse it
-      // back on hover is a round trip the Map skips.
-      const summaries=new Map();
-      const relKey=(plugin,x)=>`${plugin}|${x.tag}`;
-      const hasSummary=(x)=> !!(x.summary && (x.summary.alert || (x.summary.buckets||[]).length));
-      const tipAttrs=(plugin,x)=>{ if(!hasSummary(x)) return "";
-        summaries.set(relKey(plugin,x), x.summary);
-        return ` data-rel="${esc(relKey(plugin,x))}" data-tag="${esc(x.tag)}"`; };
-      document.getElementById("cllist").innerHTML = rows.map((r)=>{
-        const col=colorFor(r.plugin);
-        const rels=[r.release].filter(Boolean).map((x)=>
-          `<a class="clrelease${hasSummary(x)?" has-notes":""}" href="${x.url}" target="_blank" rel="noopener"${tipAttrs(r.plugin,x)}>released ${x.tag} ↗</a>`);
-        let chg="";
-        if(r.change==="init") chg=`<span class="init">created</span>`;
-        // a retirement reports the last version the plugin shipped on the same
-        // line, since that's the one anyone still has installed
-        else if(r.removed){ const lr=r.last_release;
-          const tail=lr?` (last release: <a class="clrelease${hasSummary(lr)?" has-notes":""}" href="${lr.url}" target="_blank" rel="noopener"${tipAttrs(r.plugin,lr)}>${esc(lr.tag)} ↗</a>)`:"";
-          chg=`<span class="rem">plugin:removed</span>${tail}`; }
-        else if(r.change) chg=r.change.split(" ").map((t)=> t[0]==="+"?`<span class="add">${t}</span>`:`<span class="rem">${t}</span>`).join(" ");
-        const inner=[...rels,chg].filter(Boolean).join(`<span class="clsep"> · </span>`);
-        return `<div class="clrow${rels.length?" release":""}"><span class="cldate">${r.date}</span><span class="clplug" style="color:${col}">${r.plugin}</span><span class="clchange">${inner}</span></div>`;
-      }).join("");
-      wireReleaseNotes(summaries);
+      const hatch=(col)=>{ const k=Math.max(1, Math.round(devicePixelRatio||1)), n=7*k,
+          cv=document.createElement("canvas"), g=cv.getContext("2d");
+        cv.width=cv.height=n; g.fillStyle=col; g.fillRect(0,0,n,n);
+        g.strokeStyle=hex("--abyss"); g.globalAlpha=.7; g.lineWidth=1.3*k;
+        g.beginPath(); g.moveTo(0,0); g.lineTo(n,n); g.moveTo(n,0); g.lineTo(0,n); g.stroke();
+        const pat=g.createPattern(cv,"repeat");
+        if(k>1 && pat.setTransform) pat.setTransform(new DOMMatrix().scale(1/k));
+        return pat; };
+      const fillFor=(p)=> PLUGINS[p] ? colorFor(p) : hatch(colorFor(p));
       const datasets = data.plugins.map((p)=>({label:p, data:data.series[p],
-        backgroundColor:colorFor(p), stack:"suite", borderWidth:0, maxBarThickness:34}));
+        backgroundColor:fillFor(p), stack:"suite", borderWidth:0, maxBarThickness:34}));
       if(growthChart) growthChart.destroy();
       growthChart=new Chart(document.getElementById("growthchart"),{
         type:"bar", data:{labels:data.dates, datasets},

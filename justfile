@@ -18,7 +18,7 @@ default:
 
 # Sync the siblings and regenerate every docs/ data file
 [group('start here')]
-build: sync plugins-data specs-data events-data artifacts-data
+build: sync plugins-data specs-data events-data artifacts-data feed
 
 # Serve docs/ with docsify and open a browser
 [group('start here')]
@@ -66,6 +66,16 @@ events-data:
 [group('generate docs/ data')]
 artifacts-data:
     shipyard gen-artifacts-json
+
+# Generate docs/whats-new.md: CHANGELOG.md's highlights plus every release and artifact change
+[group('generate docs/ data')]
+whats-new:
+    python3 -I suite/build-whats-new.py
+
+# Generate docs/feed.xml: the RSS feed of docs/whats-new.md, one item per date
+[group('generate docs/ data')]
+feed: whats-new
+    python3 -I suite/changelog_feed.py docs/whats-new.md --site-url https://chris-peterson.github.io/claude-marketplace/ --title "bridge.ai: What's new" --description "Changes across the bridge.ai Claude Code plugins." --home whats-new --router path --out docs/feed.xml
 
 # Generate .claude-plugin/marketplace.json from plugins.yml and each plugin.yml (CI's job; see build)
 [group('CI or one-time')]

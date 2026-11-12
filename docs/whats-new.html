@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>bridge.ai — What's new</title>
+<meta name="description" content="What changed in the bridge.ai plugin suite, by date.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="alternate" type="application/rss+xml" title="bridge.ai: What's new" href="feed.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900&family=JetBrains+Mono:wght@400;500;700&family=Spline+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="/js/docsify-shared.js"></script>
+<script src="plugins.js"></script>
+<script>initTheme();</script>
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/titlebar.css">
+<style>
+  :root{
+    --abyss:light-dark(#f7f7f1,#191a21); --deep:light-dark(#efefe8,#21222c);
+    --line:light-dark(#deded4,#2a2c38); --line-2:light-dark(#cfcfc4,#33364a);
+    --fg:var(--color-foreground); --muted:light-dark(#5a6896,#8e99bd);
+    --cyan:var(--color-cyan); --pink:var(--color-pink);
+    --sea:light-dark(#e8e8e0,#282a36); --line-h:light-dark(#c9c9bd,#44475a);
+    --gold:light-dark(#a16207,#e3b341);
+    --green:var(--color-green); --red:var(--color-red);
+    --plan:var(--color-orange); --guard:var(--color-red); --orient:var(--color-purple);
+    --ship:var(--color-cyan); --chart:var(--color-pink); --build:var(--color-green);
+    --shadow-pop:light-dark(0 14px 40px rgba(40,42,54,.22),0 14px 40px rgba(0,0,0,.5));
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --disp:'Fraunces',Georgia,'Times New Roman',serif;
+    --body:'Spline Sans',ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding-top:52px;background:var(--abyss);color:var(--fg);font-family:var(--body);line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  .sitenav{position:sticky;top:52px;z-index:20;background:color-mix(in srgb,var(--abyss) 88%,transparent);
+    backdrop-filter:blur(9px);border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:1040px;margin:0 auto;padding:13px 22px;display:flex;align-items:center;justify-content:space-between}
+  .brand{display:inline-flex;align-items:center;gap:11px;font-family:var(--mono);font-size:13px;letter-spacing:.05em;color:var(--fg);text-decoration:none}
+  .brand img{width:26px;height:26px}
+  .brand b{color:var(--cyan);font-weight:700}
+  .brand .back{color:var(--muted);font-size:15px}
+  .crumbs{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+  .crumbs .sep{color:var(--line-2)} .crumbs .here{color:var(--fg)}
+  .navleft{display:flex;align-items:center;gap:10px;min-width:0}
+  .rss{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12.5px;color:var(--muted);text-decoration:none}
+  .rss:hover{color:var(--fg)}
+  .rss svg{width:14px;height:14px}
+  .wrap{max-width:760px;margin:0 auto;padding:40px 22px 80px}
+  h1{font-family:var(--disp);font-weight:900;font-size:clamp(34px,5vw,48px);letter-spacing:-.02em;margin:0 0 6px}
+  .lede{color:var(--muted);margin:0 0 30px}
+  .day{padding:22px 0;border-top:1px solid var(--line);scroll-margin-top:100px}
+  .day h2{font-family:var(--disp);font-weight:600;font-size:22px;margin:0 0 12px}
+  .day h2 a{text-decoration:none}
+  .day ul{margin:0;padding-left:20px;display:grid;gap:8px}
+  .day li a{color:var(--cyan)}
+  .day .type{font-weight:600}
+  /* each entry's bullet and plugin name take its group's accent, as the old
+     changelog's plugin column did; highlights and archived plugins stay neutral */
+  .day li::marker{color:var(--pc,var(--line-h))}
+  .day .plug{color:var(--pc);font-weight:600}
+  .day code.add{color:var(--green)}
+  .day code.rem{color:var(--red)}
+  .day code{font-family:var(--mono);font-size:.88em;background:var(--deep);border:1px solid var(--line-2);border-radius:5px;padding:0 5px}
+  .day:target h2{color:var(--pink)}
+  .state{color:var(--muted)}
+  /* a release with notes: the landing page's old changelog treatment, a gold
+     link with a dotted underline that opens the notes' teaser on hover */
+  .day li a.rel{color:var(--gold);font-weight:600;text-decoration:none;white-space:nowrap}
+  .day li a.rel:hover{text-decoration:underline;text-underline-offset:2px}
+  .day li a.rel.has-notes{text-decoration:underline dotted;text-underline-offset:3px;text-decoration-color:color-mix(in srgb,var(--gold) 55%,transparent)}
+  .clnotes-tip{position:fixed;z-index:60;width:max-content;max-width:min(420px,86vw);
+    max-height:min(70vh,520px);overflow-y:auto;
+    background:var(--sea);border:1px solid var(--line-h);border-radius:11px;padding:12px 15px;
+    box-shadow:var(--shadow-pop);opacity:0;visibility:hidden;transition:opacity .12s;
+    scrollbar-width:thin;scrollbar-color:var(--line-h) transparent}
+  .clnotes-tip.show{opacity:1;visibility:visible}
+  .clnotes-tip .cn-tag{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+  .clnotes-tip .cn-alert{font-size:12.5px;line-height:1.45;font-weight:600;color:var(--fg);
+    border-left:2px solid var(--gold);padding-left:9px;margin-bottom:9px}
+  .clnotes-tip .cn-sec{font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);margin:9px 0 4px}
+  .clnotes-tip .cn-sec:first-child{margin-top:0}
+  .clnotes-tip ul{margin:0;padding-left:15px;font-size:12.5px;line-height:1.5;color:var(--fg)}
+  .clnotes-tip li{margin:3px 0}
+  .clnotes-tip li.cn-more{list-style:none;margin-left:-15px;color:var(--muted);font-style:italic}
+  .clnotes-tip .cn-sec.cn-more{text-transform:none;letter-spacing:0;font-style:italic}
+  .clnotes-tip .cn-full{display:block;margin-top:11px;padding-top:9px;border-top:1px solid var(--line-2);
+    font-size:11.5px;color:var(--cyan)}
+</style>
+</head>
+<body class="sidebar-hidden">
+
+<nav class="sitenav">
+  <div class="nav-inner">
+    <div class="navleft">
+      <a class="brand" href="index.html"><span class="back">&larr;</span><img src="favicon.svg" alt=""><span>bridge<b>.ai</b></span></a>
+      <span class="crumbs"><span class="sep">/</span><span class="here">What's new</span></span>
+    </div>
+    <a class="rss" href="feed.xml"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 11a8 8 0 0 1 8 8M5 4a15 15 0 0 1 15 15"/><circle cx="6" cy="18" r="1.4" fill="currentColor"/></svg>Subscribe via RSS</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <h1>What's new</h1>
+  <p class="lede">Changes across the bridge.ai plugins, newest first. Each plugin's own changelog has the full detail.</p>
+  <div id="log"><p class="state">Loading…</p></div>
+</div>
+
+<script>
+// Renders whats-new.md: `## YYYY-MM-DD` opens a day (its id is the date, which
+// the feed links to), `- ` bullets are its entries, and a leading **type:**
+// is the entry's label. Inline: **bold**, `code`, and [text](url).
+//
+// Styling rescued from the landing page's old changelog: a release's link is
+// gold, and when artifacts.json has its notes' summary a hover card shows more
+// of it than the one-line teaser; what a change added reads green and what it
+// removed red; and a plugin's entries carry its group's accent.
+(function(){
+  const esc=(s)=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const inline=(s)=>esc(s)
+    .replace(/`([^`]+)`/g,"<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g,'<span class="type">$1</span>')
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g,(m,t,u)=>`<a href="${u}">${t}</a>`);
+  const day=(d)=>new Date(d+"T12:00:00Z").toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric",timeZone:"UTC"});
+  const hasSummary=(x)=> !!(x && x.summary && (x.summary.alert || (x.summary.buckets||[]).length));
+  const RELEASE=/^\*\*released:\*\*\s*\[([^\]]+)\]\(([^)\s]+)\)/;
+  // the landing page's release card: the alert, then each section's heading
+  // and the lead of its first few bullets, with the full notes one click away
+  function renderSummary(sum, url){
+    const out=[];
+    if(sum.alert) out.push(`<div class="cn-alert">${esc(sum.alert)}</div>`);
+    (sum.buckets||[]).forEach((s)=>{
+      if(s.title) out.push(`<div class="cn-sec">${esc(s.title)}</div>`);
+      const items=(s.items||[]).map((i)=>`<li>${esc(i)}</li>`);
+      if(s.more) items.push(`<li class="cn-more">+${s.more} more</li>`);
+      out.push(`<ul>${items.join("")}</ul>`);
+    });
+    if(sum.more) out.push(`<div class="cn-sec cn-more">+${sum.more} more section${sum.more>1?"s":""}</div>`);
+    out.push(`<a class="cn-full" href="${esc(url)}" target="_blank" rel="noopener">Read the full notes ↗</a>`);
+    return out.join("");
+  }
+  // a fixed popover that stays open while the pointer is over the link or the
+  // card, so the footer link is reachable; below the link, or above if it'd spill
+  function wireReleaseNotes(byUrl){
+    const tip=document.createElement("div"); tip.className="clnotes-tip"; document.body.appendChild(tip);
+    let hideT=null;
+    const hide=()=>{ hideT=setTimeout(()=>tip.classList.remove("show"),160); };
+    const show=(a)=>{ clearTimeout(hideT);
+      const x=byUrl.get(a.getAttribute("href")); if(!hasSummary(x)) return;
+      tip.innerHTML=`<span class="cn-tag"></span><div class="cn-body">${renderSummary(x.summary, x.url)}</div>`;
+      tip.querySelector(".cn-tag").textContent=`${x.plugin} ${x.tag} release notes`;
+      tip.classList.add("show"); tip.style.left="0px"; tip.style.top="0px";
+      const r=a.getBoundingClientRect(), w=tip.offsetWidth, h=tip.offsetHeight;
+      const left=Math.max(8, Math.min(r.left, innerWidth-w-8));
+      let top=r.bottom+8; if(top+h>innerHeight-8) top=Math.max(8, r.top-h-8);
+      tip.style.left=left.toFixed(0)+"px"; tip.style.top=top.toFixed(0)+"px";
+    };
+    document.querySelectorAll("#log a.rel.has-notes").forEach((a)=>{
+      a.addEventListener("mouseenter",()=>show(a));
+      a.addEventListener("mouseleave",hide);
+    });
+    tip.addEventListener("mouseenter",()=>clearTimeout(hideT));
+    tip.addEventListener("mouseleave",hide);
+  }
+  const releases=fetch("artifacts.json").then((r)=>r.ok?r.json():{}).then((d)=>d.releases||[]).catch(()=>[]);
+  Promise.all([fetch("whats-new.md").then((r)=>{ if(!r.ok) throw new Error(r.status); return r.text(); }), releases]).then(([md, rels])=>{
+    const byUrl=new Map(rels.map((x)=>[x.url, x]));
+    const plugins=typeof PLUGINS==="object" ? PLUGINS : {};
+    const accent={}; (typeof GROUPS==="object" ? GROUPS : []).forEach((g)=> accent[g.key]=g.accent);
+    const colorOf=(name)=>{ const p=plugins[name]; return p && accent[p.group] ? `var(${accent[p.group]})` : ""; };
+    // returns [html, the plugin's accent or ""]
+    const entry=(s)=>{
+      const type=(s.match(/^\*\*([^*]+):\*\*/)||[])[1]||"";
+      const who=(s.match(/^\*\*[^*]+:\*\*\s*\[?([A-Za-z][\w-]*)/)||[])[1]||"";
+      const pc=colorOf(who);
+      let html=inline(s);
+      const m=s.match(RELEASE);
+      if(m){ const x=byUrl.get(m[2]);
+        html=html.replace(/<a href="([^"]+)">([^<]+)<\/a>/, (all,u,t)=>
+          `<a class="rel${hasSummary(x)?" has-notes":""}" href="${u}" target="_blank" rel="noopener">${t} ↗</a>`); }
+      else if(type==="changed"){
+        html=html.split("; ").map((seg)=> /\badded\b/.test(seg) ? seg.replace(/<code>/g,'<code class="add">')
+          : /\bremoved\b/.test(seg) ? seg.replace(/<code>/g,'<code class="rem">') : seg).join("; ");
+        if(pc) html=html.replace(new RegExp(`(</span>\\s*)${who}\\b`), `$1<span class="plug">${who}</span>`);
+      }
+      return [html, pc];
+    };
+    let html="", open=false;
+    md.split("\n").forEach((line)=>{
+      const h=line.match(/^## (\d{4}-\d{2}-\d{2})\s*$/);
+      if(h){ if(open) html+="</ul></section>"; html+=`<section class="day" id="${h[1]}"><h2><a href="#${h[1]}">${day(h[1])}</a></h2><ul>`; open=true; return; }
+      if(open && line.startsWith("- ")){ const [h2, pc]=entry(line.slice(2));
+        html+=`<li${pc?` style="--pc:${pc}"`:""}>${h2}</li>`; }
+    });
+    if(open) html+="</ul></section>";
+    document.getElementById("log").innerHTML=html;
+    wireReleaseNotes(byUrl);
+    const latest=(md.match(/^## (\d{4}-\d{2}-\d{2})/m)||[])[1];
+    if(latest){ try{ localStorage.setItem("bridgeai.seen",latest); }catch(e){} }
+    if(location.hash){ const t=document.getElementById(location.hash.slice(1)); if(t) t.scrollIntoView(); }
+  }).catch(()=>{ document.getElementById("log").innerHTML='<p class="state">Couldn\'t load the changelog. Reload to try again.</p>'; });
+})();
+</script>
+<script>initTitlebar({ name: 'claude-marketplace' });</script>
+</body>
+</html>
