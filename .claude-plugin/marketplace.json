@@ -20,6 +20,19 @@
       "homepage": "https://chris-peterson.github.io/rig/#/"
     },
     {
+      "name": "sonar",
+      "description": "Pings what a session can reach for the thing you're looking for: quick shallow matches first, then deeper results from history, sibling repos, links, and past transcripts.",
+      "author": {
+        "name": "chris-peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/sonar.git"
+      },
+      "category": "development",
+      "homepage": "https://chris-peterson.github.io/sonar/#/"
+    },
+    {
       "name": "ClaudeWatch",
       "description": "Screens every shell command and every file Claude writes, before either lands. Blocks the dangerous, asks on anything that changes state.",
       "author": {
@@ -70,19 +83,6 @@
       },
       "category": "development",
       "homepage": "https://chris-peterson.github.io/beacon/#/"
-    },
-    {
-      "name": "sonar",
-      "description": "Pings what a session can reach for the thing you're looking for: quick shallow matches first, then deeper results from history, sibling repos, links, and past transcripts.",
-      "author": {
-        "name": "chris-peterson"
-      },
-      "source": {
-        "source": "url",
-        "url": "https://github.com/chris-peterson/sonar.git"
-      },
-      "category": "development",
-      "homepage": "https://chris-peterson.github.io/sonar/#/"
     },
     {
       "name": "anchor",
