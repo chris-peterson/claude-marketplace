@@ -74,6 +74,7 @@ class WhatsNew(unittest.TestCase):
             "releases": [{"plugin": "anchor", "tag": "v2.0.0", "published_at": "2026-11-11T20:00:00Z",
                           "url": "https://example.com/r", "summary": {"buckets": [{"items": ["Stacks."]}]}}],
             "changelog": [{"date": "2026-11-11", "plugin": "rig", "change": "+skill:switch -hook:old"},
+                          {"date": "2026-10-01", "plugin": "rig", "change": "+hook:old"},
                           {"date": "2026-08-24", "plugin": "moor", "change": "-plugin:moor"}],
         })
         self.assertEqual(out.splitlines()[2:8], [
@@ -82,6 +83,15 @@ class WhatsNew(unittest.TestCase):
             "- **released:** [anchor v2.0.0](https://example.com/r): Stacks.",
             "- **changed:** rig added skill `switch`; removed hook `old`", ""])
         self.assertIn("## 2026-08-24\n\n- **archived:** moor", out)
+        self.assertIn("## 2026-10-01\n\n- **new plugin:** rig, with hook `old`\n", out)
+
+    def test_debut_announced_in_highlights_is_folded_in(self):
+        out = self.build("## 2026-11-11\n\n- **new plugin:** [fathom](https://example.com/fathom): one record.\n", {
+            "changelog": [{"date": "2026-11-11", "plugin": "fathom", "change": "+skill:pdf +skill:record"}],
+        })
+        self.assertIn("- **new plugin:** [fathom]", out)
+        self.assertNotIn("skill `pdf`", out)
+        self.assertNotIn("**changed:**", out)
 
 
 if __name__ == "__main__":

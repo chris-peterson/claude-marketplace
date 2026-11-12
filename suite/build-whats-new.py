@@ -65,13 +65,24 @@ def build(changelog: Path, artifacts: Path) -> str:
         line = f"- **released:** [{r['plugin']} {r['tag']}]({r['url']})"
         note = teaser(r.get("summary"))
         days[r["published_at"][:10]].append(line + (f": {note}" if note else ""))
-    for c in data.get("changelog") or []:
+    # A plugin's first row is its debut: the whole artifact set arriving at
+    # once. That's a new plugin, not a change, and when the day's highlights
+    # already announce it, the inventory adds nothing to their line.
+    debuted = set()
+    for c in sorted(data.get("changelog") or [], key=lambda c: (c["date"], c.get("at", ""))):
+        plugin, day = c["plugin"], c["date"]
         if "-plugin:" in c["change"]:
-            days[c["date"]].append(f"- **archived:** {c['plugin']}")
+            days[day].append(f"- **archived:** {plugin}")
+            continue
+        debut = plugin not in debuted
+        debuted.add(plugin)
+        if debut and any(re.match(rf"- \*\*new plugin:\*\* \[?{re.escape(plugin)}\b", h) for h in days[day]):
             continue
         what = describe(c["change"])
-        if what:
-            days[c["date"]].append(f"- **changed:** {c['plugin']} {what}")
+        if debut:
+            days[day].append(f"- **new plugin:** {plugin}" + (f", with {what.removeprefix('added ')}" if what.startswith("added ") and ";" not in what else ""))
+        elif what:
+            days[day].append(f"- **changed:** {plugin} {what}")
     out = ["# What's new", ""]
     for day in sorted(days, reverse=True):
         out += [f"## {day}", ""] + days[day] + [""]

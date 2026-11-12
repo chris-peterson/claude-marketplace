@@ -88,29 +88,14 @@
      spoke's handle shows. The crisp mark still lives in the nav. */
   .herowatermark{position:absolute;top:6px;right:-6px;width:min(400px,44vw);height:min(400px,44vw);
     opacity:.12;z-index:0;pointer-events:none;filter:drop-shadow(0 0 46px var(--glow-mark))}
-  /* The mural carries its own opacities: both marks rest as faint as the old
-     watermark, with the dotted wake between them a little stronger. */
-  .herowatermark.heromural{top:0;right:0;left:0;width:100%;height:auto;aspect-ratio:1000/440;filter:none;opacity:1}
-  .heromural .old,.heromural .helm{opacity:.12}
-  .heromural .wake{opacity:.3}
-  .heromural .pulse{display:none}
-  /* One 6.5s beat: the 1.0 mark lights up, a pulse runs the wake left to
-     right, and the helm answers as it reaches the hub. Nothing moves under
-     reduced motion; the resting wake stays. */
-  @media (prefers-reduced-motion:no-preference){
-    .heromural .pulse{display:inline;opacity:.8}
-    .heromural .old{animation:oldbeat 6.5s ease-out 1.2s infinite}
-    .heromural .helm{animation:helmbeat 6.5s ease-out 1.2s infinite}
-    .heromural .pulseband{animation:pulserun 6.5s 1.2s infinite}
-  }
-  @keyframes oldbeat{0%{opacity:.12}9%{opacity:.5}20%{opacity:.5}46%,100%{opacity:.12}}
-  @keyframes helmbeat{0%,42%{opacity:.12}52%{opacity:.24}80%,100%{opacity:.12}}
-  @keyframes pulserun{
-    0%{transform:translateX(0);animation-timing-function:linear}
-    8%{transform:translateX(175px);animation-timing-function:cubic-bezier(.45,.05,.4,1)}
-    50%{transform:translateX(881px);animation-timing-function:linear}
-    62%,100%{transform:translateX(1150px)}
-  }
+  /* The mural: the helm, as faint as the old watermark. It fades in with the
+     hero and then holds still, unless someone takes it: hovering lifts it a
+     little, and it can be turned by hand (the script under the toast). */
+  .herowatermark.heromural{top:0;right:0;left:0;width:100%;height:auto;aspect-ratio:1000/440;filter:none;opacity:1;touch-action:pan-y}
+  .heromural .helm{opacity:.12;transition:opacity .3s ease;transform-box:view-box;transform-origin:806px 220px}
+  .heromural .grip{pointer-events:all;fill:transparent;cursor:grab;-webkit-tap-highlight-color:transparent}
+  .heromural .grip:active{cursor:grabbing}
+  .heromural:has(.grip:hover) .helm,.heromural.held .helm{opacity:.22}
   .herocontent{position:relative;z-index:1;max-width:62ch}
   @media(max-width:680px){.herowatermark{display:none}}
   .eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.32em;text-transform:uppercase;color:var(--cyan);margin:0 0 18px}
@@ -128,22 +113,38 @@
   /* hero route — the capabilities as ordered stops on a course, in flow
      order; each stop deep-links to its catalog group. Blended into the hero
      (no card chrome); label and sub sit inline so the rows aren't narrow. */
-  /* what's new: a toast in the corner, shown only while the newest dated
-     entry is recent and one this visitor hasn't seen. Dismissing it, or
-     opening the page, marks it seen. */
+  /* what's new: the featured entry as a card in the corner. It opens on its
+     own once per entry; dismissing it folds it into a chip in the same
+     corner, which opens it again. */
   .toast{position:fixed;z-index:40;right:max(18px,env(safe-area-inset-right,0px));bottom:max(18px,env(safe-area-inset-bottom,0px));
-    width:min(340px,calc(100vw - 36px));display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:start;
-    padding:14px 14px 14px 16px;border-radius:14px;background:var(--deep);border:1px solid var(--line-h);
-    box-shadow:0 12px 32px -14px rgba(0,0,0,.45);animation:toastin .5s cubic-bezier(.2,.7,.2,1) .8s both}
+    display:grid;justify-items:end;align-items:end;pointer-events:none;animation:toastin .5s cubic-bezier(.2,.7,.2,1) .8s both}
+  .toast>*{grid-area:1/1;pointer-events:auto}
   @keyframes toastin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-  .toast .glyph{width:10px;height:10px;border-radius:50%;background:var(--chart);margin-top:6px}
-  .toast .t{font-weight:600;font-size:14.5px;color:var(--fg)}
+  .toast .card{width:min(340px,calc(100vw - 36px));display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:start;
+    padding:14px 14px 14px 16px;border-radius:14px;background:var(--deep);border:1px solid var(--line-h);
+    box-shadow:0 12px 32px -14px rgba(0,0,0,.45);transform-origin:100% 100%;
+    transition:opacity .22s ease,transform .3s cubic-bezier(.2,.7,.2,1),visibility 0s}
+  .toast .glyph{width:10px;height:10px;border-radius:50%;background:var(--chart);margin-top:6px;flex:none}
+  .toast .t{font-weight:600;font-size:14.5px;color:var(--fg);text-decoration:none}
+  a.t:hover{text-decoration:underline}
   .toast .b{grid-column:2;font-size:13.5px;color:var(--muted);line-height:1.45}
+  .toast .b a{color:var(--fg);text-decoration:underline;text-decoration-color:var(--line-h);text-underline-offset:2px}
+  .toast .b a:hover{text-decoration-color:var(--chart)}
   .toast .go{grid-column:2;justify-self:start;margin-top:6px;font-size:13.5px;font-weight:600;color:var(--chart);text-decoration:none}
   .toast .go:hover{text-decoration:underline}
   .toast .x{grid-row:1;grid-column:3;border:0;background:none;color:var(--muted);font-size:18px;line-height:1;cursor:pointer;padding:2px 4px;border-radius:6px}
-  .toast .x:hover{color:var(--fg)} .toast .x:focus-visible,.toast .go:focus-visible{outline:2px solid var(--chart);outline-offset:2px}
-  @media (prefers-reduced-motion:reduce){.toast{animation:none}}
+  .toast .x:hover{color:var(--fg)}
+  .toast .chip{display:flex;align-items:center;gap:8px;padding:7px 13px 7px 11px;border-radius:999px;cursor:pointer;
+    font:inherit;font-size:13px;font-weight:600;color:var(--fg);background:var(--deep);border:1px solid var(--line-h);
+    box-shadow:0 8px 22px -12px rgba(0,0,0,.45);transform-origin:100% 100%;
+    transition:opacity .22s ease,transform .3s cubic-bezier(.2,.7,.2,1),visibility 0s}
+  .toast .chip .glyph{margin:0;width:8px;height:8px}
+  .toast .chip:hover{border-color:var(--chart)}
+  .toast :focus-visible{outline:2px solid var(--chart);outline-offset:2px}
+  .toast[data-state=min] .card,.toast[data-state=open] .chip{opacity:0;transform:scale(.6);visibility:hidden;pointer-events:none;
+    transition:opacity .18s ease,transform .25s ease,visibility 0s .25s}
+  .toast[data-state=min] .card{transform:scale(.25)}
+  @media (prefers-reduced-motion:reduce){.toast,.toast .card,.toast .chip{animation:none;transition:none}}
   .routecard{position:relative;margin:22px 0 0;max-width:62ch}
   .routecard .lead{color:var(--muted);font-size:14.5px;margin:0 0 12px}
   .routecard .lead b{color:var(--fg);font-weight:600}
@@ -487,67 +488,10 @@
   <div id="home">
 
   <header class="hero">
-    <!-- The mural behind the hero: the 1.0 mark on the left and the 2.0 helm on
-         the right, joined by its four colored lines as a dotted wake. Every few
-         seconds the old mark lights up and a pulse runs along the wake into the
-         helm's hub. -->
-    <svg class="herowatermark heromural" viewBox="0 0 1000 440" preserveAspectRatio="xMaxYMin meet" aria-hidden="true">
-      <defs>
-        <linearGradient id="wakefade" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0.22" stop-color="#fff" stop-opacity="0"/>
-          <stop offset="0.52" stop-color="#fff" stop-opacity="1"/>
-          <stop offset="0.70" stop-color="#fff" stop-opacity="1"/>
-          <stop offset="0.80" stop-color="#fff" stop-opacity="0"/>
-        </linearGradient>
-        <mask id="wake" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="440">
-          <rect width="1000" height="440" fill="url(#wakefade)"/>
-        </mask>
-        <linearGradient id="pulsefade" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stop-color="#fff" stop-opacity="0"/>
-          <stop offset="0.75" stop-color="#fff" stop-opacity="1"/>
-          <stop offset="1" stop-color="#fff" stop-opacity="0"/>
-        </linearGradient>
-        <mask id="pulse" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="440">
-          <rect class="pulseband" x="-300" width="300" height="440" fill="url(#pulsefade)"/>
-        </mask>
-        <g id="wakelines">
-          <path d="M100 143.5 H270 C470 143.5 600 205 740 205 L806 220" stroke="var(--guard)"/>
-          <path d="M208 161.5 H270 C470 161.5 600 215 740 215 L806 220" stroke="var(--orient)"/>
-          <path d="M100 287.5 H270 C470 287.5 600 225 740 225 L806 220" stroke="var(--ship)"/>
-          <path d="M208 305.5 H270 C470 305.5 600 235 740 235 L806 220" stroke="var(--build)"/>
-        </g>
-      </defs>
-      <g class="old" transform="translate(30 100) scale(6)">
-        <g fill="var(--deep)" stroke="var(--line-h)" stroke-width="0.8">
-          <rect x="3" y="3" width="16" height="16" rx="2.6"/>
-          <rect x="21" y="3" width="16" height="16" rx="2.6"/>
-          <rect x="3" y="21" width="16" height="16" rx="2.6"/>
-          <rect x="21" y="21" width="16" height="16" rx="2.6"/>
-        </g>
-        <g fill="var(--muted)" opacity="0.5">
-          <rect x="5.3" y="9.5" width="9.6" height="1.5" rx="0.75"/>
-          <rect x="5.3" y="12.5" width="7.4" height="1.5" rx="0.75"/>
-          <rect x="5.3" y="15.5" width="5.2" height="1.5" rx="0.75"/>
-          <rect x="23.3" y="6.5" width="7.8" height="1.5" rx="0.75"/>
-          <rect x="23.3" y="12.5" width="9.2" height="1.5" rx="0.75"/>
-          <rect x="23.3" y="15.5" width="4.6" height="1.5" rx="0.75"/>
-          <rect x="5.3" y="24.5" width="8.4" height="1.5" rx="0.75"/>
-          <rect x="5.3" y="27.5" width="5.6" height="1.5" rx="0.75"/>
-          <rect x="5.3" y="33.5" width="9.0" height="1.5" rx="0.75"/>
-          <rect x="23.3" y="24.5" width="6.8" height="1.5" rx="0.75"/>
-          <rect x="23.3" y="27.5" width="8.8" height="1.5" rx="0.75"/>
-          <rect x="23.3" y="30.5" width="5.8" height="1.5" rx="0.75"/>
-        </g>
-        <rect x="5.3" y="6.5" width="6.4" height="1.5" rx="0.75" fill="var(--guard)"/>
-        <rect x="23.3" y="9.5" width="6.4" height="1.5" rx="0.75" fill="var(--orient)"/>
-        <rect x="5.3" y="30.5" width="6.4" height="1.5" rx="0.75" fill="var(--ship)"/>
-        <rect x="23.3" y="33.5" width="6.4" height="1.5" rx="0.75" fill="var(--build)"/>
-      </g>
-      <g fill="none" stroke-linecap="round" stroke-dasharray="0 17">
-        <use class="wake" href="#wakelines" stroke-width="6" mask="url(#wake)"/>
-        <use class="pulse" href="#wakelines" stroke-width="7" mask="url(#pulse)"/>
-      </g>
-      <use class="helm" href="#mark" x="626" y="40" width="360" height="360"/>
+    <!-- The mural behind the hero: the helm, which can be turned by hand. -->
+    <svg class="herowatermark heromural" id="mural" viewBox="0 0 1000 440" preserveAspectRatio="xMaxYMin meet" aria-hidden="true">
+      <use class="helm" id="muralhelm" href="#mark" x="626" y="40" width="360" height="360"/>
+      <circle class="grip" id="muralgrip" cx="806" cy="220" r="172"/>
     </svg>
     <div class="herocontent">
       <p class="eyebrow">Claude Code plugins</p>
@@ -639,34 +583,114 @@
     </details>
   </section>
 
-  <aside class="toast" id="newstoast" role="status" hidden>
-    <span class="glyph" aria-hidden="true"></span>
-    <span class="t" id="newstitle"></span>
-    <button type="button" class="x" id="newsclose" aria-label="Dismiss">&times;</button>
-    <span class="b" id="newsbody"></span>
-    <a class="go" id="newsgo" href="whats-new.html">See what's new</a>
+  <aside class="toast" id="newstoast" aria-label="What's new" data-state="min" hidden>
+    <div class="card" id="newscard" role="status">
+      <span class="glyph" aria-hidden="true"></span>
+      <a class="t" id="newstitle"></a>
+      <button type="button" class="x" id="newsclose" aria-label="Dismiss" aria-controls="newscard">&times;</button>
+      <span class="b" id="newsbody"></span>
+      <a class="go" id="newsgo" href="whats-new.html">See what's new</a>
+    </div>
+    <button type="button" class="chip" id="newschip" aria-controls="newscard" aria-expanded="false"><span class="glyph" aria-hidden="true"></span>What's new</button>
   </aside>
   <script>
-  // The newest dated entry in whats-new.md, against the last one this visitor
-  // saw (kept in this browser only). A toast shows while the entry is recent.
+  // The featured entry in whats-new.md, found by its link text; with FEATURED
+  // empty, the newest dated entry stands in while it's recent. The card opens
+  // on its own until this visitor dismisses that entry (kept in this browser
+  // only, as a date: whats-new.html marks the newest one when it's read);
+  // after that it waits as a chip in the corner.
   (function(){
-    const KEY="bridgeai.seen", RECENT_DAYS=45;
+    const FEATURED="bridge.ai 2.0", KEY="bridgeai.seen", RECENT_DAYS=45;
     const read=()=>{ try{ return localStorage.getItem(KEY)||""; }catch(e){ return ""; } };
-    const mark=(d)=>{ try{ localStorage.setItem(KEY,d); }catch(e){} };
+    const mark=(id)=>{ try{ localStorage.setItem(KEY,id); }catch(e){} };
+    const pick=(md)=>{
+      let date="";
+      for(const ln of md.split("\n")){
+        const d=ln.match(/^## (\d{4}-\d{2}-\d{2})/); if(d){ date=d[1]; continue; }
+        const e=ln.match(/^- (.+)$/); if(!e||!date) continue;
+        const line=e[1].replace(/^\*\*[^*]+:\*\*\s*/,""), link=line.match(/^\[([^\]]+)\]\(([^)]+)\):?\s*(.*)$/);
+        const entry={date, title:link?link[1]:"New on "+date, href:link?link[2]:"", body:link?link[3]:line};
+        if(!FEATURED) return entry;
+        if(entry.title===FEATURED) return entry;
+      }
+      return null;
+    };
     fetch("whats-new.md").then((r)=>r.ok?r.text():Promise.reject(r.status)).then((md)=>{
-      const m=md.match(/^## (\d{4}-\d{2}-\d{2})\s*\n+- (.+)$/m); if(!m) return;
-      const latest=m[1]; if(read()>=latest) return;
-      const age=(Date.now()-Date.parse(latest+"T12:00:00Z"))/864e5; if(age>RECENT_DAYS) return;
-      const line=m[2].replace(/^\*\*[^*]+:\*\*\s*/,""), link=line.match(/^\[([^\]]+)\]\([^)]+\):?\s*(.*)$/);
-      document.getElementById("newstitle").textContent=link?link[1]:"New on "+latest;
-      const body=(link?link[2]:line).replace(/[`*]/g,"");
-      document.getElementById("newsbody").textContent=body.charAt(0).toUpperCase()+body.slice(1);
-      document.getElementById("newsgo").href="whats-new.html#"+latest;
-      const toast=document.getElementById("newstoast"); toast.hidden=false;
-      const seen=()=>{ mark(latest); toast.hidden=true; };
-      document.getElementById("newsclose").addEventListener("click",seen);
-      document.getElementById("newsgo").addEventListener("click",()=>mark(latest));
+      const n=pick(md); if(!n) return;
+      if(!FEATURED && (Date.now()-Date.parse(n.date+"T12:00:00Z"))/864e5>RECENT_DAYS) return;
+      const title=document.getElementById("newstitle"), go=document.getElementById("newsgo");
+      title.textContent=n.title;
+      if(n.href) title.href=n.href; else title.removeAttribute("href");
+      // the body keeps its markdown links as links; everything else is text
+      const body=n.body.replace(/[`*]/g,""), out=document.getElementById("newsbody");
+      let at=0;
+      const text=(t)=>{ if(t) out.append(at?t:t.charAt(0).toUpperCase()+t.slice(1)); };
+      for(const m of body.matchAll(/\[([^\]]+)\]\(([^)\s]+)\)/g)){
+        text(body.slice(at,m.index));
+        const a=document.createElement("a"); a.href=m[2]; a.textContent=m[1]; out.append(a); at=m.index+m[0].length;
+      }
+      text(body.slice(at));
+      go.href="whats-new.html#"+n.date;
+      const toast=document.getElementById("newstoast"), chip=document.getElementById("newschip"), close=document.getElementById("newsclose");
+      const set=(open,focus)=>{
+        toast.dataset.state=open?"open":"min"; chip.setAttribute("aria-expanded",String(open));
+        if(focus) (open?close:chip).focus();
+      };
+      set(read()<n.date,false); toast.hidden=false;
+      close.addEventListener("click",()=>{ mark(n.date); set(false,true); });
+      chip.addEventListener("click",()=>set(true,true));
+      toast.addEventListener("keydown",(e)=>{ if(e.key==="Escape"&&toast.dataset.state==="open"){ mark(n.date); set(false,true); } });
+      [title,go].forEach((a)=>a.addEventListener("click",()=>mark(n.date)));
     }).catch(()=>{});
+  })();
+  </script>
+  <script>
+  // The mural's easter egg: the helm turns by hand. It's a self-centering
+  // wheel: a spring pulls it back to midships, lightly damped so it swings
+  // past once or twice before it settles. Under reduced motion the damping is
+  // critical, so it comes back without the swing. A tap without a drag nudges
+  // it toward the side touched.
+  (function(){
+    const svg=document.getElementById("mural"), helm=document.getElementById("muralhelm"), grip=document.getElementById("muralgrip");
+    if(!svg||!helm||!grip) return;
+    const calm=matchMedia("(prefers-reduced-motion: reduce)");
+    const K=34, damping=()=>calm.matches?2*Math.sqrt(K):4;
+    let angle=0, vel=0, raf=0, drag=null;
+    const draw=()=>{ helm.style.transform=angle?`rotate(${angle}deg)`:""; };
+    const hub=()=>{ const p=svg.createSVGPoint(); p.x=806; p.y=220; return p.matrixTransform(svg.getScreenCTM()); };
+    const bearing=(e,h)=>Math.atan2(e.clientY-h.y,e.clientX-h.x)*180/Math.PI;
+    const settle=()=>{
+      cancelAnimationFrame(raf); let last=performance.now();
+      const step=(now)=>{
+        const dt=Math.min(.032,(now-last)/1000); last=now;
+        vel+=(-K*angle-damping()*vel)*dt; angle+=vel*dt;
+        if(Math.abs(angle)<.03&&Math.abs(vel)<.5){ angle=0; vel=0; draw(); return; }
+        draw(); raf=requestAnimationFrame(step);
+      };
+      raf=requestAnimationFrame(step);
+    };
+    grip.addEventListener("pointerdown",(e)=>{
+      cancelAnimationFrame(raf);
+      const h=hub(), b=bearing(e,h);
+      drag={h, last:b, t:performance.now(), x:e.clientX, y:e.clientY, moved:false, rate:0};
+      grip.setPointerCapture(e.pointerId); svg.classList.add("held"); e.preventDefault();
+    });
+    grip.addEventListener("pointermove",(e)=>{
+      if(!drag) return;
+      if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>4) drag.moved=true;
+      const b=bearing(e,drag.h); let d=b-drag.last; if(d>180) d-=360; if(d<-180) d+=360;
+      const now=performance.now(), dt=Math.max(.001,(now-drag.t)/1000);
+      drag.rate=.6*drag.rate+.4*(d/dt); drag.last=b; drag.t=now;
+      angle+=d; draw();
+    });
+    const release=(e)=>{
+      if(!drag) return;
+      if(drag.moved) vel=Math.max(-400,Math.min(400,drag.rate));
+      else vel+=(e.clientX>=drag.h.x?1:-1)*140;
+      drag=null; svg.classList.remove("held"); settle();
+    };
+    grip.addEventListener("pointerup",release);
+    grip.addEventListener("pointercancel",release);
   })();
   </script>
 
