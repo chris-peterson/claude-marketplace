@@ -72,6 +72,19 @@
       "homepage": "https://chris-peterson.github.io/beacon/#/"
     },
     {
+      "name": "sonar",
+      "description": "Pings what a session can reach for the thing you're looking for: quick shallow matches first, then deeper results from history, sibling repos, links, and past transcripts.",
+      "author": {
+        "name": "chris-peterson"
+      },
+      "source": {
+        "source": "url",
+        "url": "https://github.com/chris-peterson/sonar.git"
+      },
+      "category": "development",
+      "homepage": "https://chris-peterson.github.io/sonar/#/"
+    },
+    {
       "name": "anchor",
       "description": "One skill per step of the code-change lifecycle: file an issue, review the diff and commit, open and describe a change request, resolve review feedback, merge, release, and watch the pipeline. Supports multiple source forges (GitHub, GitLab).",
       "author": {
