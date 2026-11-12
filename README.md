@@ -16,11 +16,15 @@ claude plugin install <name>@chris-peterson
 
 ## Plugins
 
-Each falls into one of six jobs: plan the passage, stay safe, keep oriented, reach your waypoints, chart the waters for the people who come next, and leave standing orders for the agent that comes next. They're listed in that order.
+Each falls into one of five jobs: plan the passage, stay safe, keep oriented, reach your waypoints, and chart the waters for the people and agents who come next. They're listed in that order.
 
 ### [rig](https://chris-peterson.github.io/rig/#/) — plan the passage
 
 Launches Claude Code with a named set of plugins chosen for a kind of work. Pin your local plugin checkouts so edits take effect without a release, and turn on the sandbox for a launch that asks for it. `/rig:switch` moves the current session to another rig and keeps the conversation.
+
+### [sonar](https://chris-peterson.github.io/sonar/#/) — plan the passage
+
+Searches everything a session can reach for what you're after: the files it has loaded, the ones they lead to, sibling repos, git history, links, and past transcripts. Shallow matches come back right away; deeper ones arrive when your next turn starts. In preview: no commands yet.
 
 ### [ClaudeWatch](https://chris-peterson.github.io/ClaudeWatch/#/) — stay safe
 
@@ -38,10 +42,6 @@ Tracks what you're working on across crashes, context overflow, and jumps betwee
 
 Colors each session's tab so you can tell what every Claude session is doing at a glance: neutral at rest, amber working, red waiting for you. That's iTerm2 on macOS; on any OS or terminal the same state shows in a fleet dashboard you open in a browser.
 
-### [sonar](https://chris-peterson.github.io/sonar/#/) — keep oriented
-
-Searches everything a session can reach for what you're after: the files it has loaded, the ones they lead to, sibling repos, git history, links, and past transcripts. Shallow matches come back right away; deeper ones arrive when your next turn starts. In preview: no commands yet.
-
 ### [anchor](https://chris-peterson.github.io/anchor/#/) — reach your waypoints
 
 Keeps your issues, commits, change requests, reviews, and releases consistent — the same quality, formatting, and content every time, not reinvented per change. `/anchor:commit` walks you through the diff, then writes a why-first message; `/anchor:prepare-review` opens the change request.
@@ -58,10 +58,10 @@ Keeps the facts of a piece of work (an incident, an investigation) in one versio
 
 Stands up a documentation hub for a repo and keeps it current as the code changes, on the docs engine you choose. Its pages are written for the people who use what the repo ships: how the thing works, and what to watch out for. In preview: no commands yet.
 
-### [cleat](https://chris-peterson.github.io/cleat/#/) — leave standing orders
+### [cleat](https://chris-peterson.github.io/cleat/#/) — chart the waters
 
 Write your project's instructions once, in the file every AI tool reads. AGENTS.md is the file about 30 of them read; Claude Code reads CLAUDE.md and nothing else, so guidance kept in either one alone reaches half your tools. cleat holds a repo in the shape that satisfies both.
 
-### [sextant](https://chris-peterson.github.io/sextant/#/) — leave standing orders
+### [sextant](https://chris-peterson.github.io/sextant/#/) — chart the waters
 
 Keeps a plain-language spec — what the code must do — under source control, and reconciles it with the code in either direction. Written for specs that lag the code as often as they lead it.

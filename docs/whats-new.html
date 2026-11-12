@@ -70,6 +70,20 @@
   .day li a.rel{color:var(--gold);font-weight:600;text-decoration:none;white-space:nowrap}
   .day li a.rel:hover{text-decoration:underline;text-underline-offset:2px}
   .day li a.rel.has-notes{text-decoration:underline dotted;text-underline-offset:3px;text-decoration-color:color-mix(in srgb,var(--gold) 55%,transparent)}
+  /* the featured entry, pinned above the dated log with its date beside it;
+     the same entry the landing page's toast carries */
+  .featured{display:grid;gap:6px;margin:0 0 30px;padding:18px 20px 18px 18px;border-radius:14px;
+    background:var(--deep);border:1px solid var(--line-h);border-left:3px solid var(--chart)}
+  .featured .flabel{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .featured .flabel b{color:var(--chart);font-weight:600}
+  .featured .ftitle{font-family:var(--disp);font-weight:600;font-size:26px;line-height:1.2;color:var(--fg);text-decoration:none}
+  .featured .ftitle:hover{text-decoration:underline;text-decoration-color:var(--chart);text-underline-offset:4px}
+  .featured .fbody{margin:0;color:var(--muted)}
+  .featured .fbody a{color:var(--cyan)}
+  .featured .fgo{justify-self:start;margin-top:8px;padding:8px 16px;border-radius:999px;font-weight:600;font-size:14.5px;
+    color:var(--abyss);background:var(--chart);text-decoration:none}
+  .featured .fgo:hover{filter:brightness(1.08)}
+  .featured .fgo:focus-visible{outline:2px solid var(--chart);outline-offset:3px}
   .clnotes-tip{position:fixed;z-index:60;width:max-content;max-width:min(420px,86vw);
     max-height:min(70vh,520px);overflow-y:auto;
     background:var(--sea);border:1px solid var(--line-h);border-radius:11px;padding:12px 15px;
@@ -124,17 +138,23 @@
     .replace(/`([^`]+)`/g,"<code>$1</code>")
     .replace(/\*\*([^*]+)\*\*/g,'<span class="type">$1</span>')
     .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g,(m,t,u)=>`<a href="${u}">${t}</a>`);
+  // a release summary is plain text but for its code spans
+  const code=(s)=>esc(s).replace(/`([^`]+)`/g,"<code>$1</code>");
   const day=(d)=>new Date(d+"T12:00:00Z").toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric",timeZone:"UTC"});
   const hasSummary=(x)=> !!(x && x.summary && (x.summary.alert || (x.summary.buckets||[]).length));
+  // pinned above the log, out of its day's list; keep in step with FEATURED in
+  // index.html, whose toast carries the same entry
+  const FEATURED="bridge.ai 2.0";
+  const FEATURED_LINE=/^\*\*[^*]+:\*\*\s*\[([^\]]+)\]\(([^)\s]+)\):?\s*(.*)$/;
   const RELEASE=/^\*\*released:\*\*\s*\[([^\]]+)\]\(([^)\s]+)\)/;
   // the landing page's release card: the alert, then each section's heading
   // and the lead of its first few bullets, with the full notes one click away
   function renderSummary(sum, url){
     const out=[];
-    if(sum.alert) out.push(`<div class="cn-alert">${esc(sum.alert)}</div>`);
+    if(sum.alert) out.push(`<div class="cn-alert">${code(sum.alert)}</div>`);
     (sum.buckets||[]).forEach((s)=>{
-      if(s.title) out.push(`<div class="cn-sec">${esc(s.title)}</div>`);
-      const items=(s.items||[]).map((i)=>`<li>${esc(i)}</li>`);
+      if(s.title) out.push(`<div class="cn-sec">${code(s.title)}</div>`);
+      const items=(s.items||[]).map((i)=>`<li>${code(i)}</li>`);
       if(s.more) items.push(`<li class="cn-more">+${s.more} more</li>`);
       out.push(`<ul>${items.join("")}</ul>`);
     });
@@ -188,14 +208,25 @@
       }
       return [html, pc];
     };
-    let html="", open=false;
+    let html="", open=false, date="", feat="";
     md.split("\n").forEach((line)=>{
       const h=line.match(/^## (\d{4}-\d{2}-\d{2})\s*$/);
-      if(h){ if(open) html+="</ul></section>"; html+=`<section class="day" id="${h[1]}"><h2><a href="#${h[1]}">${day(h[1])}</a></h2><ul>`; open=true; return; }
-      if(open && line.startsWith("- ")){ const [h2, pc]=entry(line.slice(2));
-        html+=`<li${pc?` style="--pc:${pc}"`:""}>${h2}</li>`; }
+      if(h){ if(open) html+="</ul></section>"; date=h[1]; html+=`<section class="day" id="${h[1]}"><h2><a href="#${h[1]}">${day(h[1])}</a></h2><ul>`; open=true; return; }
+      if(!open || !line.startsWith("- ")) return;
+      const f=FEATURED && !feat && line.slice(2).match(FEATURED_LINE);
+      if(f && f[1]===FEATURED){
+        const body=f[3].replace(/^./,(c)=>c.toUpperCase());
+        feat=`<section class="featured"><span class="flabel"><b>Featured</b> · <a href="#${date}">${day(date)}</a></span>`
+          +`<a class="ftitle" href="${esc(f[2])}">${esc(f[1])}</a>`
+          +(body?`<p class="fbody">${inline(body)}</p>`:"")
+          +`<a class="fgo" href="${esc(f[2])}">Read the announcement →</a></section>`;
+        return;
+      }
+      const [h2, pc]=entry(line.slice(2));
+      html+=`<li${pc?` style="--pc:${pc}"`:""}>${h2}</li>`;
     });
     if(open) html+="</ul></section>";
+    html=(feat+html).replace(/<section class="day" id="[^"]+"><h2>.*?<\/h2><ul><\/ul><\/section>/g,"");
     document.getElementById("log").innerHTML=html;
     wireReleaseNotes(byUrl);
     const latest=(md.match(/^## (\d{4}-\d{2}-\d{2})/m)||[])[1];

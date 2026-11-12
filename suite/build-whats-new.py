@@ -35,7 +35,9 @@ def highlights(path: Path) -> dict[str, list[str]]:
 def teaser(summary: dict) -> str:
     for bucket in (summary or {}).get("buckets") or []:
         for item in bucket.get("items") or []:
-            text = item.rstrip("…").strip()
+            # an item shipyard clipped keeps its ellipsis, so a cut-off line
+            # doesn't read as a finished one
+            text = item.strip()
             return text if len(text) <= TEASER_MAX else text[:TEASER_MAX].rsplit(" ", 1)[0] + "…"
     return ""
 

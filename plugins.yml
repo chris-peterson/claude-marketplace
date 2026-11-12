@@ -13,11 +13,11 @@ source: https://github.com/{owner}/{name}.git
 
 plugins:
   - rig
+  - sonar
   - ClaudeWatch
   - shipshape
   - tack
   - beacon
-  - sonar
   - anchor
   - mate
   - cleat
@@ -57,8 +57,5 @@ groups:
   - key: charts
     accent: --chart
     tag: Chart the waters
-  - key: orders
-    accent: --build
-    tag: Leave standing orders
     retired:
       - logbook
