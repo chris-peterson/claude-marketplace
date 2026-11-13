@@ -69,3 +69,4 @@ date,at,plugin,skills,rules,hooks,commands,agents,change
 2026-11-12,2026-11-12T17:44:50-08:00,fathom,5,0,0,0,0,+skill:proof +skill:wtf
 2026-11-12,2026-11-12T18:00:45-08:00,masthead,1,0,0,0,0,+skill:bootstrap
 2026-11-12,2026-11-12T00:25:14-08:00,sonar,1,0,1,0,0,+skill:pulse +hook:hooks
+2026-11-13,2026-11-13T22:34:35Z,fathom,6,0,0,0,0,+skill:slack
