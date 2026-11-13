@@ -10,13 +10,13 @@
       <line x1="20" y1="20" x2="36.17" y2="14.75" stroke="#ff5555"/>
       <line x1="20" y1="20" x2="29.99" y2="33.75" stroke="#bd93f9"/>
       <line x1="20" y1="20" x2="10.01" y2="33.75" stroke="#8be9fd"/>
-      <line x1="20" y1="20" x2="3.83" y2="14.75" stroke="#ff79c6"/>
+      <line x1="20" y1="20" x2="3.83" y2="14.75" stroke="#50fa7b"/>
     </g>
     <circle cx="20" cy="3" r="2.6" fill="#ffb86c"/>
     <circle cx="36.17" cy="14.75" r="2.6" fill="#ff5555"/>
     <circle cx="29.99" cy="33.75" r="2.6" fill="#bd93f9"/>
     <circle cx="10.01" cy="33.75" r="2.6" fill="#8be9fd"/>
-    <circle cx="3.83" cy="14.75" r="2.6" fill="#ff79c6"/>
+    <circle cx="3.83" cy="14.75" r="2.6" fill="#50fa7b"/>
     <circle cx="20" cy="20" r="3.6" fill="#f8f8f2"/>
   </g>
 </svg>

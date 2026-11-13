@@ -42,7 +42,7 @@ hub: ../chris-peterson.github.io/docs/projects.yml
 groups:
   - key: passage
     accent: --plan
-    tag: Plan the passage
+    tag: Plan ahead
   - key: safety
     accent: --guard
     tag: Stay safe
@@ -55,7 +55,7 @@ groups:
     retired:
       - moor
   - key: charts
-    accent: --chart
-    tag: Chart the waters
+    accent: --build
+    tag: Write it down
     retired:
       - logbook

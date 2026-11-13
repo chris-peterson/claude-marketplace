@@ -16,13 +16,19 @@ claude plugin install <name>@chris-peterson
 
 ## Plugins
 
-Each falls into one of five jobs: plan the passage, stay safe, keep oriented, reach your waypoints, and chart the waters for the people and agents who come next. They're listed in that order.
+Each plugin does one of these jobs, and the list below follows the same order:
 
-### [rig](https://chris-peterson.github.io/rig/#/) — plan the passage
+- **Plan ahead:** set up the harness, recall past lessons
+- **Stay safe:** screen risky commands
+- **Keep oriented:** see work at a glance
+- **Reach your waypoints:** land changes cleanly
+- **Write it down:** capture lessons
+
+### [rig](https://chris-peterson.github.io/rig/#/) — plan ahead
 
 Launches Claude Code with a named set of plugins chosen for a kind of work. Pin your local plugin checkouts so edits take effect without a release, and turn on the sandbox for a launch that asks for it. `/rig:switch` moves the current session to another rig and keeps the conversation.
 
-### [sonar](https://chris-peterson.github.io/sonar/#/) — plan the passage
+### [sonar](https://chris-peterson.github.io/sonar/#/) — plan ahead
 
 Searches everything a session can reach for what you're after: the files it has loaded, the ones they lead to, sibling repos, git history, links, and past transcripts. Shallow matches come back right away; deeper ones arrive when your next turn starts. In preview: no commands yet.
 
@@ -50,18 +56,18 @@ Keeps your issues, commits, change requests, reviews, and releases consistent �
 
 Makes the change itself, in the two shapes it comes in. `/mate:fix` drives a defect from symptom to shipped fix: root cause, a test that fails for the reason the bug exists, then a sweep for the same bug class. `/mate:feature` adds a capability against the patterns already in the codebase. Between them, one line naming the phase that comes next.
 
-### [fathom](https://chris-peterson.github.io/fathom/#/) — chart the waters
+### [fathom](https://chris-peterson.github.io/fathom/#/) — write it down
 
 Keeps the facts of a piece of work (an incident, an investigation) in one versioned record, then renders each reader's document from it: an analysis for engineers, a status for managers, an explainer for everyone else. `/fathom:record` turns evidence into facts; `/fathom:render` writes a view for one reader, and every figure in it cites the fact it came from.
 
-### [masthead](https://chris-peterson.github.io/masthead/#/) — chart the waters
+### [masthead](https://chris-peterson.github.io/masthead/#/) — write it down
 
 Stands up a documentation hub for a repo and keeps it current as the code changes, on the docs engine you choose. Its pages are written for the people who use what the repo ships: how the thing works, and what to watch out for. In preview: no commands yet.
 
-### [cleat](https://chris-peterson.github.io/cleat/#/) — chart the waters
+### [cleat](https://chris-peterson.github.io/cleat/#/) — write it down
 
 Write your project's instructions once, in the file every AI tool reads. AGENTS.md is the file about 30 of them read; Claude Code reads CLAUDE.md and nothing else, so guidance kept in either one alone reaches half your tools. cleat holds a repo in the shape that satisfies both.
 
-### [sextant](https://chris-peterson.github.io/sextant/#/) — chart the waters
+### [sextant](https://chris-peterson.github.io/sextant/#/) — write it down
 
 Keeps a plain-language spec — what the code must do — under source control, and reconciles it with the code in either direction. Written for specs that lag the code as often as they lead it.
