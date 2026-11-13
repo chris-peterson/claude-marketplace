@@ -163,9 +163,14 @@
   .stop .txt .sub::before{content:" — ";color:var(--faint)}
   .stop .txt .new{display:inline-block;margin-left:7px;padding:1px 7px;border-radius:999px;vertical-align:1px;
     font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
-    color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 55%,transparent);background:color-mix(in srgb,var(--ac) 12%,transparent)}
+    color:var(--ac-text);border:1px solid color-mix(in srgb,var(--ac) 55%,transparent);background:color-mix(in srgb,var(--ac) 12%,transparent)}
   .stop:hover .txt .lab{text-decoration:underline;text-underline-offset:3px}
   .stop:hover .node{box-shadow:0 0 0 3px var(--abyss),0 0 10px -1px var(--ac)}
+  /* text drawn in an accent: the day palette's accents run under 4.5:1 on the light
+     surfaces at the small sizes they're used for, so text mixes in black by day and
+     keeps the accent at night. Edges, borders and tints use --ac as is. Declared on
+     every element so it follows whichever --ac is in scope there. */
+  *{--ac-text:color-mix(in srgb,var(--ac) 70%,light-dark(black,var(--ac)))}
   .stop.s-passage{--ac:var(--orange)} .stop.s-safety{--ac:var(--red)} .stop.s-bearings{--ac:var(--purple)}
   .stop.s-waypoints{--ac:var(--cyan)} .stop.s-charts{--ac:var(--green)}
   .n-passage{background:var(--orange)} .n-safety{background:var(--red)} .n-bearings{background:var(--purple)} .n-waypoints{background:var(--cyan)} .n-charts{background:var(--green)}
@@ -202,7 +207,7 @@
     border:1px solid color-mix(in srgb,var(--ac) 45%,transparent);box-shadow:0 0 18px -5px var(--ac)}
   .prow .pbody{padding-top:3px}
   .prow .pname{font-family:var(--disp);font-weight:600;font-size:20px;color:var(--fg);display:flex;align-items:baseline;gap:11px;flex-wrap:wrap}
-  .prow .pname b{color:var(--ac)}
+  .prow .pname b{color:var(--ac-text)}
   .prow .when{margin:4px 0 0;color:var(--muted);font-size:15px}
   .prow .when b{color:var(--fg);font-weight:600}
   .prow.lead .pmark img{width:56px;height:56px}
@@ -243,12 +248,12 @@
   .ship .gloss{font-family:var(--disp);font-style:italic;font-size:14.5px;color:var(--muted);margin:10px 0 0}
   .ship .what{margin:11px 0 0;color:var(--fg);font-size:15px;line-height:1.55}
   .ship .cmds{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 0}
-  .ship .cmd{font-family:var(--mono);font-size:11.5px;color:var(--ac);
+  .ship .cmd{font-family:var(--mono);font-size:11.5px;color:var(--ac-text);
     background:color-mix(in srgb,var(--ac) 9%,transparent);
     border:1px solid color-mix(in srgb,var(--ac) 22%,transparent);border-radius:6px;padding:4px 8px}
   .ship .cmdsep{align-self:center;color:var(--muted);font-family:var(--mono);font-size:12px;margin:0 2px}
   .ship .cli{align-self:center;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--ac);border:1px solid color-mix(in srgb,var(--ac) 32%,transparent);border-radius:5px;padding:2px 7px}
+    color:var(--ac-text);border:1px solid color-mix(in srgb,var(--ac) 32%,transparent);border-radius:5px;padding:2px 7px}
   a.cli:hover{text-decoration:none;border-color:color-mix(in srgb,var(--ac) 64%,transparent);
     background:color-mix(in srgb,var(--ac) 9%,transparent)}
   .ship .ver{align-self:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--muted);
@@ -258,7 +263,7 @@
   .ship .compbody{display:flex;margin:13px 0 0;border-top:1px solid var(--line-2);padding-top:12px;
     flex-direction:column;gap:8px}
   .ship .compcat{display:grid;grid-template-columns:68px 1fr;gap:11px;align-items:baseline;font-family:var(--mono);font-size:11.5px}
-  .ship .compk{color:var(--ac)}
+  .ship .compk{color:var(--ac-text)}
   .ship .compv{color:var(--muted);word-break:break-word;line-height:1.55}
   /* an artifact chip with a declared description gets a dotted underline + help cursor */
   .ship .compitem[data-tip]{cursor:help;text-decoration:underline dotted;text-underline-offset:2px;
@@ -273,12 +278,12 @@
   .leg .bead img{width:38px;height:38px;border-radius:11px;background:var(--sea);position:relative;z-index:1;
     border:1px solid color-mix(in srgb,var(--ac) 50%,transparent);box-shadow:0 0 14px -4px var(--ac)}
   .leg .lbody h3{font-family:var(--disp);font-weight:600;font-size:20px;margin:2px 0 5px;color:var(--fg)}
-  .leg .lbody h3 .inst{color:var(--ac);font-style:italic;font-weight:500}
+  .leg .lbody h3 .inst{color:var(--ac-text);font-style:italic;font-weight:500}
   .leg .lbody p{margin:0;color:var(--muted);font-size:15px}
   .leg .lbody .opt{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em}
   .leg .lbody .prompt{display:inline-flex;align-items:center;gap:9px;margin-top:11px;font-family:var(--mono);font-size:12.5px;
     background:var(--abyss);border:1px solid var(--line-2);border-radius:8px;padding:8px 12px;color:var(--fg)}
-  .leg .lbody .prompt .cue{color:var(--ac)}
+  .leg .lbody .prompt .cue{color:var(--ac-text)}
 
   /* install block */
   .install{margin-top:28px;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--abyss)}
@@ -300,11 +305,18 @@
     background:color-mix(in srgb,var(--ac) 8%,transparent);border:1px solid color-mix(in srgb,var(--ac) 26%,transparent);
     border-radius:8px;padding:7px 11px;color:var(--fg);transition:border-color .2s;max-width:100%}
   .cmdcopy:hover{border-color:color-mix(in srgb,var(--ac) 55%,transparent)}
-  .cmdcopy .cc-cmd{color:var(--fg);white-space:normal;min-width:0;line-height:1.5}
-  .cmdcopy .cc-cmd .cc-nb{white-space:nowrap}
-  .cmdcopy .cc-ico{color:var(--ac);border-left:1px solid var(--line-2);padding-left:10px;flex:none;display:inline-flex;align-items:center}
+  .cmdcopy .cc-cmd{color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;line-height:1.5}
+  .cmdcopy .cc-ico{color:var(--ac-text);border-left:1px solid var(--line-2);padding-left:10px;flex:none;display:inline-flex;align-items:center}
   .cmdcopy .cc-ico svg{display:block}
   .ship .cmdcopy{width:100%;max-width:100%;justify-content:space-between;overflow:hidden}
+  /* the install command stays on one line: a wrapped one makes its card taller than
+     its neighbour. Every card shares one size, small enough for the longest command
+     (--cmdlen, in characters) to fit; the mono face advances .6em a character, and
+     62px is the box's padding, border and copy icon. Narrower than that allows
+     at 10px (a phone, where cards stack and have no neighbour), it wraps instead. */
+  .ship .pacts{container-type:inline-size}
+  .ship .cmdcopy .cc-cmd{font-size:max(10px,min(12px,calc((100cqi - 62px) / (var(--cmdlen,48) * .6))))}
+  @container (width < 350px){ .ship .cmdcopy .cc-cmd{white-space:normal;font-size:11.5px} }
   .cmdcopy.solo .cc-ico{border-left:0;padding-left:0}
   .cmdcopy.done{border-color:color-mix(in srgb,var(--green) 55%,transparent)}
   .cmdcopy.done .cc-ico{color:var(--green)}
@@ -313,12 +325,12 @@
   .pnamelink{display:inline-flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
   .pnamelink:hover h3{text-decoration:underline;text-underline-offset:3px}
   .pnamelink::after{content:"\2197";font-size:13px;line-height:1;align-self:center;margin-left:-5px;
-    color:var(--ac);opacity:0;transition:opacity .2s}
+    color:var(--ac-text);opacity:0;transition:opacity .2s}
   .pnamelink:hover::after{opacity:.75}
   /* header quick-links: shareable anchor + source, a matched icon pair pushed to
      the right; the anchor icon carries the margin that floats the cluster over. */
   .ship .head .iconbtn{align-self:center;display:inline-flex;align-items:center;color:var(--muted);transition:color .2s}
-  .ship .head .iconbtn:hover{color:var(--ac);text-decoration:none}
+  .ship .head .iconbtn:hover{color:var(--ac-text);text-decoration:none}
   .ship .head .iconbtn svg{display:block}
   .ship .head .anchorlink{margin-left:auto}
   .ship .head .anchorlink.copied{color:var(--green)}
@@ -778,18 +790,22 @@
   // group a card is in is the plugin's own `suite.group`, so membership has one
   // home. ACCENT resolves a group key to its custom property.
   const ACCENT={}; GROUPS.forEach(g=> ACCENT[g.key]=g.accent);
+  // how far a group's nth plugin (of n) mixes away from the group color
+  const SHADE_SPAN=.36, shadeAmount=(shade,n)=> n>1 ? SHADE_SPAN*shade/(n-1) : 0;
   const MEMBERS={}; GROUPS.forEach(g=> MEMBERS[g.key]=[]);
   Object.keys(PLUGINS).forEach((slug)=>{ const k=PLUGINS[slug].group;
     if(MEMBERS[k]) MEMBERS[k].push(slug); });
-  // each plugin's accent = its group color, stepped once per same-group sibling so
-  // the cards in a group are distinct (.26 + .2·shade). The step moves away from
-  // the page, not toward white: mixing toward white on a light surface walks the
-  // colour into the background, which took the shaded plugins under 2:1.
-  const accentVar=(token,shade)=> shade
-    ? `color-mix(in srgb, var(${token}) ${Math.round((1-(.26+.2*shade))*100)}%, light-dark(black, white))`
+  // each plugin's accent = its group color, stepped per same-group sibling so the
+  // cards in a group are distinct. The steps share one fixed span however many
+  // siblings there are: a fixed step per sibling ran a four-plugin group's last
+  // card most of the way to white. The step moves away from the page, not toward
+  // white: mixing toward white on a light surface walks the colour into the
+  // background, which took the shaded plugins under 2:1.
+  const accentVar=(token,shade,n)=> shade
+    ? `color-mix(in srgb, var(${token}) ${Math.round((1-shadeAmount(shade,n))*100)}%, light-dark(black, white))`
     : `var(${token})`;
   const PLUGIN_AC={};
-  GROUPS.forEach(g=> MEMBERS[g.key].forEach((slug,idx)=>{ PLUGIN_AC[slug]=accentVar(g.accent,idx); }));
+  GROUPS.forEach(g=> MEMBERS[g.key].forEach((slug,idx)=>{ PLUGIN_AC[slug]=accentVar(g.accent,idx,MEMBERS[g.key].length); }));
   // ---- artifact inventory (from plugins.js `components`, derived from suite/artifacts.csv) ----
   const COMP_ORDER=["skills","rules","hooks","commands","agents"];
   // each artifact name is a hoverable chip; if the plugin's plugin.yml declares a
@@ -821,13 +837,15 @@
       `</div>`+
       `<p class="what">${p.pitch||p.what}</p>`+
       (compHtml?`<div class="compbody">${compHtml}</div>`:``)+
-      `<div class="pacts"><button class="cmdcopy" data-cmd="${cmd}"><span class="cc-cmd"><span class="cc-nb">claude plugin install</span> <span class="cc-nb">${slug}@chris-peterson</span></span><span class="cc-ico">${COPY_ICO}</span></button></div></article>`;
+      `<div class="pacts"><button class="cmdcopy" data-cmd="${cmd}"><span class="cc-cmd">${cmd}</span><span class="cc-ico">${COPY_ICO}</span></button></div></article>`;
   };
   document.getElementById("catalog").innerHTML = GROUPS.map(g=>
     `<div class="fgroup reveal" id="g-${g.key}" style="--ac:var(${g.accent})">`+
       `<div class="ghead"><a class="gtag" href="#g-${g.key}">${g.tag}</a></div>`+
       `<div class="fleet${MEMBERS[g.key].length===1?' solo':''}">${MEMBERS[g.key].map(catCard).join("")}</div></div>`
   ).join("");
+  document.getElementById("catalog").style.setProperty("--cmdlen",
+    Math.max(...Object.keys(PLUGINS).map((s)=>`claude plugin install ${s}@chris-peterson`.length)));
 
   // ---- copy-to-clipboard (delegated) ----
   document.addEventListener("click",(e)=>{
@@ -1024,8 +1042,9 @@
       // An archived plugin keeps its history and its group's color, but starts
       // hidden: the legend strikes its name through, the way it does any band
       // toggled off, and a click brings it back.
+      const groupSize={}; Object.values(data.colors).forEach((c)=>{ groupSize[c.group]=(groupSize[c.group]||0)+1; });
       const colorFor=(p)=>{ const c=data.colors[p]; if(!c || !ACCENT[c.group]) return hex("--muted");
-        const base=hex(ACCENT[c.group]); return c.shade ? shadeStep(base, .26+.2*c.shade) : base; };
+        const base=hex(ACCENT[c.group]); return c.shade ? shadeStep(base, shadeAmount(c.shade, groupSize[c.group])) : base; };
       // a redraw (the theme toggle) keeps whatever the reader toggled
       const was=new Map((growthChart?.data.datasets||[]).map((d,i)=>[d.label, !growthChart.isDatasetVisible(i)]));
       const datasets = data.plugins.map((p)=>({label:p, data:data.series[p],
