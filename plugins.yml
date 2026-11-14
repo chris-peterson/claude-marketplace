@@ -11,6 +11,12 @@ owner: chris-peterson
 # anything is cloned — which is what suite/sync.sh reads to do the cloning.
 source: https://github.com/{owner}/{name}.git
 
+# Marketplaces a plugin here may declare a hard dependency on. Claude Code
+# refuses to install a dependency from any other marketplace, and shipyard
+# rejects one at generation.
+allowCrossMarketplaceDependenciesOn:
+  - claude-plugins-official
+
 plugins:
   - rig
   - sonar
