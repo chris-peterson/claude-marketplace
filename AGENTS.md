@@ -40,6 +40,17 @@ by the sibling's `PostToolUse` hook, with no dispatcher between them. Its key
 table is the suite's only shared record of who announces what, and a key belongs
 in it once both sides agree, not once it first fires.
 
+**This repo owns the suite's eventing requirements.** [`SPEC.md`](SPEC.md) holds
+them as EARS requirements under stable IDs (`WIRE`, `KEY`, `EMIT`, `SUB`,
+`SWITCH`, `DECLARE`, `CATALOG`, `CHECK`); [`STATUS.md`](STATUS.md) is the ledger
+of what enforces each one and which plugins conform. `plugin-contract.md` is the
+guide that explains them. Changing a rule means touching all three, and a rule
+that lands in a plugin's own `SPEC.md` instead of here is the drift this is
+meant to stop: a plugin's spec cites `bridge.ai SUB-03`, it doesn't restate it.
+The enforcement lives in shipyard (`gen-events-json` for `CATALOG`) and in each
+plugin's own tests (`CHECK`), so a requirement here can be ahead of what
+enforces it; `STATUS.md` is where that gap shows.
+
 ## Suite toolkit (`suite/`)
 
 The bridge.ai suite is maintained by reading the sibling plugin repos (cloned by

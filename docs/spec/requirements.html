@@ -232,7 +232,9 @@
 
   function build(plugins){
     const bySlug={}; plugins.forEach(p=> bySlug[p.name]=p);
-    const ordered=ORDER.filter(s=>bySlug[s]).concat(plugins.map(p=>p.name).filter(s=>!ORDER.includes(s)));
+    // Anything not on the roster (the suite's own contracts) leads, since it is
+    // what the plugins below it cite.
+    const ordered=plugins.map(p=>p.name).filter(s=>!ORDER.includes(s)).concat(ORDER.filter(s=>bySlug[s]));
 
     ordered.forEach(slug=>{
       const p=bySlug[slug];

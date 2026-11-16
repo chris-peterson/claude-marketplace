@@ -14,6 +14,12 @@ already there. What each side declares about itself lives in its own
 `plugin.yml` ([Declaring events](#declaring-events)), and nothing at runtime
 reads those declarations.
 
+This page is the guide: why each rule exists and how to meet it. The rules
+themselves are numbered in the suite's [`SPEC.md`](../SPEC.md) (`WIRE`, `KEY`,
+`EMIT`, `SUB`, `SWITCH`, `DECLARE`, `CATALOG`, `CHECK`), and
+[`STATUS.md`](../STATUS.md) records which plugins meet them. A plugin's own spec
+cites those IDs rather than restating the wire format.
+
 ## The announcement
 
 One line: the key, one whitespace run, then a single compact JSON object to end
@@ -72,6 +78,37 @@ would put the one-line guarantee back into percent-encoding discipline that
 every producer has to get right, where a JSON object gets it structurally. §6
 would also want a provisional IANA registration before anything using such a
 scheme left this suite.
+
+## Naming a key
+
+The key is the only thing a subscriber can route on before it parses anything,
+so most of the design effort belongs here rather than in the body.
+
+**Name it for what is true at the moment the line prints.** The line sits after
+the operation succeeded, so the key says what that success made true:
+`commit.pushed`, printed once the push has landed, not `commit.created`, printed
+by the same script before anything left the machine.
+
+**One code path can end in different facts.** When it does, announce a different
+key per outcome rather than one key with the outcome in the body. anchor's
+`prepare-review` either opens a change request or edits the one already open,
+and announces `cr.created` or `cr.updated` accordingly, never both. A single
+`cr.saved` carrying `"new": true` would hand every subscriber that only cares
+about a fresh CR a body to parse on each edit of every description.
+
+The test is whether a subscriber would react differently. anchor's
+`commit.pushed` fires for a new commit, an amend, and a push of an existing
+commit, and is right to: what every subscriber cares about is the same in all
+three (the branch tip reached the remote), and the body carries the sha that
+differs.
+
+**If a subscriber has to tell two cases apart to decide whether to react, the
+difference belongs in the key.** A subscriber matches the key with an anchored
+`grep`; it cannot filter on the body without parsing every line that shares the
+key. mate reacts only to a change request leaving draft (`cr.ready`), and tack's
+`record-landed.sh` only to a merge (`cr.merged`). Had anchor announced one
+`cr.changed` with a `state` field, both would wake on every description edit and
+parse the body to learn it wasn't for them.
 
 ## Publishing
 
@@ -320,7 +357,8 @@ re-run fires it again, what it means when the same key arrives twice.
 The two directions cannot be gated the same way:
 
 - **A subscription to a key nobody publishes fails the build.** It is a typo or
-  a stale reference, always.
+  a stale reference, always. `shipyard gen-events-json` exits non-zero on one,
+  after writing the catalog, so the page naming it still renders locally.
 - **A published key with no subscriber warns.** CI reads each sibling's
   committed branch, so hard-failing would break the first half of every
   two-repo rollout for as long as the second half takes to land.
@@ -371,6 +409,28 @@ claude -p --plugin-dir <subscriber-checkout> --allowedTools='Bash(printf:*)' \
 
 `NONE` proves nothing on its own: confirm the hook fired (a marker file, a
 side effect) before reading silence as a failure.
+
+## Why there is no dispatcher
+
+A `PostToolUse` hook already does what a dispatcher would:
+
+- It sees every command's stdout, so the announcement line is the delivery.
+  The publisher calls nothing, and can't be failed by anything downstream of it.
+- It runs in the session the fact belongs to, in the repository it is about.
+- It has a channel to the agent, `additionalContext`.
+
+A dispatcher would add an install every publisher depends on, a config file per
+plugin, state on disk, and a process between two plugins that otherwise never
+need to know about each other. A durable bus would add offsets, replay and dead
+letters on top, and no plugin needs a message after the turn that caused it.
+
+What a dispatcher would give, and where this design gets it instead:
+
+| A dispatcher would | Here |
+|---|---|
+| refuse a subscription to a key nobody publishes | the catalog build fails on it (`CATALOG-02`) |
+| report a key a plugin emits but never declared | not yet covered (`CATALOG-04`, `CATALOG-05`) |
+| count deliveries, so a dead subscriber shows | the live check in [the failure mode](#the-failure-mode-this-contract-has) |
 
 ## Published keys
 

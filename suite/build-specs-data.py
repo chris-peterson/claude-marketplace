@@ -5,7 +5,8 @@ plugin → category → requirement).
 Each plugin keeps an EARS-style spec — requirements tagged `[PFX-NN]`, grouped
 under category headings that carry the prefix. The suite uses two heading-label
 conventions plus beacon's numbered sections, so the parser covers all three
-(see HEADING_A / HEADING_B). tack has adopted a versioned layout
+(see HEADING_A / HEADING_B), plus sextant's layout, where the category and each
+requirement are headings of their own (see HEADING_CAT / HEADING_REQ). tack has adopted a versioned layout
 (`spec/v<N>/SPEC.md`); everyone else keeps a root `SPEC.md` — spec_path() prefers
 the versioned file when present. docs/specs.json is ephemeral — regenerated each
 deploy, not committed.
@@ -30,6 +31,11 @@ SECTION_NUM = re.compile(r"^\d+(?:\.\d+)*\.?\s+")
 # Pattern A: `PFX — Label` (em/en dash or hyphen). Pattern B: `Label (PFX)`.
 HEADING_A = re.compile(r"^([A-Z]{2,})\s*[—–-]\s*(.+)$")
 HEADING_B = re.compile(r"^(.+?)\s*\(([A-Z]{2,})\)\s*$")
+# sextant's layout: `### `PFX`` with its label on the next line, then one
+# `#### `PFX-NN`` heading per requirement with the text as the paragraph below
+# it. A lettered decomposition (`PFX-NNa`) is a requirement of its own.
+HEADING_CAT = re.compile(r"^`([A-Z]{2,})`$")
+HEADING_REQ = re.compile(r"^`([A-Z]{2,})-(\d+[a-z]?)`$")
 
 
 def spec_path(name: str):
@@ -81,10 +87,39 @@ def parse_spec(path) -> list[dict]:
             cat["label"] = label
         return cat
 
+    # sextant's layout carries a category's label and a requirement's text on
+    # the lines after the heading, so each heading may leave one pending.
+    pending_label: dict | None = None
+    pending_req: dict | None = None
+
     for line in path.read_text().splitlines():
+        if pending_label is not None and line.strip() and not HEADING.match(line):
+            pending_label["label"] = line.strip()
+            pending_label = None
+            continue
+        if pending_req is not None and not HEADING.match(line):
+            if line.strip():
+                pending_req["text"] = (pending_req["text"] + " " + line.strip()).strip()
+                continue
+            if pending_req["text"]:
+                pending_req = None
+                continue
         if m := HEADING.match(line):
             collecting_desc = False
             current = None
+            pending_label = pending_req = None
+            text = m.group(2).strip()
+            if r := HEADING_REQ.match(text):
+                prefix = r.group(1)
+                cat = by_prefix.get(prefix) or ensure(prefix, last_heading)
+                current = cat
+                pending_req = {"id": f"{prefix}-{r.group(2)}", "text": ""}
+                cat["reqs"].append(pending_req)
+                continue
+            if c := HEADING_CAT.match(text):
+                current = ensure(c.group(1))
+                pending_label = current
+                continue
             last_heading = clean_label(m.group(2))
             parsed = parse_heading(m.group(2))
             if parsed:
@@ -119,6 +154,20 @@ def main() -> int:
             "name": name,
             "gloss": suite.get("gloss", ""),
             "spec": str(path.relative_to(WORKSPACE / name)),
+            "categories": cats,
+            "catCount": len(cats),
+            "reqCount": sum(len(c["reqs"]) for c in cats),
+        })
+
+    # The suite's own contracts (SPEC.md beside this directory) lead the
+    # browser: they are the rules every plugin below cites.
+    suite_spec = ROOT / "SPEC.md"
+    if suite_spec.exists():
+        cats = parse_spec(suite_spec)
+        plugins.insert(0, {
+            "name": "bridge.ai",
+            "gloss": "suite contracts",
+            "spec": "SPEC.md",
             "categories": cats,
             "catCount": len(cats),
             "reqCount": sum(len(c["reqs"]) for c in cats),
